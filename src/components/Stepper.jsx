@@ -229,7 +229,7 @@ export default function Stepper() {
                 <label className="block text-sm sm:text-base font-semibold text-slate-700 mb-2">Beschreibung</label>
                 <textarea
                   name="description"
-                  rows="8"
+                  rows="12"
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Beschreibe kurz was deine Idee macht..."
@@ -272,8 +272,8 @@ export default function Stepper() {
             <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">Über dich</h3>
             <p className="text-slate-600 text-base sm:text-lg">Damit alles anonym bleibt, such dir bitte einen Fantasienamen und ein Bild aus.</p>
 
-            <div className="grid grid-cols-4 sm:grid-cols-4 gap-2 sm:gap-4 mb-8">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-4 mb-8">
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((i) => (
                 <button
                   key={i}
                   onClick={() => setFormData(prev => ({ ...prev, avatar: `avatar-${i}` }))}
