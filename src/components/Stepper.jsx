@@ -4,10 +4,10 @@ import { Check, ChevronRight, ChevronLeft, ShieldCheck, User, Lightbulb, Heart, 
 import { cn } from '../utils/cn';
 
 const steps = [
-  { id: 1, title: 'Richtlinien', icon: ShieldCheck },
-  { id: 2, title: 'Die Idee', icon: Lightbulb },
-  { id: 3, title: 'Impact', icon: Heart },
-  { id: 4, title: 'Identität', icon: User },
+  { id: 1, title: 'Regeln', icon: ShieldCheck },
+  { id: 2, title: 'Deine Idee', icon: Lightbulb },
+  { id: 3, title: 'Nutzen', icon: Heart },
+  { id: 4, title: 'Über dich', icon: User },
 ];
 
 export default function Stepper() {
@@ -27,18 +27,18 @@ export default function Stepper() {
     const newErrors = {};
 
     if (step === 1) {
-      if (!formData.agreed) newErrors.agreed = 'Du musst den Richtlinien zustimmen.';
+      if (!formData.agreed) newErrors.agreed = 'Bitte stimme den Regeln zu.';
     }
     if (step === 2) {
-      if (!formData.title.trim() || formData.title.length < 3) newErrors.title = 'Titel muss mind. 3 Zeichen haben.';
-      if (!formData.category) newErrors.category = 'Bitte wähle eine Kategorie.';
-      if (!formData.description.trim() || formData.description.length < 10) newErrors.description = 'Beschreibung muss mind. 10 Zeichen haben.';
+      if (!formData.title.trim() || formData.title.length < 3) newErrors.title = 'Der Name ist zu kurz (mind. 3 Zeichen).';
+      if (!formData.category) newErrors.category = 'Bitte wähle einen Bereich aus.';
+      if (!formData.description.trim() || formData.description.length < 10) newErrors.description = 'Bitte beschreibe deine Idee etwas genauer.';
     }
     if (step === 3) {
-      if (!formData.benefit.trim() || formData.benefit.length < 10) newErrors.benefit = 'Bitte erkläre den sozialen Nutzen (mind. 10 Zeichen).';
+      if (!formData.benefit.trim() || formData.benefit.length < 10) newErrors.benefit = 'Bitte erkläre kurz, wem das Projekt hilft.';
     }
     if (step === 4) {
-      if (!formData.username.trim() || formData.username.length < 3) newErrors.username = 'Nutzername muss mind. 3 Zeichen haben.';
+      if (!formData.username.trim() || formData.username.length < 3) newErrors.username = 'Der Wunschname ist zu kurz.';
     }
 
     setErrors(newErrors);
@@ -66,8 +66,8 @@ export default function Stepper() {
   };
 
   const renderError = (field) => errors[field] && (
-    <p className="text-red-500 text-xs mt-1 flex items-center font-medium">
-      <AlertCircle className="w-3 h-3 mr-1" /> {errors[field]}
+    <p className="text-red-600 text-sm mt-2 flex items-center font-medium bg-red-50 p-2 rounded-md">
+      <AlertCircle className="w-4 h-4 mr-2" /> {errors[field]}
     </p>
   );
 
@@ -75,28 +75,30 @@ export default function Stepper() {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-slate-900">Bevor wir starten</h3>
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-slate-700 space-y-4">
-              <p className="font-semibold">Bitte stelle sicher, dass deine Idee folgende Kriterien erfüllt:</p>
-              <ul className="list-disc list-inside space-y-2 text-slate-600">
-                <li>Gemeinnützig und sozial orientiert.</li>
-                <li>Kein kommerzielles Interesse oder Tracking.</li>
-                <li>Technisch als Web-App umsetzbar.</li>
-                <li>Respektvoller und inklusiver Inhalt.</li>
+          <div className="space-y-8">
+            <h3 className="text-3xl font-bold text-slate-900">Kurz vorab</h3>
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-8 text-slate-800 space-y-5">
+              <p className="font-semibold text-lg">Damit wir deine Idee prüfen können, sollte sie:</p>
+              <ul className="list-disc list-inside space-y-3 text-slate-700 text-base leading-relaxed">
+                <li>Anderen Menschen oder der Umwelt helfen.</li>
+                <li>Keine Gewinnabsichten haben.</li>
+                <li>Als Webseite oder App machbar sein.</li>
+                <li>Niemanden ausgrenzen oder beleidigen.</li>
               </ul>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3 text-slate-600">
+            <div className="space-y-3">
+              <div className="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, agreed: !prev.agreed }))}>
                 <input
                   type="checkbox"
                   id="agree"
                   name="agreed"
                   checked={formData.agreed}
                   onChange={handleChange}
-                  className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="mt-1 w-6 h-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                 />
-                <label htmlFor="agree" className={errors.agreed ? "text-red-500 font-medium" : ""}>Ich bestätige, dass meine Idee diese Regeln befolgt.</label>
+                <label htmlFor="agree" className={cn("text-lg cursor-pointer select-none", errors.agreed ? "text-red-600 font-medium" : "text-slate-700")}>
+                  Ja, meine Idee passt zu diesen Punkten.
+                </label>
               </div>
               {renderError('agreed')}
             </div>
@@ -104,54 +106,54 @@ export default function Stepper() {
         );
       case 2:
         return (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-slate-900">Was ist deine Idee?</h3>
-            <div className="space-y-4">
+          <div className="space-y-8">
+            <h3 className="text-3xl font-bold text-slate-900">Erzähl uns von deiner Idee</h3>
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Projekttitel</label>
+                <label className="block text-base font-semibold text-slate-700 mb-2">Wie soll das Projekt heißen?</label>
                 <input
                   type="text"
                   name="title"
-                  placeholder="z.B. FoodShare Lokal"
+                  placeholder="z.B. Essensretter App"
                   value={formData.title}
                   onChange={handleChange}
                   className={cn(
-                    "w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none",
-                    errors.title ? "border-red-500 bg-red-50" : "border-gray-200"
+                    "w-full bg-white border-2 rounded-xl px-5 py-4 text-lg text-slate-900 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none",
+                    errors.title ? "border-red-300 bg-red-50" : "border-gray-200"
                   )}
                 />
                 {renderError('title')}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Kategorie</label>
+                <label className="block text-base font-semibold text-slate-700 mb-2">Worum geht es?</label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
                   className={cn(
-                    "w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none",
-                    errors.category ? "border-red-500 bg-red-50" : "border-gray-200"
+                    "w-full bg-white border-2 rounded-xl px-5 py-4 text-lg text-slate-900 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none cursor-pointer appearance-none",
+                    errors.category ? "border-red-300 bg-red-50" : "border-gray-200"
                   )}
                 >
-                  <option value="">Kategorie wählen</option>
-                  <option value="environment">Umwelt & Nachhaltigkeit</option>
-                  <option value="education">Bildung & Wissen</option>
-                  <option value="health">Gesundheit & Wohlbefinden</option>
-                  <option value="community">Gemeinschaft & Inklusion</option>
+                  <option value="">Bitte wählen...</option>
+                  <option value="environment">Umwelt & Natur</option>
+                  <option value="education">Bildung & Lernen</option>
+                  <option value="health">Gesundheit</option>
+                  <option value="community">Zusammenleben</option>
                 </select>
                 {renderError('category')}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Kurzbeschreibung</label>
+                <label className="block text-base font-semibold text-slate-700 mb-2">Beschreibung</label>
                 <textarea
                   name="description"
-                  rows="4"
+                  rows="5"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Beschreibe deine Idee mit einfachen Worten..."
+                  placeholder="Beschreibe kurz was deine Idee macht..."
                   className={cn(
-                    "w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none",
-                    errors.description ? "border-red-500 bg-red-50" : "border-gray-200"
+                    "w-full bg-white border-2 rounded-xl px-5 py-4 text-lg text-slate-900 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none resize-none",
+                    errors.description ? "border-red-300 bg-red-50" : "border-gray-200"
                   )}
                 />
                 {renderError('description')}
@@ -161,20 +163,20 @@ export default function Stepper() {
         );
       case 3:
         return (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-slate-900">Sozialer Impact</h3>
-            <div className="space-y-4">
+          <div className="space-y-8">
+            <h3 className="text-3xl font-bold text-slate-900">Warum ist das wichtig?</h3>
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Wer profitiert davon?</label>
+                <label className="block text-base font-semibold text-slate-700 mb-2">Wem hilft das Projekt?</label>
                 <textarea
                   name="benefit"
-                  rows="4"
+                  rows="6"
                   value={formData.benefit}
                   onChange={handleChange}
-                  placeholder="Erkläre, wie die App anderen hilft oder ein soziales Problem löst..."
+                  placeholder="Erkläre kurz, welches Problem gelöst wird..."
                   className={cn(
-                    "w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none",
-                    errors.benefit ? "border-red-500 bg-red-50" : "border-gray-200"
+                    "w-full bg-white border-2 rounded-xl px-5 py-4 text-lg text-slate-900 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none resize-none",
+                    errors.benefit ? "border-red-300 bg-red-50" : "border-gray-200"
                   )}
                 />
                 {renderError('benefit')}
@@ -184,36 +186,37 @@ export default function Stepper() {
         );
       case 4:
         return (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-slate-900">Deine Identität</h3>
-            <p className="text-slate-500">Wähle einen Nutzernamen und Avatar. Keine Klarnamen erforderlich.</p>
+          <div className="space-y-8">
+            <h3 className="text-3xl font-bold text-slate-900">Über dich</h3>
+            <p className="text-slate-600 text-lg">Damit alles anonym bleibt, such dir bitte einen Fantasienamen und ein Bild aus.</p>
 
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-4 gap-4 mb-8">
               {[1, 2, 3, 4].map((i) => (
                 <button
                   key={i}
                   onClick={() => setFormData(prev => ({ ...prev, avatar: `avatar-${i}` }))}
                   className={cn(
-                    "aspect-square rounded-full bg-gray-100 border-2 transition-all hover:scale-105",
-                    formData.avatar === `avatar-${i}` ? "border-blue-500 ring-2 ring-blue-500/20" : "border-transparent"
+                    "aspect-square rounded-2xl bg-gray-50 border-4 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200",
+                    formData.avatar === `avatar-${i}` ? "border-blue-500 shadow-lg" : "border-transparent"
                   )}
+                  aria-label={`Avatar Option ${i}`}
                 >
-                  <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${i}`} alt="Avatar" className="w-full h-full rounded-full" />
+                  <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${i}`} alt="" className="w-full h-full rounded-xl" />
                 </button>
               ))}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Nutzername</label>
+              <label className="block text-base font-semibold text-slate-700 mb-2">Dein Fantasiename</label>
               <input
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="z.B. CaptainPlanet"
+                placeholder="z.B. WeltraumHeld"
                 className={cn(
-                  "w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none",
-                  errors.username ? "border-red-500 bg-red-50" : "border-gray-200"
+                  "w-full bg-white border-2 rounded-xl px-5 py-4 text-lg text-slate-900 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none",
+                  errors.username ? "border-red-300 bg-red-50" : "border-gray-200"
 
                 )}
               />
@@ -223,30 +226,26 @@ export default function Stepper() {
         );
       case 5:
         return (
-          <div className="space-y-6 text-center">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ShieldCheck className="w-8 h-8" />
+          <div className="space-y-8 text-center pt-8">
+            <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-10 h-10" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900">Bereit zum Absenden?</h3>
-            <p className="text-slate-500">
-              Deine Idee wird von unserem Team geprüft, bevor sie live geht. <br />
-              Dieser Prozess verhindert Spam und sichert Qualität.
+            <h3 className="text-3xl font-bold text-slate-900">Fertig zum Absenden?</h3>
+            <p className="text-slate-600 text-lg max-w-lg mx-auto">
+              Wir schauen uns deine Idee kurz an, bevor sie veröffentlicht wird. Das machen wir, um Spam zu vermeiden.
             </p>
 
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 text-left text-sm text-slate-600 max-w-md mx-auto">
-              <p className="mb-2"><strong className="text-slate-900 block">Projekt:</strong> {formData.title}</p>
-              <p className="mb-2"><strong className="text-slate-900 block">Kategorie:</strong> {formData.category}</p>
-              <p><strong className="text-slate-900 block">Nutzer:</strong> {formData.username}</p>
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 text-left text-base text-slate-600 max-w-md mx-auto shadow-sm">
+              <p className="mb-3 border-b border-gray-100 pb-2"><strong className="text-slate-900 block mb-1">Name der Idee:</strong> {formData.title}</p>
+              <p className="mb-3 border-b border-gray-100 pb-2"><strong className="text-slate-900 block mb-1">Bereich:</strong> {formData.category}</p>
+              <p><strong className="text-slate-900 block mb-1">Erstellt von:</strong> {formData.username}</p>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-2">
               {/* Simulating Turnstile */}
-              <div className="inline-block bg-white px-4 py-2 rounded-lg border border-gray-200 text-slate-400 text-xs text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <ShieldCheck className="w-4 h-4 mr-1 text-green-500" />
-                  <span className="text-slate-600 font-medium">Sicherheitscheck bestanden</span>
-                </div>
-                <span className="opacity-50">[Cloudflare Turnstile]</span>
+              <div className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-slate-500 text-sm">
+                <ShieldCheck className="w-4 h-4 mr-2 text-green-500" />
+                <span>Automatische Sicherheitsprüfung aktiv</span>
               </div>
             </div>
           </div>
@@ -257,9 +256,9 @@ export default function Stepper() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto py-10">
+    <div className="w-full max-w-3xl mx-auto py-10 px-4">
       {/* Progress Bar */}
-      <div className="mb-12 px-2">
+      <div className="mb-14 px-2 hidden sm:block">
         <div className="flex items-center justify-between mb-2">
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -267,19 +266,19 @@ export default function Stepper() {
             const isCompleted = step.id < currentStep;
 
             return (
-              <div key={step.id} className="flex flex-col items-center relative z-10">
+              <div key={step.id} className="flex flex-col items-center relative z-10 w-24">
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 bg-white",
-                    isActive ? "border-blue-600 text-blue-600 shadow-md" :
+                    "w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 bg-white shadow-sm",
+                    isActive ? "border-blue-600 text-blue-600 ring-4 ring-blue-100" :
                       isCompleted ? "border-blue-600 bg-blue-600 text-white" :
                         "border-gray-200 text-gray-300"
                   )}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-6 h-6" />
                 </div>
                 <span className={cn(
-                  "absolute -bottom-8 text-xs font-semibold whitespace-nowrap transition-colors",
+                  "absolute -bottom-8 text-sm font-semibold whitespace-nowrap transition-colors",
                   isActive ? "text-blue-600" : isCompleted ? "text-slate-900" : "text-gray-300"
                 )}>
                   {step.title}
@@ -290,7 +289,7 @@ export default function Stepper() {
         </div>
 
         {/* Track */}
-        <div className="relative w-full h-1 bg-gray-100 rounded-full -mt-7 -z-0 top-[-10px]">
+        <div className="relative w-full h-1 bg-gray-200 rounded-full -mt-9 -z-0 top-[-14px] mx-auto" style={{ width: 'calc(100% - 6rem)' }}>
           <div
             className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
@@ -298,49 +297,55 @@ export default function Stepper() {
         </div>
       </div>
 
+      {/* Mobile Step Indicator */}
+      <div className="mb-8 sm:hidden flex items-center justify-between text-slate-500 text-sm font-medium">
+        <span>Schritt {currentStep} von {steps.length + 1}</span>
+        <span>{steps[Math.min(currentStep - 1, steps.length - 1)]?.title || 'Abschluss'}</span>
+      </div>
+
       {/* Content Card */}
-      <div className="elgato-card p-8 min-h-[450px] flex flex-col justify-between">
+      <div className="elgato-card p-6 sm:p-10 min-h-[500px] flex flex-col justify-between shadow-xl shadow-gray-200/50">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.25 }}
             className="flex-grow"
           >
             {renderStepContent(currentStep)}
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex justify-between mt-10 pt-6 border-t border-gray-100">
+        <div className="flex justify-between mt-12 pt-8 border-t border-gray-100">
           <button
             onClick={prevStep}
             disabled={currentStep === 1}
             className={cn(
-              "flex items-center px-4 py-2 rounded-lg text-sm font-semibold transition-all",
-              currentStep === 1 ? "opacity-0 cursor-default" : "text-slate-500 hover:text-slate-900 hover:bg-gray-50"
+              "flex items-center px-6 py-3 rounded-xl text-base font-semibold transition-all",
+              currentStep === 1 ? "opacity-0 cursor-default" : "text-slate-600 hover:text-slate-900 hover:bg-gray-100"
             )}
           >
-            <ChevronLeft className="w-4 h-4 mr-1" />
+            <ChevronLeft className="w-5 h-5 mr-1" />
             Zurück
           </button>
 
           {currentStep <= steps.length ? (
             <button
               onClick={nextStep}
-              className="flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow"
+              className="flex items-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-base font-semibold transition-all shadow-lg shadow-blue-200 hover:shadow-xl hover:translate-y-[-1px]"
             >
               Weiter
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <ChevronRight className="w-5 h-5 ml-1" />
             </button>
           ) : (
             <button
-              onClick={() => alert('Idee erfolgreich eingereicht!')}
-              className="flex items-center px-6 py-2 bg-slate-900 hover:bg-black text-white rounded-lg text-sm font-semibold transition-all shadow-md"
+              onClick={() => alert('Idee eingereicht! Vielen Dank.')}
+              className="flex items-center px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-base font-semibold transition-all shadow-lg hover:shadow-xl"
             >
-              Kostenlos einreichen
-              <Check className="w-4 h-4 ml-2" />
+              Jetzt absenden
+              <Check className="w-5 h-5 ml-2" />
             </button>
           )}
         </div>

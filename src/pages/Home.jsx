@@ -27,32 +27,32 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-6 inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold tracking-wide"
+                    className="mb-8 inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold tracking-wide"
                 >
-                    <span className="relative flex h-2 w-2 mr-2">
+                    <span className="relative flex h-2.5 w-2.5 mr-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
                     </span>
-                    Aktuelle Phase: Einreichung
+                    Wir sammeln jetzt Ideen
                 </motion.div>
 
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
-                    className="h1-hero mb-6 max-w-4xl mx-auto"
+                    className="h1-hero mb-8 max-w-4xl mx-auto leading-tight"
                 >
                     Deine Idee für <br />
-                    <span className="text-blue-600">eine bessere Welt.</span>
+                    <span className="text-blue-600">ein besseres Miteinander.</span>
                 </motion.h1>
 
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed"
+                    className="text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-normal"
                 >
-                    GoodVibes ist die Plattform für soziale Innovation. Reiche dein Non-Profit Projekt ein, die Community stimmt ab, und wir setzen es um. Kostenlos.
+                    GoodVibes hilft dir, soziale Projekte zu starten. Du hast die Idee, wir alle entscheiden gemeinsam – und setzen die besten Vorschläge kostenlos um.
                 </motion.p>
 
                 <motion.div
@@ -61,11 +61,11 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                     className="flex flex-col sm:flex-row justify-center gap-4"
                 >
-                    <Link to="/submission" className="btn-primary flex items-center justify-center text-lg">
-                        Jetzt Idee einreichen <ArrowRight className="ml-2 w-5 h-5" />
+                    <Link to="/submission" className="btn-primary flex items-center justify-center text-lg shadow-blue-200 shadow-lg hover:shadow-xl hover:shadow-blue-200/50">
+                        Idee vorschlagen <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
                     <Link to="/voting" className="btn-secondary flex items-center justify-center text-lg">
-                        Community Voting ansehen
+                        Abstimmung ansehen
                     </Link>
                 </motion.div>
             </section>
@@ -80,18 +80,18 @@ export default function Home() {
             >
                 <FeatureCard
                     icon={Lightbulb}
-                    title="Sinnvolle Innovation"
-                    desc="Der Fokus liegt zu 100% auf sozialem Nutzen. Kein Profit, kein Tracking, nur echte Hilfe."
+                    title="Einfach helfen"
+                    desc="Im Mittelpunkt steht der gute Zweck. Uns geht es nicht um Gewinn, sondern darum, echte Probleme zu lösen."
                 />
                 <FeatureCard
                     icon={Users}
-                    title="Community Power"
-                    desc="Demokratische Entscheidung. Die Ideen mit dem größten Rückhalt werden realisiert."
+                    title="Gemeinsam entscheiden"
+                    desc="Jede Stimme zählt gleich viel. Die Vorschläge mit dem meisten Zuspruch werden verwirklicht."
                 />
                 <FeatureCard
-                    icon={Zap}
-                    title="Professionelle Umsetzung"
-                    desc="'AAA' Qualität für dein Projekt. Wir bauen skalierbare, sichere Web-Apps."
+                    icon={ShieldCheck}
+                    title="Sicher & Privat"
+                    desc="Wir speichern keine persönlichen Daten von dir. Deine Privatsphäre bleibt geschützt."
                 />
             </motion.section>
         </div>
@@ -100,12 +100,12 @@ export default function Home() {
 
 function FeatureCard({ icon: Icon, title, desc }) {
     return (
-        <motion.div variants={item} className="elgato-card p-8 hover:border-blue-500/30">
-            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
-                <Icon className="w-6 h-6 text-blue-600" />
+        <motion.div variants={item} className="elgato-card p-8 hover:border-blue-400 transition-colors">
+            <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
+                <Icon className="w-7 h-7 text-blue-600" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
-            <p className="text-slate-500 leading-relaxed">{desc}</p>
+            <p className="text-slate-500 leading-relaxed text-base">{desc}</p>
         </motion.div>
     );
 }

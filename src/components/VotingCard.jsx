@@ -49,7 +49,7 @@ export default function VotingCard({ project, onVote }) {
 
                 <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
                     <p className="text-xs text-slate-500 leading-relaxed">
-                        <strong className="text-slate-900 block mb-1">Impact:</strong>
+                        <strong className="text-slate-900 block mb-1">Gut für:</strong>
                         {project.benefit}
                     </p>
                 </div>
