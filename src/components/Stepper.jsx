@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, ChevronLeft, ShieldCheck, User, Lightbulb, Heart, AlertCircle } from 'lucide-react';
+import { Check, ChevronRight, ChevronLeft, ShieldCheck, User, Lightbulb, Heart, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getDeviceId } from '../utils/security';
 
 const steps = [
   { id: 1, title: 'Regeln', icon: ShieldCheck },
@@ -12,6 +14,9 @@ const steps = [
 
 export default function Stepper() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState(null);
+
   const [formData, setFormData] = useState({
     agreed: false,
     title: '',
@@ -62,6 +67,46 @@ export default function Stepper() {
     }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setFormError(null);
+
+    if (!isSupabaseConfigured()) {
+      // Fallback for Demo without Backend
+      setTimeout(() => {
+        alert("Supabase ist nicht verbunden. Dies ist nur eine Demo.");
+        setIsSubmitting(false);
+      }, 1000);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('projects').insert({
+        title: formData.title,
+        category: formData.category,
+        description: formData.description,
+        benefit: formData.benefit,
+        username: formData.username,
+        avatar_seed: formData.avatar,
+        status: 'pending', // Important: Needs approval
+        owner_id: getDeviceId() // Simplified tracking
+      });
+
+      if (error) throw error;
+
+      // Reset / Success State
+      alert("Idee erfolgreich eingereicht! Sie wird nach Prüfung freigeschaltet.");
+      // Optional: Redirect or Reset Form
+      window.location.href = '/voting';
+
+    } catch (err) {
+      console.error("Submission error:", err);
+      setFormError("Es gab ein Problem beim Senden. Bitte versuche es später noch einmal.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -241,6 +286,12 @@ export default function Stepper() {
               <p><strong className="text-slate-900 block mb-1">Erstellt von:</strong> {formData.username}</p>
             </div>
 
+            {formError && (
+              <div className="max-w-md mx-auto mt-4 p-4 bg-red-50 border border-red-100 rounded-lg text-red-600">
+                {formError}
+              </div>
+            )}
+
             <div className="pt-2">
               {/* Simulating Turnstile */}
               <div className="inline-flex items-center px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-slate-500 text-sm">
@@ -321,7 +372,7 @@ export default function Stepper() {
         <div className="flex justify-between mt-12 pt-8 border-t border-gray-100">
           <button
             onClick={prevStep}
-            disabled={currentStep === 1}
+            disabled={currentStep === 1 || isSubmitting}
             className={cn(
               "flex items-center px-6 py-3 rounded-xl text-base font-semibold transition-all",
               currentStep === 1 ? "opacity-0 cursor-default" : "text-slate-600 hover:text-slate-900 hover:bg-gray-100"
@@ -341,11 +392,15 @@ export default function Stepper() {
             </button>
           ) : (
             <button
-              onClick={() => alert('Idee eingereicht! Vielen Dank.')}
-              className="flex items-center px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-base font-semibold transition-all shadow-lg hover:shadow-xl"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="flex items-center px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-base font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Jetzt absenden
-              <Check className="w-5 h-5 ml-2" />
+              {isSubmitting ? (
+                <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Wird gesendet...</>
+              ) : (
+                <>Jetzt absenden <Check className="w-5 h-5 ml-2" /></>
+              )}
             </button>
           )}
         </div>
