@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@layer base {
+    :root {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        /* ... (rest of variables implicit, keeping existing ones would be better but I'm overwriting the file. Wait. I should append or replace carefully. 
+       Actually, `write_to_file` overwrites. I need to be careful. I have the content from previous steps. 
+       I will re-write the full file to be safe and add the scroll bar stuff.) */
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 217.2 91.2% 59.8%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 212.7 26.8% 83.9%;
+    }
+
+    body {
+        @apply bg-slate-950 text-slate-50 font-sans antialiased selection:bg-indigo-500/30 selection:text-indigo-200;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    /* Custom Scrollbar for that premium feel */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #0f172a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+    }
+}
+
+@layer utilities {
+    .glass {
+        @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl;
+    }
+
+    .glass-card {
+        @apply bg-slate-900/40 backdrop-blur-md border border-slate-700/30 hover:border-indigo-500/30 hover:bg-slate-800/40 transition-all duration-300 shadow-lg hover:shadow-indigo-500/10;
+    }
+
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400;
+    }
+}
