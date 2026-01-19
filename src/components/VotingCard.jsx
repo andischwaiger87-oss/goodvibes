@@ -74,7 +74,7 @@ export default function VotingCard({ project, onVote }) {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+                        className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
                     >
                         <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
                             <h2 className="text-xl font-bold text-slate-900 pr-8">{project.title}</h2>
@@ -295,10 +295,9 @@ export default function VotingCard({ project, onVote }) {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowDetail(true)}
-                            className="text-slate-400 hover:text-blue-600 transition-colors p-1"
-                            title="Details"
+                            className="text-blue-600 hover:text-blue-700 transition-colors text-xs font-semibold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200"
                         >
-                            <Eye className="w-4 h-4" />
+                            Mehr lesen
                         </button>
                         <button
                             onClick={handleShare}
