@@ -336,7 +336,7 @@ export default function Stepper() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto py-6 sm:py-10 px-4">
+    <div className="w-full max-w-3xl mx-auto py-6 sm:py-10 px-2 sm:px-4">
       {/* Progress Bar (Desktop) */}
       <div className="mb-10 px-2 hidden sm:block">
         <div className="flex items-center justify-between mb-2">
