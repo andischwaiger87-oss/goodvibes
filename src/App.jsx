@@ -4,6 +4,9 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Submission from './pages/Submission.jsx';
 import Voting from './pages/Voting.jsx';
+import Login from './pages/Login';
+import Admin from './pages/Admin';
+import ProtectedRoute from './components/ProtectedRoute';
 import IntroWizard from './components/IntroWizard';
 
 function App() {
@@ -15,6 +18,15 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/submission" element={<Submission />} />
                     <Route path="/voting" element={<Voting />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/admin"
+                        element={
+                            <ProtectedRoute>
+                                <Admin />
+                            </ProtectedRoute>
+                        }
+                    />
                 </Routes>
             </Layout>
         </Router>
