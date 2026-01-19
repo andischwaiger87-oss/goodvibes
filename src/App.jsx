@@ -11,10 +11,12 @@ import IntroWizard from './components/IntroWizard';
 import Imprint from './pages/Imprint';
 import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
     return (
         <Router>
+            <ScrollToTop />
             <Layout>
                 <IntroWizard />
                 <Routes>

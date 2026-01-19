@@ -3,7 +3,7 @@ import Stepper from '../components/Stepper';
 
 export default function Submission() {
     return (
-        <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="py-8 sm:py-12 px-2 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
                 <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400 mb-4">
                     Idee einreichen
