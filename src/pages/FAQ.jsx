@@ -4,8 +4,8 @@ import { ChevronDown, HelpCircle } from 'lucide-react';
 
 const faqs = [
     {
-        question: "Was genau ist GoodVibes?",
-        answer: "GoodVibes ist eine Plattform für soziale, gemeinnützige digitale Ideen. Hast du eine Idee für eine App oder Webseite, die der Gesellschaft oder Umwelt hilft, aber kannst sie nicht selbst bauen? Dann bist du hier richtig. Ich setze die besten Ideen kostenlos um."
+        question: "Was bedeutet 'GoodVibes'?",
+        answer: "Der Name ist Programm: 'Good' steht für soziale Projekte, die Gutes tun. 'Vibes' kommt von 'Vibe Coding' – dem Einsatz modernster KI. Wir nutzen diese Technologie, um gute Ideen nicht nur zu träumen, sondern blitzschnell und kostenlos Realität werden zu lassen."
     },
     {
         question: "Kostet mich das wirklich nichts?",

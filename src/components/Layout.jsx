@@ -46,7 +46,7 @@ const Footer = () => (
         <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="mb-6 flex justify-center space-x-8 text-sm font-medium">
                 <Link to="/faq" className="hover:text-blue-600 transition-colors">FAQ</Link>
-                <a href="#" className="hover:text-blue-600 transition-colors">Datenschutz</a>
+                <Link to="/privacy" className="hover:text-blue-600 transition-colors">Datenschutz</Link>
                 <Link to="/imprint" className="hover:text-blue-600 transition-colors">Impressum</Link>
             </div>
             <p className="text-xs text-slate-400">© {new Date().getFullYear()} GoodVibes. Non-profit Open Source Initiative.</p>

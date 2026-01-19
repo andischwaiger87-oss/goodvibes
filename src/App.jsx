@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import IntroWizard from './components/IntroWizard';
 import Imprint from './pages/Imprint';
 import FAQ from './pages/FAQ';
+import Privacy from './pages/Privacy';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/imprint" element={<Imprint />} />
                     <Route path="/faq" element={<FAQ />} />
+                    <Route path="/privacy" element={<Privacy />} />
                     <Route
                         path="/admin"
                         element={

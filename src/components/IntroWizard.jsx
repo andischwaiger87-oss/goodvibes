@@ -6,7 +6,7 @@ const steps = [
     {
         icon: Heart,
         title: "Willkommen bei GoodVibes",
-        text: "Hier entstehen digitale Projekte, die die Welt ein bisschen besser machen. Kostenlos und für alle."
+        text: "Wo 'Good' (Gutes tun) auf 'Vibes' (Vibe Coding mit KI) trifft. Wir verwandeln soziale Ideen mithilfe künstlicher Intelligenz in echte Anwendungen."
     },
     {
         icon: Zap,
