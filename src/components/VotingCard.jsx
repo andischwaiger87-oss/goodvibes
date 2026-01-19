@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ThumbsUp, Heart, Share2, AlertTriangle, ShieldCheck } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ThumbsUp, Heart, Share2, Check } from 'lucide-react';
 
 export default function VotingCard({ project, onVote }) {
     const [hasVoted, setHasVoted] = useState(false);
@@ -26,38 +25,38 @@ export default function VotingCard({ project, onVote }) {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-xl overflow-hidden flex flex-col h-full"
+            className="elgato-card flex flex-col h-full overflow-hidden group"
         >
             {/* Header / Avatar */}
-            <div className="p-6 pb-0 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 overflow-hidden">
+            <div className="p-6 flex items-start space-x-4">
+                <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
                     <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatarSeed}`} alt="Avatar" className="w-full h-full" />
                 </div>
-                <div>
-                    <h3 className="font-bold text-lg text-white leading-tight">{project.title}</h3>
-                    <p className="text-xs text-indigo-400">by {project.username}</p>
+                <div className="flex-grow min-w-0">
+                    <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 truncate">{project.title}</h3>
+                    <p className="text-xs font-medium text-slate-500">von {project.username}</p>
                 </div>
-                <div className="ml-auto">
-                    <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700">
-                        {project.category}
-                    </span>
-                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100">
+                    {project.category}
+                </span>
             </div>
 
             {/* Content */}
-            <div className="p-6 flex-grow">
-                <p className="text-sm text-slate-300 mb-4 line-clamp-3">
+            <div className="px-6 pb-6 flex-grow">
+                <p className="text-sm text-slate-600 mb-5 leading-relaxed line-clamp-3">
                     {project.description}
                 </p>
-                <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/10">
-                    <p className="text-xs text-indigo-200">
-                        <strong className="text-indigo-400">Impact:</strong> {project.benefit}
+
+                <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                        <strong className="text-slate-900 block mb-1">Impact:</strong>
+                        {project.benefit}
                     </p>
                 </div>
             </div>
 
             {/* Actions / Blind Vote Logic */}
-            <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between mt-auto">
 
                 {/* Vote Button Area */}
                 <div className="relative">
@@ -73,15 +72,15 @@ export default function VotingCard({ project, onVote }) {
                                 >
                                     <button
                                         onClick={confirmVote}
-                                        className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded flex items-center"
+                                        className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md flex items-center shadow-sm transition-colors"
                                     >
-                                        <Check className="w-3 h-3 mr-1" /> Confirm
+                                        <Check className="w-3 h-3 mr-1.5" /> Bestätigen
                                     </button>
                                     <button
                                         onClick={() => setShowConfirm(false)}
-                                        className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded"
+                                        className="px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-slate-600 text-xs font-semibold rounded-md transition-colors"
                                     >
-                                        Cancel
+                                        Abbruch
                                     </button>
                                 </motion.div>
                             ) : (
@@ -90,12 +89,12 @@ export default function VotingCard({ project, onVote }) {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     onClick={handleInitialVoteClick}
-                                    className="flex items-center space-x-2 text-slate-400 hover:text-indigo-400 transition-colors group"
+                                    className="flex items-center space-x-2 text-slate-500 hover:text-blue-600 transition-colors group/btn"
                                 >
-                                    <div className="p-2 rounded-full bg-slate-800 group-hover:bg-indigo-500/20 transition-colors">
-                                        <ThumbsUp className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    <div className="p-2 rounded-lg bg-white border border-gray-200 group-hover/btn:border-blue-200 group-hover/btn:bg-blue-50 transition-all">
+                                        <ThumbsUp className="w-4 h-4" />
                                     </div>
-                                    <span className="text-sm font-medium">Support this</span>
+                                    <span className="text-sm font-semibold">Unterstützen</span>
                                 </motion.button>
                             )
                         ) : (
@@ -103,14 +102,14 @@ export default function VotingCard({ project, onVote }) {
                                 key="voted"
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                className="flex items-center space-x-2 text-indigo-400"
+                                className="flex items-center space-x-3 text-blue-600"
                             >
-                                <div className="p-2 rounded-full bg-indigo-500/20">
-                                    <Heart className="w-5 h-5 fill-current" />
+                                <div className="p-2 rounded-lg bg-blue-50 border border-blue-100">
+                                    <Heart className="w-4 h-4 fill-current" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-bold">{votes} Votes</span>
-                                    <span className="text-[10px] text-slate-500">Thanks for voting!</span>
+                                    <span className="text-sm font-bold text-slate-900">{votes} Stimmen</span>
+                                    <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-400">Gestimmt</span>
                                 </div>
                             </motion.div>
                         )}
@@ -118,25 +117,10 @@ export default function VotingCard({ project, onVote }) {
                 </div>
 
                 {/* Share Button */}
-                <button className="text-slate-500 hover:text-white transition-colors">
+                <button className="text-slate-400 hover:text-slate-900 transition-colors">
                     <Share2 className="w-4 h-4" />
                 </button>
             </div>
         </motion.div>
-    );
-}
-
-// Helper icon
-function Check({ className }) {
-    return (
-        <svg
-            className={className}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={3}
-        >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
     );
 }

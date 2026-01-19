@@ -1,36 +1,33 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, Menu, X } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Heart, Menu, X, ArrowRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = React.useState(false);
-
     return (
-        <nav className="fixed top-0 w-full z-50 glass border-b border-white/5">
+        <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    <Link to="/" className="flex items-center space-x-2">
-                        <div className="p-2 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-xl">
+                <div className="flex items-center justify-between h-20">
+                    <Link to="/" className="flex items-center space-x-3 group">
+                        <div className="p-2 bg-slate-900 rounded-lg group-hover:bg-blue-600 transition-colors duration-300">
                             <Heart className="w-5 h-5 text-white fill-white" />
                         </div>
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+                        <span className="text-xl font-bold text-slate-900 tracking-tight">
                             GoodVibes
                         </span>
                     </Link>
 
                     <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-4">
-                            <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">
-                                Home
+                        <div className="ml-10 flex items-center space-x-8">
+                            <Link to="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">
+                                Startseite
                             </Link>
-                            <Link to="/voting" className="px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">
+                            <Link to="/voting" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">
                                 Voting
                             </Link>
-                            <Link to="/submission" className="bg-white text-slate-900 hover:bg-slate-200 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                                Submit Idea
+                            <Link to="/submission" className="btn-primary flex items-center text-sm">
+                                Projekt einreichen <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
                         </div>
                     </div>
@@ -41,49 +38,28 @@ const Navbar = () => {
 };
 
 const Footer = () => (
-    <footer className="w-full py-8 mt-auto border-t border-white/5 bg-slate-950/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
-            <p>© {new Date().getFullYear()} GoodVibes. Non-profit Open Source Initiative.</p>
+    <footer className="w-full py-12 mt-auto border-t border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+            <div className="mb-4 flex justify-center space-x-6 text-slate-400">
+                <a href="#" className="hover:text-blue-600 transition-colors">Über uns</a>
+                <a href="#" className="hover:text-blue-600 transition-colors">Datenschutz</a>
+                <a href="#" className="hover:text-blue-600 transition-colors">Impressum</a>
+            </div>
+            <p className="text-slate-500 text-sm">© {new Date().getFullYear()} GoodVibes. Non-profit Open Source Initiative.</p>
         </div>
     </footer>
 );
 
 export default function Layout({ children }) {
     return (
-        <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-950">
-            {/* Ambient Background Effects */}
-            <motion.div
-                animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                    x: [0, 50, 0],
-                    y: [0, -30, 0]
-                }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[128px] pointer-events-none"
-            />
-            <motion.div
-                animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.2, 0.4, 0.2],
-                    x: [0, -30, 0],
-                    y: [0, 40, 0]
-                }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[128px] pointer-events-none"
-            />
-            {/* Additional subtle orb */}
-            <motion.div
-                animate={{
-                    opacity: [0.1, 0.3, 0.1],
-                }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"
-            />
+        <div className="min-h-screen flex flex-col relative bg-gray-50 text-slate-900 font-sans">
+            {/* Subtle technical background grid removed for pure clean look, or keep very subtle */}
 
             <Navbar />
-            <main className="flex-grow pt-16 relative z-10">
-                {children}
+            <main className="flex-grow pt-24 pb-12 px-4 relative z-10">
+                <div className="max-w-7xl mx-auto">
+                    {children}
+                </div>
             </main>
             <Footer />
         </div>
