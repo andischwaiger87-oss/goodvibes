@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, Heart, ShieldCheck, Zap } from 'lucide-react';
+import { supabase } from '../lib/supabase'; // Import Supabase to check auth
 
 const steps = [
     {
@@ -25,12 +26,22 @@ export default function IntroWizard() {
     const [step, setStep] = useState(0);
 
     useEffect(() => {
-        // Session Storage: Zeigt den Wizard bei jedem neuen Tab/Browser-Start
-        const hasSeenWizard = sessionStorage.getItem('gv_wizard_seen_session');
-        if (!hasSeenWizard) {
-            const timer = setTimeout(() => setIsOpen(true), 1000);
-            return () => clearTimeout(timer);
-        }
+        const checkWizard = async () => {
+            // 1. Check if user is logged in (Admin) -> Don't show wizard
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                return; // Admin doesn't need to see this
+            }
+
+            // 2. Session Storage Check
+            const hasSeenWizard = sessionStorage.getItem('gv_wizard_seen_session');
+            if (!hasSeenWizard) {
+                const timer = setTimeout(() => setIsOpen(true), 1000);
+                return () => clearTimeout(timer);
+            }
+        };
+
+        checkWizard();
     }, []);
 
     const handleNext = () => {
@@ -56,7 +67,7 @@ export default function IntroWizard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4" // Increased Z-Index & Backdrop
             >
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -67,7 +78,7 @@ export default function IntroWizard() {
                     {/* Skip Button (New) */}
                     <button
                         onClick={handleClose}
-                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium px-3 py-1 bg-gray-50 rounded-lg border border-gray-100"
+                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium px-3 py-1 bg-gray-50 rounded-lg border border-gray-100 z-10"
                     >
                         Überspringen
                     </button>
