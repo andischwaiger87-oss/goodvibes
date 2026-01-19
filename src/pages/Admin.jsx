@@ -94,8 +94,8 @@ export default function Admin() {
                                         <p className="text-sm text-slate-500">{getCategoryLabel(detailProject.category)}</p>
                                     </div>
                                     <span className={`ml-auto px-3 py-1 rounded-full text-xs font-bold uppercase ${detailProject.status === 'active' ? 'bg-green-100 text-green-700' :
-                                            detailProject.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                                'bg-amber-100 text-amber-700'
+                                        detailProject.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                            'bg-amber-100 text-amber-700'
                                         }`}>
                                         {detailProject.status === 'active' ? 'Aktiv' : detailProject.status === 'rejected' ? 'Abgelehnt' : 'Wartend'}
                                     </span>
@@ -316,7 +316,34 @@ export default function Admin() {
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                                        <td className="px-6 py-4 text-right space-x-1" onClick={(e) => e.stopPropagation()}>
+                                            {project.status === 'pending' && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleApprove(project.id)}
+                                                        className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200"
+                                                        title="Freigeben"
+                                                    >
+                                                        <CheckCircle className="w-5 h-5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => confirmReject(project.id)}
+                                                        className="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-200"
+                                                        title="Ablehnen"
+                                                    >
+                                                        <AlertTriangle className="w-5 h-5" />
+                                                    </button>
+                                                </>
+                                            )}
+                                            {project.status === 'rejected' && (
+                                                <button
+                                                    onClick={() => handleDeleteForever(project.id)}
+                                                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Endgültig löschen"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => setDetailProject(project)}
                                                 className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
