@@ -344,6 +344,15 @@ export default function Admin() {
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>
                                             )}
+                                            {project.status === 'active' && (
+                                                <button
+                                                    onClick={() => handleDeleteForever(project.id)}
+                                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Entfernen"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => setDetailProject(project)}
                                                 className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
