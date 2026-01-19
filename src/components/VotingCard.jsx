@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThumbsUp, Heart, Share2, Check } from 'lucide-react';
+import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle } from 'lucide-react';
 import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/security';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
@@ -9,9 +9,13 @@ export default function VotingCard({ project, onVote }) {
     const [showConfirm, setShowConfirm] = useState(false);
     const [votes, setVotes] = useState(project.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
+    const [shareSuccess, setShareSuccess] = useState(false);
+
+    const isRejected = project.status === 'rejected';
+    const isOwner = project.owner_id === getDeviceId();
 
     const handleInitialVoteClick = () => {
-        if (!hasVoted) {
+        if (!hasVoted && !isRejected) {
             setShowConfirm(true);
         }
     };
@@ -19,20 +23,14 @@ export default function VotingCard({ project, onVote }) {
     const confirmVote = async () => {
         setIsVoting(true);
 
-        // 1. Local Security Check (Optimistic UI)
         const deviceId = getDeviceId();
         recordVoteLocal(project.id);
 
-        // 2. Database Update (Real Logic)
         if (isSupabaseConfigured()) {
             try {
-                // Call RPC or simple increment if policies allow
-                // For MVP we just increment the counter. In prod, use an 'upvotes' table.
                 const { error } = await supabase.rpc('increment_vote', { project_id: project.id });
-
                 if (error) {
                     console.error("Vote error:", error);
-                    // In a real app we might rollback optimistic UI here
                 }
             } catch (err) {
                 console.error("Vote exception:", err);
@@ -42,10 +40,88 @@ export default function VotingCard({ project, onVote }) {
         setShowConfirm(false);
         setHasVoted(true);
         setVotes(prev => prev + 1);
-        onVote(project.id); // Update parent
+        onVote(project.id);
         setIsVoting(false);
     };
 
+    const handleShare = async () => {
+        if (isRejected) return;
+
+        const shareData = {
+            title: `GoodVibes: ${project.title}`,
+            text: `Schau dir diese Idee an: "${project.title}" – ${project.description.substring(0, 100)}...`,
+            url: window.location.href
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback: Copy to clipboard
+                await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+                setShareSuccess(true);
+                setTimeout(() => setShareSuccess(false), 2000);
+            }
+        } catch (err) {
+            console.log('Share cancelled or failed:', err);
+        }
+    };
+
+    // Rejected Card UI
+    if (isRejected && isOwner) {
+        return (
+            <motion.div
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="elgato-card flex flex-col h-full overflow-hidden bg-red-50 border-2 border-red-200"
+            >
+                {/* Rejection Banner */}
+                <div className="bg-red-600 text-white px-6 py-3 flex items-center space-x-3">
+                    <XCircle className="w-5 h-5 flex-shrink-0" />
+                    <span className="font-bold text-sm">Deine Idee wurde abgelehnt</span>
+                </div>
+
+                {/* Header / Avatar */}
+                <div className="p-6 flex items-start space-x-4">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0 opacity-50">
+                        <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatar_seed || project.id}`} alt="Avatar" className="w-full h-full" />
+                    </div>
+                    <div className="flex-grow min-w-0">
+                        <h3 className="font-bold text-lg text-slate-600 leading-tight mb-1 truncate line-through">{project.title}</h3>
+                        <p className="text-xs font-medium text-slate-400">von {project.username}</p>
+                    </div>
+                </div>
+
+                {/* Rejection Reason */}
+                <div className="px-6 pb-6 flex-grow">
+                    <div className="p-4 rounded-lg bg-white border border-red-200">
+                        <p className="text-xs text-slate-500 mb-2 flex items-center">
+                            <AlertTriangle className="w-4 h-4 mr-2 text-red-500" />
+                            <strong className="text-red-600">Begründung:</strong>
+                        </p>
+                        <p className="text-sm text-slate-700 leading-relaxed">
+                            {project.rejection_reason || 'Keine Begründung angegeben.'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Disabled Actions */}
+                <div className="px-6 py-4 border-t border-red-200 bg-red-100/50 flex items-center justify-between mt-auto">
+                    <span className="text-xs text-red-600 font-medium">
+                        Abstimmung und Teilen nicht möglich
+                    </span>
+                </div>
+            </motion.div>
+        );
+    }
+
+    // Don't render rejected cards for non-owners at all
+    if (isRejected && !isOwner) {
+        return null;
+    }
+
+    // Normal Active Card
     return (
         <motion.div
             layout
@@ -145,8 +221,22 @@ export default function VotingCard({ project, onVote }) {
                 </div>
 
                 {/* Share Button */}
-                <button className="text-slate-400 hover:text-slate-900 transition-colors">
+                <button
+                    onClick={handleShare}
+                    className="text-slate-400 hover:text-slate-900 transition-colors relative"
+                    title="Teilen"
+                >
                     <Share2 className="w-4 h-4" />
+                    {shareSuccess && (
+                        <motion.span
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute -top-8 -left-4 text-xs bg-green-600 text-white px-2 py-1 rounded whitespace-nowrap"
+                        >
+                            Kopiert!
+                        </motion.span>
+                    )}
                 </button>
             </div>
         </motion.div>

@@ -3,6 +3,7 @@ import VotingCard from '../components/VotingCard';
 import { motion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { Database } from 'lucide-react';
+import { getDeviceId } from '../utils/security';
 
 export default function Voting() {
     const [projects, setProjects] = useState([]);
@@ -16,23 +17,43 @@ export default function Voting() {
     const fetchProjects = async () => {
         setLoading(true);
 
-        // Check if Supabase is connected
         if (!isSupabaseConfigured()) {
             setLoading(false);
-            return; // No Data (as requested: No Demo entries)
+            return;
         }
 
         try {
-            const { data, error } = await supabase
+            const deviceId = getDeviceId();
+
+            // Fetch active projects (public) + rejected projects owned by this user
+            const { data: activeProjects, error: activeError } = await supabase
                 .from('projects')
                 .select('*')
+                .eq('status', 'active')
                 .order('votes', { ascending: false });
 
-            if (error) throw error;
-            setProjects(data || []);
+            if (activeError) throw activeError;
+
+            // Fetch user's own rejected projects
+            const { data: rejectedProjects, error: rejectedError } = await supabase
+                .from('projects')
+                .select('*')
+                .eq('status', 'rejected')
+                .eq('owner_id', deviceId);
+
+            if (rejectedError) {
+                console.error('Could not fetch rejected projects:', rejectedError);
+            }
+
+            // Combine: rejected first (for visibility), then active
+            const allProjects = [
+                ...(rejectedProjects || []),
+                ...(activeProjects || [])
+            ];
+
+            setProjects(allProjects);
         } catch (err) {
             console.error('Error fetching projects:', err);
-            // Silent error for UI, or show friendly message
             setError('Konnte Projekte nicht laden.');
         } finally {
             setLoading(false);
@@ -40,10 +61,14 @@ export default function Voting() {
     };
 
     const handleVoteUpdate = (projectId) => {
-        // Optimistic update locally
         setProjects(prev => prev.map(p =>
             p.id === projectId ? { ...p, votes: (p.votes || 0) + 1 } : p
-        ).sort((a, b) => b.votes - a.votes));
+        ).sort((a, b) => {
+            // Keep rejected at top, then sort by votes
+            if (a.status === 'rejected' && b.status !== 'rejected') return -1;
+            if (b.status === 'rejected' && a.status !== 'rejected') return 1;
+            return b.votes - a.votes;
+        }));
     };
 
     return (
