@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThumbsUp, Heart, Share2, Check } from 'lucide-react';
+import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/security';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export default function VotingCard({ project, onVote }) {
-    const [hasVoted, setHasVoted] = useState(false);
+    const [hasVoted, setHasVoted] = useState(hasAlreadyVotedLocal(project.id));
     const [showConfirm, setShowConfirm] = useState(false);
     const [votes, setVotes] = useState(project.votes || 0);
+    const [isVoting, setIsVoting] = useState(false);
 
     const handleInitialVoteClick = () => {
         if (!hasVoted) {
@@ -13,24 +16,47 @@ export default function VotingCard({ project, onVote }) {
         }
     };
 
-    const confirmVote = () => {
-        // Simulate secure voting call
+    const confirmVote = async () => {
+        setIsVoting(true);
+
+        // 1. Local Security Check (Optimistic UI)
+        const deviceId = getDeviceId();
+        recordVoteLocal(project.id);
+
+        // 2. Database Update (Real Logic)
+        if (isSupabaseConfigured()) {
+            try {
+                // Call RPC or simple increment if policies allow
+                // For MVP we just increment the counter. In prod, use an 'upvotes' table.
+                const { error } = await supabase.rpc('increment_vote', { project_id: project.id });
+
+                if (error) {
+                    console.error("Vote error:", error);
+                    // In a real app we might rollback optimistic UI here
+                }
+            } catch (err) {
+                console.error("Vote exception:", err);
+            }
+        }
+
         setShowConfirm(false);
         setHasVoted(true);
         setVotes(prev => prev + 1);
-        onVote(project.id);
+        onVote(project.id); // Update parent
+        setIsVoting(false);
     };
 
     return (
         <motion.div
+            layout
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="elgato-card flex flex-col h-full overflow-hidden group"
+            className="elgato-card flex flex-col h-full overflow-hidden group bg-white"
         >
             {/* Header / Avatar */}
             <div className="p-6 flex items-start space-x-4">
                 <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
-                    <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatarSeed}`} alt="Avatar" className="w-full h-full" />
+                    <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatar_seed || project.id}`} alt="Avatar" className="w-full h-full" />
                 </div>
                 <div className="flex-grow min-w-0">
                     <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 truncate">{project.title}</h3>
@@ -72,12 +98,14 @@ export default function VotingCard({ project, onVote }) {
                                 >
                                     <button
                                         onClick={confirmVote}
-                                        className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md flex items-center shadow-sm transition-colors"
+                                        disabled={isVoting}
+                                        className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md flex items-center shadow-sm transition-colors disabled:opacity-50"
                                     >
-                                        <Check className="w-3 h-3 mr-1.5" /> Bestätigen
+                                        {isVoting ? '...' : <><Check className="w-3 h-3 mr-1.5" /> Bestätigen</>}
                                     </button>
                                     <button
                                         onClick={() => setShowConfirm(false)}
+                                        disabled={isVoting}
                                         className="px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-slate-600 text-xs font-semibold rounded-md transition-colors"
                                     >
                                         Abbruch

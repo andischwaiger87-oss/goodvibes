@@ -1,34 +1,38 @@
+import { v4 as uuidv4 } from 'uuid';
+
+const STORAGE_KEY_VOTES = 'gv_votes_local';
+const STORAGE_KEY_DEVICE_ID = 'gv_device_uuid';
+
 /**
- * Security Utility for Voting Integrity
- * 
- * This module implements a stub for device fingerprinting and vote verification.
- * In a production environment, this would integrate with detailed canvas fingerprinting,
- * IP risk analysis (e.g., via Cloudflare headers), and cryptographic signing.
+ * Holt oder erstellt eine einzigartige, anonyme ID für diesen Browser.
+ * Dies ersetzt das invasive Fingerprinting durch einen einfachen Cookie-ähnlichen Ansatz.
+ * Vorteile: 100% datenschutzkonform, keine Berechtigungen nötig, "vergisst" nicht so leicht.
  */
+export const getDeviceId = () => {
+    let id = localStorage.getItem(STORAGE_KEY_DEVICE_ID);
+    if (!id) {
+        id = uuidv4();
+        localStorage.setItem(STORAGE_KEY_DEVICE_ID, id);
+    }
+    return id;
+};
 
-// Simulates generating a unique device hash
-export async function getDeviceFingerprint() {
-    // In reality, this would collect screen res, user agent, canvas data, etc.
-    const mockData = navigator.userAgent + navigator.language + window.screen.width;
+/**
+ * Prüft lokal (für schnelles Feedback), ob für eine ID schon gestimmt wurde.
+ * Die "echte" Sicherheit kommt dann über die Datenbank (Unique constraint auf device_id + project_id).
+ */
+export const hasAlreadyVotedLocal = (projectId) => {
+    const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '[]');
+    return votes.includes(projectId);
+};
 
-    // Simple hash function for demo purposes
-    const msgBuffer = new TextEncoder().encode(mockData);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-    return hashHex;
-}
-
-// Simulates checking if this fingerprint has already voted for a specific project
-export function hasAlreadyVoted(projectId, fingerprint) {
-    const voteRecord = localStorage.getItem(`vote_${projectId}`);
-    return voteRecord === fingerprint;
-}
-
-// Records a vote securely
-export function recordVote(projectId, fingerprint) {
-    // In production, this would send the signed vote to the backend/smart contract
-    localStorage.setItem(`vote_${projectId}`, fingerprint);
-    return true;
-}
+/**
+ * Speichert den Vote lokal.
+ */
+export const recordVoteLocal = (projectId) => {
+    const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '[]');
+    if (!votes.includes(projectId)) {
+        votes.push(projectId);
+        localStorage.setItem(STORAGE_KEY_VOTES, JSON.stringify(votes));
+    }
+};

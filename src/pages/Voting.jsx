@@ -1,64 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import VotingCard from '../components/VotingCard';
 import { motion } from 'framer-motion';
-
-// Mock Data (Adjusted Wording)
-const MOCK_PROJECTS = [
-    {
-        id: 1,
-        title: "Kleidertausch Treff",
-        category: "Umwelt",
-        description: "Eine einfache Webseite, um in der Nachbarschaft Kleidung zu tauschen, die man nicht mehr trägt.",
-        benefit: "Weniger Müll und man spart Geld.",
-        username: "GreenFox",
-        avatarSeed: 1,
-        votes: 124
-    },
-    {
-        id: 2,
-        title: "Video-Chat für Senioren",
-        category: "Zusammenleben",
-        description: "Ganz einfache Video-Ecke im Browser. Nur ein Knopf zum Starten. Perfekt für Oma und Opa.",
-        benefit: "Hilft gegen Einsamkeit und verbindet Familien.",
-        username: "SilverSurfer",
-        avatarSeed: 2,
-        votes: 89
-    },
-    {
-        id: 3,
-        title: "Nachhilfe für Alle",
-        category: "Bildung",
-        description: "Wer gut in Mathe ist, hilft anderen. Kostenlos und online. Für alle, die sich keine Nachhilfe leisten können.",
-        benefit: "Gleiche Chancen in der Schule für alle Kinder.",
-        username: "BookWorm",
-        avatarSeed: 3,
-        votes: 256
-    },
-    {
-        id: 4,
-        title: "Essen Retten Karte",
-        category: "Gesundheit",
-        description: "Eine Karte die zeigt, wo es gerade Lebensmittel gibt, die sonst weggeworfen würden.",
-        benefit: "Weniger Lebensmittelverschwendung und Hilfe für Bedürftige.",
-        username: "ChefCook",
-        avatarSeed: 4,
-        votes: 180
-    },
-    {
-        id: 5,
-        title: "Rollstuhl-Wegweiser",
-        category: "Zusammenleben",
-        description: "Wir markieren gemeinsam auf einer Karte, welche Wege gut mit dem Rollstuhl befahrbar sind.",
-        benefit: "Mehr Freiheit für Menschen im Rollstuhl.",
-        username: "RollingStone",
-        avatarSeed: 5,
-        votes: 92
-    }
-];
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { Database } from 'lucide-react';
 
 export default function Voting() {
-    const handleVote = (id) => {
-        console.log("Stimme abgegeben für:", id);
+    const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchProjects();
+    }, []);
+
+    const fetchProjects = async () => {
+        setLoading(true);
+
+        // Check if Supabase is connected
+        if (!isSupabaseConfigured()) {
+            setLoading(false);
+            return; // No Data (as requested: No Demo entries)
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*')
+                .order('votes', { ascending: false });
+
+            if (error) throw error;
+            setProjects(data || []);
+        } catch (err) {
+            console.error('Error fetching projects:', err);
+            // Silent error for UI, or show friendly message
+            setError('Konnte Projekte nicht laden.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVoteUpdate = (projectId) => {
+        // Optimistic update locally
+        setProjects(prev => prev.map(p =>
+            p.id === projectId ? { ...p, votes: (p.votes || 0) + 1 } : p
+        ).sort((a, b) => b.votes - a.votes));
     };
 
     return (
@@ -92,11 +77,32 @@ export default function Voting() {
                 </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                {MOCK_PROJECTS.map((project) => (
-                    <VotingCard key={project.id} project={project} onVote={handleVote} />
-                ))}
-            </div>
+            {loading ? (
+                <div className="flex justify-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            ) : projects.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    {projects.map((project) => (
+                        <VotingCard key={project.id} project={project} onVote={handleVoteUpdate} />
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-100 max-w-2xl mx-auto">
+                    <Database className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">Noch keine Projekte</h3>
+                    <p className="text-slate-500 max-w-md mx-auto mb-6">
+                        {!isSupabaseConfigured()
+                            ? "Die Datenbank ist noch nicht verbunden. Projekte werden angezeigt, sobald die Verbindung steht."
+                            : "Es wurden noch keine Ideen freigegeben. Sei der Erste!"}
+                    </p>
+                    {!isSupabaseConfigured() && (
+                        <div className="inline-block px-4 py-2 bg-yellow-50 text-yellow-800 text-xs rounded border border-yellow-100">
+                            Administrator Info: Bitte Supabase Keys in .env eintragen.
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
