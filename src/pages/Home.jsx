@@ -52,7 +52,7 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-normal"
                 >
-                    GoodVibes hilft dir, soziale Projekte zu starten. Du hast die Idee, wir alle entscheiden gemeinsam – und setzen die besten Vorschläge kostenlos um.
+                    GoodVibes hilft dir, soziale Projekte zu starten. Du hast die Idee, wir alle entscheiden gemeinsam – und ich setze die besten Vorschläge kostenlos um.
                 </motion.p>
 
                 <motion.div
@@ -81,7 +81,7 @@ export default function Home() {
                 <FeatureCard
                     icon={Lightbulb}
                     title="Einfach helfen"
-                    desc="Im Mittelpunkt steht der gute Zweck. Uns geht es nicht um Gewinn, sondern darum, echte Probleme zu lösen."
+                    desc="Im Mittelpunkt steht der gute Zweck. Mir geht es nicht um Gewinn, sondern darum, echte Probleme zu lösen."
                 />
                 <FeatureCard
                     icon={Users}

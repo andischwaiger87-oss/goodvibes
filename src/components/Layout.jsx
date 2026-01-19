@@ -47,7 +47,7 @@ const Footer = () => (
             <div className="mb-6 flex justify-center space-x-8 text-sm font-medium">
                 <a href="#" className="hover:text-blue-600 transition-colors">Über uns</a>
                 <a href="#" className="hover:text-blue-600 transition-colors">Datenschutz</a>
-                <a href="#" className="hover:text-blue-600 transition-colors">Impressum</a>
+                <Link to="/imprint" className="hover:text-blue-600 transition-colors">Impressum</Link>
             </div>
             <p className="text-xs text-slate-400">© {new Date().getFullYear()} GoodVibes. Non-profit Open Source Initiative.</p>
         </div>
