@@ -37,6 +37,9 @@ const Navbar = () => {
                             <Link to="/voting" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
                                 Abstimmung
                             </Link>
+                            <Link to="/faq" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
+                                FAQ
+                            </Link>
                             <Link to="/submission" className="btn-primary flex items-center text-sm shadow-blue-500/20 hover:shadow-blue-500/30">
                                 Idee einreichen <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>

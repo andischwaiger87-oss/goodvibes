@@ -33,9 +33,14 @@ export default function IntroWizard() {
                 return; // Admin doesn't need to see this
             }
 
-            // 2. Session Storage Check
-            const hasSeenWizard = sessionStorage.getItem('gv_wizard_seen_session');
-            if (!hasSeenWizard) {
+            // 2. Visit Counter Logic: Show wizard every 3 visits
+            const SHOW_EVERY_N_VISITS = 3;
+            const visitCount = parseInt(localStorage.getItem('gv_visit_count') || '0', 10);
+            const newCount = visitCount + 1;
+            localStorage.setItem('gv_visit_count', newCount.toString());
+
+            // Show on first visit, or every Nth visit
+            if (newCount === 1 || newCount % SHOW_EVERY_N_VISITS === 0) {
                 const timer = setTimeout(() => setIsOpen(true), 1000);
                 return () => clearTimeout(timer);
             }
