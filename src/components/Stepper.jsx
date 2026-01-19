@@ -338,15 +338,23 @@ export default function Stepper() {
   return (
     <div className="w-full max-w-3xl mx-auto py-6 sm:py-10 px-2 sm:px-4">
       {/* Progress Bar (Desktop) */}
-      <div className="mb-10 px-2 hidden sm:block">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mb-16 hidden sm:block">
+        <div className="relative flex items-center justify-between">
+          {/* Background Line */}
+          <div className="absolute top-6 left-12 right-12 h-1 bg-gray-200 rounded-full -z-10" />
+          {/* Progress Line */}
+          <div
+            className="absolute top-6 left-12 h-1 bg-blue-600 rounded-full -z-10 transition-all duration-500 ease-out"
+            style={{ width: `calc(${((currentStep - 1) / (steps.length - 1)) * 100}% * (100% - 6rem) / 100%)` }}
+          />
+
           {steps.map((step) => {
             const Icon = step.icon;
             const isActive = step.id === currentStep;
             const isCompleted = step.id < currentStep;
 
             return (
-              <div key={step.id} className="flex flex-col items-center relative z-10 w-24">
+              <div key={step.id} className="flex flex-col items-center z-10">
                 <div
                   className={cn(
                     "w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 bg-white shadow-sm",
@@ -358,7 +366,7 @@ export default function Stepper() {
                   <Icon className="w-6 h-6" />
                 </div>
                 <span className={cn(
-                  "absolute -bottom-8 text-sm font-semibold whitespace-nowrap transition-colors",
+                  "mt-3 text-sm font-semibold transition-colors",
                   isActive ? "text-blue-600" : isCompleted ? "text-slate-900" : "text-gray-300"
                 )}>
                   {step.title}
@@ -366,12 +374,6 @@ export default function Stepper() {
               </div>
             );
           })}
-        </div>
-        <div className="relative w-full h-1 bg-gray-200 rounded-full -mt-9 -z-0 top-[-14px] mx-auto" style={{ width: 'calc(100% - 6rem)' }}>
-          <div
-            className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-          />
         </div>
       </div>
 
