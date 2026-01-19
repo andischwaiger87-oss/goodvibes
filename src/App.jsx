@@ -9,6 +9,7 @@ import Admin from './pages/Admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import IntroWizard from './components/IntroWizard';
 import Imprint from './pages/Imprint';
+import FAQ from './pages/FAQ';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/voting" element={<Voting />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/imprint" element={<Imprint />} />
+                    <Route path="/faq" element={<FAQ />} />
                     <Route
                         path="/admin"
                         element={

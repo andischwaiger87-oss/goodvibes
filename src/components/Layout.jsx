@@ -45,7 +45,7 @@ const Footer = () => (
     <footer className="w-full py-12 mt-auto border-t border-gray-100 bg-white text-slate-500">
         <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="mb-6 flex justify-center space-x-8 text-sm font-medium">
-                <a href="#" className="hover:text-blue-600 transition-colors">Über uns</a>
+                <Link to="/faq" className="hover:text-blue-600 transition-colors">FAQ</Link>
                 <a href="#" className="hover:text-blue-600 transition-colors">Datenschutz</a>
                 <Link to="/imprint" className="hover:text-blue-600 transition-colors">Impressum</Link>
             </div>
