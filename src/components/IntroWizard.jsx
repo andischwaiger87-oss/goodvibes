@@ -25,9 +25,9 @@ export default function IntroWizard() {
     const [step, setStep] = useState(0);
 
     useEffect(() => {
-        const hasSeenWizard = localStorage.getItem('gv_wizard_seen');
+        // Session Storage: Zeigt den Wizard bei jedem neuen Tab/Browser-Start
+        const hasSeenWizard = sessionStorage.getItem('gv_wizard_seen_session');
         if (!hasSeenWizard) {
-            // Kleines Delay damit es nicht sofort aufpoppt
             const timer = setTimeout(() => setIsOpen(true), 1000);
             return () => clearTimeout(timer);
         }
@@ -43,7 +43,7 @@ export default function IntroWizard() {
 
     const handleClose = () => {
         setIsOpen(false);
-        localStorage.setItem('gv_wizard_seen', 'true');
+        sessionStorage.setItem('gv_wizard_seen_session', 'true');
     };
 
     if (!isOpen) return null;
@@ -64,16 +64,16 @@ export default function IntroWizard() {
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
                     className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden relative"
                 >
-                    {/* Close Button */}
+                    {/* Skip Button (New) */}
                     <button
                         onClick={handleClose}
-                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium px-3 py-1 bg-gray-50 rounded-lg border border-gray-100"
                     >
-                        <X className="w-5 h-5" />
+                        Überspringen
                     </button>
 
                     {/* Content */}
-                    <div className="p-8 pb-6 text-center">
+                    <div className="p-8 pb-6 text-center pt-12">
                         <motion.div
                             key={step}
                             initial={{ x: 20, opacity: 0 }}
