@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Heart, ShieldCheck, Zap } from 'lucide-react';
+import { X, ArrowRight, Heart, ShieldCheck, Vote, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase'; // Import Supabase to check auth
 
 const steps = [
