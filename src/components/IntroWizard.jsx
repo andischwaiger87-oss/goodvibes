@@ -11,7 +11,7 @@ const steps = [
     },
     {
         icon: Zap,
-        title: "Du hast die Macht",
+        title: "Deine Meinung zählt!",
         text: "Reiche deine eigene Idee ein oder stimme für Projekte ab, die du wichtig findest. Die Community entscheidet."
     },
     {
