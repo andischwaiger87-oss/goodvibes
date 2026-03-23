@@ -10,7 +10,7 @@ const steps = [
         text: "Wo 'Good' (Gutes tun) auf 'Vibes' (Vibe Coding mit KI) trifft. Wir verwandeln soziale Ideen mithilfe künstlicher Intelligenz in echte Anwendungen."
     },
     {
-        icon: vote,
+        icon: Vote,
         title: "Deine Meinung zählt!",
         text: "Reiche deine eigene Idee ein oder stimme für Projekte ab, die du wichtig findest. Die Community entscheidet."
     },
