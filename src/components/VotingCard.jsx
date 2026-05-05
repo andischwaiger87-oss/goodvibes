@@ -5,6 +5,15 @@ import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/sec
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
 
+const getAvatarUrl = (seedString, fallbackId = 'default') => {
+    const seed = String(seedString || fallbackId);
+    if (seed.includes(':')) {
+        const [style, actualSeed] = seed.split(':');
+        return `https://api.dicebear.com/7.x/${style}/svg?seed=${actualSeed}`;
+    }
+    return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+};
+
 export default function VotingCard({ project, onVote }) {
     const [hasVoted, setHasVoted] = useState(hasAlreadyVotedLocal(project.id));
     const [showConfirm, setShowConfirm] = useState(false);
@@ -85,7 +94,7 @@ export default function VotingCard({ project, onVote }) {
                         <div className="p-6 space-y-6">
                             <div className="flex items-center space-x-4">
                                 <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden">
-                                    <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatar_seed || project.id}`} alt="" className="w-full h-full" />
+                                    <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
                                 </div>
                                 <div>
                                     <p className="font-semibold text-slate-900">{project.username}</p>
@@ -161,10 +170,10 @@ export default function VotingCard({ project, onVote }) {
 
                     <div className="p-6 flex items-start space-x-4">
                         <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0 opacity-50">
-                            <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatar_seed || project.id}`} alt="" className="w-full h-full" />
+                            <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
                         </div>
                         <div className="flex-grow min-w-0">
-                            <h3 className="font-bold text-lg text-slate-600 leading-tight mb-1 truncate line-through">{project.title}</h3>
+                            <h3 className="font-bold text-lg text-slate-600 leading-tight mb-1 line-clamp-2 pr-2 line-through">{project.title}</h3>
                             <p className="text-xs font-medium text-slate-400">von {project.username}</p>
                         </div>
                     </div>
@@ -208,10 +217,10 @@ export default function VotingCard({ project, onVote }) {
             >
                 <div className="p-6 flex items-start space-x-4">
                     <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
-                        <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatar_seed || project.id}`} alt="" className="w-full h-full" />
+                        <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
                     </div>
                     <div className="flex-grow min-w-0">
-                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 truncate">{project.title}</h3>
+                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 line-clamp-2 pr-2">{project.title}</h3>
                         <p className="text-xs font-medium text-slate-500">von {project.username}</p>
                     </div>
                     <span className="text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100">

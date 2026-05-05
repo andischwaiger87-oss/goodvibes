@@ -1,0 +1,75 @@
+💙 Style Guide: GoodVibes
+1. Markenidentität & Tonalität
+GoodVibes ist eine ehrenamtliche, nicht-kommerzielle Initiative. Das Design und die Kommunikation spiegeln diese Kernwerte wider:
+
+Mission: Gute Ideen für ein besseres Miteinander durch Technologie ("Vibe Coding") kostenlos und blitzschnell Realität werden lassen.
+
+Tonalität: Freundlich, transparent, motivierend und auf Augenhöhe. Die Community wird geduzt ("Deine Idee", "Wir sammeln jetzt Ideen").
+
+Privatsphäre im Fokus: Keine Tracker, keine User-Accounts, reiner Fokus auf das Wesentliche.
+
+2. Typografie
+Das Projekt nutzt eine klare, moderne und sehr gut lesbare serifenlose Schriftart, die perfekt für Benutzeroberflächen geeignet ist.
+
+Primäre Schriftart: Inter, sans-serif.
+
+Schrift-Feature: Antialiased für scharfe Kanten, rlig (Required Ligatures) und calt (Contextual Alternates) sind aktiviert.
+
+Hero-Headlines (.h1-hero): Sehr groß (5xl bis 6xl), extra fett (font-extrabold), enges Tracking (tracking-tight) und in sehr dunklem Grau (text-slate-900).
+
+Fließtext / Untertitel (.text-subtle): Mittelgrau (text-slate-500), mittlere Schriftstärke (font-medium), mit einer entspannten Zeilenhöhe (leading-relaxed) für optimale Lesbarkeit.
+
+3. Farbpalette
+Die Farben sind stark an moderne Tech-Dashboards (wie Elgato) angelehnt: Hell, aufgeräumt, mit einem starken primären Blau-Akzent.
+
+Hintergrund: Ein sehr helles Grau / Off-White (bg-gray-50).
+
+Karten / Container: Reines Weiß (#ffffff), um sich sanft vom Hintergrund abzuheben.
+
+Primärfarbe (Marken-Blau): Ein kräftiges, leuchtendes Blau (blue-600 / HSL 221 83% 53%). Wird für wichtige Call-to-Actions, Icons und Logos genutzt.
+
+Textfarben:
+
+Primärtext (Headings): Scharfes Dunkelgrau/Fast-Schwarz (text-slate-900).
+
+Sekundärtext (Beschreibungen): Schiefergrau (text-slate-500 / text-slate-600).
+
+Semantische Farben (Status):
+
+Erfolg/Aktiv: Grün (bg-green-100, text-green-700).
+
+Warnung/Wartend: Bernstein/Gelb (bg-amber-100, text-amber-700).
+
+Fehler/Abgelehnt: Rot (bg-red-100, text-red-700 / HSL 0 84.2% 60.2% für Buttons).
+
+4. UI-Komponenten & Styling
+4.1 Buttons
+Primär-Button (.btn-primary): Blauer Hintergrund (bg-blue-600), weißer Text, abgerundete Ecken (rounded-lg), feiner Schatten. Beim Hover verdunkelt sich das Blau (hover:bg-blue-700).
+
+Sekundär-Button (.btn-secondary): Weißer Hintergrund mit dezentem grauen Rahmen (border-gray-300), dunkelgrauer Text (text-slate-700). Beim Hover sanftes Grau (hover:bg-gray-50).
+
+4.2 Karten (Cards)
+Stil (.elgato-card): Minimalistisch. Reines Weiß, sehr subtiler grauer Rahmen (border-gray-200), stark abgerundete Ecken (rounded-xl), weicher Schatten (shadow-sm). Beim Hover verstärkt sich der Schatten sanft (hover:shadow-md) und der Rahmen kann farblich reagieren (hover:border-blue-400).
+
+4.3 UI-Elemente & Badges
+Pills / Badges: Genutzt für Statusanzeigen (z.B. "Wir sammeln jetzt Ideen"). Heller Hintergrund (bg-blue-50), passender Rahmen (border-blue-100), dunklere Schrift (text-blue-700), komplett abgerundet (rounded-full).
+
+Live-Indikatoren: Ein pulsierender Punkt (animate-ping) wird verwendet, um Aktivität ("Jetzt") zu signalisieren.
+
+4.4 Ikonografie & Bilder
+Icons: Die Bibliothek lucide-react liefert klare, linienbasierte Vektor-Icons (z.B. Lightbulb, ShieldCheck, Trash2), die perfekt zur modernen Typografie passen.
+
+Avatare: Anonyme User bekommen automatisch generierte, verspielte Roboter-Avatare (Dicebear Bottts).
+
+Grafikstil (wie in deinen KI-Prompts besprochen): Glasmorphismus (milchiges Glas), verschwommene (blurred) Hintergründe in Blau- und Violetttönen und prominentes Platzieren des Herz-Logos.
+
+5. Animationen & Interaktion
+Das Interface wirkt organisch und reaktiv, ohne aufdringlich zu sein.
+
+Bibliothek: framer-motion.
+
+Seitenaufbau: Elemente gleiten weich von unten nach oben ein (y: 20 zu y: 0) und blenden sich ein (opacity: 0 zu opacity: 1).
+
+Listen / Grids: Kaskadierende Animationen (staggerChildren), bei denen Elemente leicht zeitversetzt laden, um Dynamik zu erzeugen.
+
+Scrollbars: Eine schlanke, modernisierte Scrollbar (6px breit, transparenter Track, abgerundeter grauer Thumb) rundet das Web-Design ab.

@@ -87,7 +87,7 @@ export default function Voting() {
                     transition={{ delay: 0.1 }}
                     className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed"
                 >
-                    Welches Projekt findest du am besten? <br />
+                    Welches Projekt findest du am besten? <br className="hidden sm:block" />
                     Entscheide mit, was wir als nächstes bauen.
                 </motion.p>
 

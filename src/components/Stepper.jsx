@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, ChevronLeft, ShieldCheck, User, Lightbulb, Heart, AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { Check, ChevronRight, ChevronLeft, ShieldCheck, User, Lightbulb, Heart, AlertCircle, Loader2, Sparkles, RefreshCw } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getDeviceId } from '../utils/security';
@@ -12,11 +12,21 @@ const steps = [
   { id: 4, title: 'Avatar', icon: User },
 ];
 
+const AVATAR_STYLES = [
+    { id: 'bottts', label: 'Roboter' },
+    { id: 'fun-emoji', label: 'Emojis' },
+    { id: 'shapes', label: 'Monster' }
+];
+
 export default function Stepper() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false); // New Success State
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formError, setFormError] = useState(null);
+
+  // Avatar Selection State
+  const [avatarStyle, setAvatarStyle] = useState('bottts');
+  const [avatarOptions, setAvatarOptions] = useState([]);
 
   const [formData, setFormData] = useState({
     agreed: false,
@@ -25,9 +35,27 @@ export default function Stepper() {
     description: '',
     benefit: '',
     username: '',
-    avatar: 'avatar-1'
+    avatar: 'bottts:default'
   });
   const [errors, setErrors] = useState({});
+
+  // Generate random avatar options
+  const generateAvatars = (style) => {
+      const newOptions = Array.from({ length: 12 }, () => {
+          const randomSeed = Math.random().toString(36).substring(2, 10);
+          return `${style}:${randomSeed}`;
+      });
+      setAvatarOptions(newOptions);
+      // Select the first one by default when generating new ones
+      setFormData(prev => ({ ...prev, avatar: newOptions[0] }));
+  };
+
+  // Generate initial avatars when reaching step 4 or changing style
+  useEffect(() => {
+      if (currentStep === 4) {
+          generateAvatars(avatarStyle);
+      }
+  }, [currentStep, avatarStyle]);
 
   const validateStep = (step) => {
     const newErrors = {};
@@ -55,7 +83,7 @@ export default function Stepper() {
     if (validateStep(currentStep)) {
       setErrors({});
       setCurrentStep((prev) => Math.min(prev + 1, steps.length + 1));
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll top on step change for mobile
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -94,14 +122,14 @@ export default function Stepper() {
         description: formData.description,
         benefit: formData.benefit,
         username: formData.username,
-        avatar_seed: formData.avatar,
+        avatar_seed: formData.avatar, // Saves as "style:seed"
         status: 'pending',
         owner_id: getDeviceId()
       });
 
       if (error) throw error;
 
-      setIsSuccess(true); // Show Success UI instead of alert
+      setIsSuccess(true);
 
     } catch (err) {
       console.error("Submission error:", err);
@@ -117,7 +145,12 @@ export default function Stepper() {
     </p>
   );
 
-  // Success View
+  // Helper to parse avatar format
+  const getAvatarUrl = (avatarString) => {
+      const [style, seed] = avatarString.split(':');
+      return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
+  };
+
   if (isSuccess) {
     return (
       <div className="w-full max-w-2xl mx-auto py-10 px-4">
@@ -272,24 +305,49 @@ export default function Stepper() {
             <h3 className="text-2xl sm:text-3xl font-bold text-slate-900">Über dich</h3>
             <p className="text-slate-600 text-base sm:text-lg">Damit alles anonym bleibt, such dir bitte einen Fantasienamen und ein Bild aus.</p>
 
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-4 mb-8">
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((i) => (
-                <button
-                  key={i}
-                  onClick={() => setFormData(prev => ({ ...prev, avatar: `avatar-${i}` }))}
-                  className={cn(
-                    "aspect-square rounded-2xl bg-gray-50 border-4 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200",
-                    formData.avatar === `avatar-${i}` ? "border-blue-500 shadow-lg" : "border-transparent"
-                  )}
-                  aria-label={`Avatar Option ${i}`}
+            <div className="space-y-4">
+                {/* Category Selector */}
+                <div className="flex gap-2 p-1 bg-gray-100 rounded-lg w-fit mb-4">
+                    {AVATAR_STYLES.map(style => (
+                        <button
+                            key={style.id}
+                            onClick={() => setAvatarStyle(style.id)}
+                            className={cn(
+                                "px-4 py-2 rounded-md text-sm font-medium transition-all",
+                                avatarStyle === style.id ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"
+                            )}
+                        >
+                            {style.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Avatar Grid */}
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-4">
+                  {avatarOptions.map((avatarStr) => (
+                    <button
+                      key={avatarStr}
+                      onClick={() => setFormData(prev => ({ ...prev, avatar: avatarStr }))}
+                      className={cn(
+                        "aspect-square rounded-2xl bg-gray-50 border-4 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200 overflow-hidden",
+                        formData.avatar === avatarStr ? "border-blue-500 shadow-lg" : "border-transparent"
+                      )}
+                    >
+                      <img src={getAvatarUrl(avatarStr)} alt="" className="w-full h-full" />
+                    </button>
+                  ))}
+                </div>
+                
+                <button 
+                    onClick={() => generateAvatars(avatarStyle)}
+                    className="mt-4 flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors"
                 >
-                  <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${i}`} alt="" className="w-full h-full rounded-xl" />
+                    <RefreshCw className="w-4 h-4 mr-2" /> Neue Bilder generieren
                 </button>
-              ))}
             </div>
 
             <div>
-              <label className="block text-sm sm:text-base font-semibold text-slate-700 mb-2">Dein Fantasiename</label>
+              <label className="block text-sm sm:text-base font-semibold text-slate-700 mb-2 mt-8">Dein Fantasiename</label>
               <input
                 type="text"
                 name="username"
@@ -320,7 +378,12 @@ export default function Stepper() {
             <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 text-left text-sm sm:text-base text-slate-600 max-w-md mx-auto shadow-sm">
               <p className="mb-3 border-b border-gray-100 pb-2 flex justify-between"><span className="text-slate-900 font-semibold">Projekt:</span> <span className="truncate ml-2">{formData.title}</span></p>
               <p className="mb-3 border-b border-gray-100 pb-2 flex justify-between"><span className="text-slate-900 font-semibold">Bereich:</span> <span className="truncate ml-2">{formData.category === 'other' ? 'Sonstiges' : formData.category}</span></p>
-              <p className="flex justify-between"><span className="text-slate-900 font-semibold">Von:</span> <span className="truncate ml-2">{formData.username}</span></p>
+              <p className="flex items-center justify-between"><span className="text-slate-900 font-semibold">Von:</span> 
+                <span className="flex items-center truncate ml-2">
+                    <img src={getAvatarUrl(formData.avatar)} className="w-6 h-6 mr-2 rounded-full bg-gray-100" alt="" />
+                    {formData.username}
+                </span>
+              </p>
             </div>
 
             {formError && (

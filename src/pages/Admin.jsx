@@ -4,6 +4,15 @@ import { Trash2, CheckCircle, Clock, Search, XCircle, RefreshCw, AlertTriangle, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryLabel } from '../utils/categories';
 
+const getAvatarUrl = (seedString, fallbackId = 'default') => {
+    const seed = String(seedString || fallbackId);
+    if (seed.includes(':')) {
+        const [style, actualSeed] = seed.split(':');
+        return `https://api.dicebear.com/7.x/${style}/svg?seed=${actualSeed}`;
+    }
+    return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+};
+
 export default function Admin() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -87,7 +96,7 @@ export default function Admin() {
                             <div className="p-6 space-y-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden">
-                                        <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${detailProject.avatar_seed}`} alt="" className="w-full h-full" />
+                                        <img src={getAvatarUrl(detailProject.avatar_seed)} alt="" className="w-full h-full" />
                                     </div>
                                     <div>
                                         <p className="font-semibold text-slate-900">{detailProject.username}</p>
@@ -291,7 +300,7 @@ export default function Admin() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center space-x-2">
                                                 <div className="w-6 h-6 rounded bg-gray-200 overflow-hidden">
-                                                    <img src={`https://api.dicebear.com/7.x/bottts/svg?seed=${project.avatar_seed}`} alt="" className="w-full h-full" />
+                                                    <img src={getAvatarUrl(project.avatar_seed)} alt="" className="w-full h-full" />
                                                 </div>
                                                 <span className="text-sm text-slate-600">{project.username}</span>
                                             </div>
