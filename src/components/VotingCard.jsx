@@ -219,13 +219,15 @@ export default function VotingCard({ project, onVote }) {
                     <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
                         <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
                     </div>
-                    <div className="flex-grow min-w-0">
-                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 line-clamp-2 pr-2">{project.title}</h3>
-                        <p className="text-xs font-medium text-slate-500">von {project.username}</p>
+                    <div className="flex-grow min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                        <div className="min-w-0">
+                            <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 line-clamp-2">{project.title}</h3>
+                            <p className="text-xs font-medium text-slate-500">von {project.username}</p>
+                        </div>
+                        <span className="inline-flex text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100 shrink-0 w-fit">
+                            {getCategoryLabel(project.category)}
+                        </span>
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100">
-                        {getCategoryLabel(project.category)}
-                    </span>
                 </div>
 
                 <div className="px-6 pb-6 flex-grow">
