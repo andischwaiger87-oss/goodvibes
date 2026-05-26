@@ -20,8 +20,11 @@ function App() {
     return (
         <Router>
             <ScrollToTop />
+            
+            {/* SOTA-Fix: Der Wizard schwebt jetzt auf globaler Root-Ebene über absolut allem (Navbar, Banner etc.) */}
+            <IntroWizard />
+            
             <Layout>
-                <IntroWizard />
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/submission" element={<Submission />} />

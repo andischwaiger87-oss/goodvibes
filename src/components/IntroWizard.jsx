@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Heart, ShieldCheck, Vote, Zap } from 'lucide-react';
+import { ArrowRight, Heart, ShieldCheck, Vote } from 'lucide-react';
 import { supabase } from '../lib/supabase'; // Import Supabase to check auth
 
 const steps = [
@@ -72,15 +72,16 @@ export default function IntroWizard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4" // Increased Z-Index & Backdrop
+                /* SOTA Mobile-Fix: overflow-y-auto garantiert die Scrollbarkeit des gesamten Overlays auf kleinen Displays */
+                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 overflow-y-auto"
             >
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                    className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden relative"
+                    className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden relative my-auto"
                 >
-                    {/* Skip Button (New) */}
+                    {/* Skip Button */}
                     <button
                         onClick={handleClose}
                         className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium px-3 py-1 bg-gray-50 rounded-lg border border-gray-100 z-10"
