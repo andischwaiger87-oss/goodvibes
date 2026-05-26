@@ -5,6 +5,7 @@ import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye, Wrench 
 import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/security';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
+import { cn } from '../utils/cn';
 
 const getAvatarUrl = (seedString, fallbackId = 'default') => {
     const seed = String(seedString || fallbackId);
