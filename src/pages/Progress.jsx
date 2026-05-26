@@ -92,10 +92,10 @@ export default function Progress() {
                     <Activity className="w-4 h-4 animate-pulse text-indigo-500" />
                     Umsetzungs-Phase
                 </motion.div>
-                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
                     Projekt-Fortschritt
                 </h1>
-                <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-base sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
                     Hier kannst du in Echtzeit verfolgen, wie wir die Gewinner-Idee der Community in Code verwandeln.
                 </p>
             </div>
@@ -104,7 +104,7 @@ export default function Progress() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="elgato-card p-6 sm:p-10 mb-12 bg-white relative overflow-hidden border-indigo-100 shadow-md"
+                className="elgato-card p-5 sm:p-10 mb-12 bg-white relative overflow-hidden border-indigo-100 shadow-md"
             >
                 <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
                 
@@ -114,13 +114,13 @@ export default function Progress() {
                             {getCategoryLabel(project.category)}
                         </span>
                         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">{project.title}</h2>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-xs sm:text-sm text-slate-500">
                             Eingereicht von <span className="font-semibold">{project.username}</span> • {project.votes} Stimmen erhalten
                         </p>
                     </div>
                 </div>
 
-                <p className="text-slate-600 mb-8 leading-relaxed text-base sm:text-lg bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                <p className="text-slate-600 mb-8 leading-relaxed text-sm sm:text-lg bg-gray-50/50 p-4 rounded-xl border border-gray-100">
                     {project.description}
                 </p>
 
@@ -143,13 +143,13 @@ export default function Progress() {
 
             {/* Timeline updates */}
             <div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2">
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2">
                     <Calendar className="w-6 h-6 text-indigo-600" />
                     Entwicklungs-Tagebuch (Timeline)
                 </h3>
 
                 {updates.length > 0 ? (
-                    <div className="relative border-l-2 border-indigo-100 ml-4 sm:ml-8 pl-6 sm:pl-10 space-y-12">
+                    <div className="relative border-l-2 border-indigo-100 ml-2 sm:ml-8 pl-6 sm:pl-10 space-y-12">
                         {updates.map((update, index) => (
                             <motion.div
                                 key={update.id || index}
@@ -158,23 +158,23 @@ export default function Progress() {
                                 transition={{ delay: index * 0.1 }}
                                 className="relative"
                             >
-                                {/* Timeline Dot */}
-                                <div className="absolute -left-[35px] sm:-left-[51px] top-1.5 w-6 h-6 rounded-full border-4 border-slate-50 bg-indigo-600 flex items-center justify-center shadow-sm">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                {/* Mobile-Fix: Vollautomatische Zentrierung des Timeline-Punkts auf der vertikalen Linie */}
+                                <div className="absolute left-0 -translate-x-[calc(50%+1px)] top-6 w-5 h-5 rounded-full border-4 border-slate-50 bg-indigo-600 flex items-center justify-center shadow-sm z-10">
+                                    <CheckCircle2 className="w-2.5 h-2.5 text-white" />
                                 </div>
 
-                                <div className="elgato-card p-6 bg-white hover:border-indigo-200 transition-colors shadow-sm">
+                                <div className="elgato-card p-4 sm:p-6 bg-white hover:border-indigo-200 transition-colors shadow-sm">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                                        <h4 className="text-lg font-bold text-slate-900">{update.update_title}</h4>
-                                        <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded">
+                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">{update.update_title}</h4>
+                                        <span className="text-[11px] sm:text-xs font-semibold text-slate-400 flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded w-fit">
                                             {new Date(update.created_at).toLocaleDateString('de-DE')}
                                         </span>
                                     </div>
-                                    <p className="text-slate-600 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+                                    <p className="text-slate-600 text-xs sm:text-base leading-relaxed whitespace-pre-wrap">
                                         {update.update_text}
                                     </p>
                                     <div className="mt-4 flex items-center gap-2">
-                                        <span className="text-xs text-indigo-600 font-semibold px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded">
+                                        <span className="text-[11px] sm:text-xs text-indigo-600 font-semibold px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded">
                                             Status: {update.progress_percent}% fertiggestellt
                                         </span>
                                     </div>

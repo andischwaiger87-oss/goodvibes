@@ -228,9 +228,9 @@ export default function Layout({ children }) {
 
     // Padding top offset calculation based on whether banner is active
     const paddingTopClass = currentPhase === 'implementation' && activeProjectTitle
-        ? "pt-32 md:pt-36"
+        ? "pt-40 sm:pt-32 md:pt-36"
         : currentPhase === 'review'
-            ? "pt-32 md:pt-36"
+            ? "pt-40 sm:pt-32 md:pt-36"
             : "pt-24 md:pt-28";
 
     return (
