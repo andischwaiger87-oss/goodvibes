@@ -17,6 +17,7 @@ const getAvatarUrl = (seedString, fallbackId = 'default') => {
 // ──────────────────────────────────────────────
 // Tab 1: Project Moderation (existing functionality)
 // ──────────────────────────────────────────────
+/* eslint-disable react/prop-types */
 function ProjectModerationTab({ projects, fetchProjects, loading }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [rejectId, setRejectId] = useState(null);
@@ -327,8 +328,15 @@ function PhaseControlTab({ projects, fetchProjects }) {
         setSaving(true);
         setSaveMsg('');
         try {
-            await supabase.from('app_settings').update({ value: currentPhase }).eq('key', 'current_phase');
-            await supabase.from('app_settings').update({ value: activeProjectId }).eq('key', 'active_project_id');
+            // SOTA-Fix: Wir fangen Fehler beim Schreiben aktiv ab, anstatt Erfolg blind zu vermuten
+            const { error: phaseError } = await supabase.from('app_settings').update({ value: currentPhase }).eq('key', 'current_phase');
+            const { error: projectError } = await supabase.from('app_settings').update({ value: activeProjectId }).eq('key', 'active_project_id');
+
+            if (phaseError || projectError) {
+                setSaveMsg('Datenbank-Fehler: ' + (phaseError?.message || projectError?.message));
+                setSaving(false);
+                return;
+            }
 
             // Update project statuses accordingly
             if (activeProjectId) {
@@ -336,11 +344,11 @@ function PhaseControlTab({ projects, fetchProjects }) {
             }
 
             window.dispatchEvent(new Event('gv_settings_updated'));
-            setSaveMsg('Einstellungen gespeichert!');
+            setSaveMsg('Einstellungen erfolgreich live gespeichert!');
             fetchProjects();
         } catch (err) {
             console.error(err);
-            setSaveMsg('Fehler beim Speichern.');
+            setSaveMsg('Kritischer Systemfehler beim Speichern.');
         } finally {
             setSaving(false);
         }
@@ -443,7 +451,14 @@ function PhaseControlTab({ projects, fetchProjects }) {
                         </button>
                     )}
 
-                    {saveMsg && <span className="text-sm font-semibold text-green-600">{saveMsg}</span>}
+                    {saveMsg && (
+                        <span className={cn(
+                            "text-sm font-semibold",
+                            saveMsg.includes('Fehler') ? "text-red-600" : "text-green-600"
+                        )}>
+                            {saveMsg}
+                        </span>
+                    )}
                 </div>
             </div>
 
