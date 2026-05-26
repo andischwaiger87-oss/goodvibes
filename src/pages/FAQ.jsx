@@ -34,6 +34,18 @@ const faqs = [
     {
         question: "Kann ich bei der Entwicklung helfen?",
         answer: "GoodVibes ist als Open Source Projekt geplant. Aktuell setze ich die Projekte alleine um, aber der Code wird auf GitHub veröffentlicht. Wenn du Entwickler bist, kannst du dort gerne beitragen."
+    },
+    {
+        question: "Welche Projektphasen gibt es bei GoodVibes?",
+        answer: "GoodVibes durchläuft einen zyklischen Prozess in drei Phasen: 1. Einreichungs-Phase (Nutzer reichen Ideen ein und die Community stimmt ab), 2. Review-Phase (die Abstimmungen werden geschlossen und die Gewinner-Idee wird zur Umsetzung vorbereitet) und 3. Umsetzungs-Phase (die App wird aktiv entwickelt. Währenddessen bleibt das Voting für andere zukünftige Projekte geöffnet)."
+    },
+    {
+        question: "Was bedeutet es, wenn ein Projekt 'In Umsetzung' ist?",
+        answer: "Das Projekt hat die letzte Abstimmungsrunde gewonnen und wird nun kostenlos und ehrenamtlich entwickelt. Um Fairness zu garantieren, ist das Voting für dieses Projekt während der Entwicklung eingefroren. Auf unserer neuen 'Umsetzungs'-Seite kannst du den aktuellen Status der Entwicklung in Echtzeit mitverfolgen."
+    },
+    {
+        question: "Was passiert nach der Fertigstellung eines Projekts?",
+        answer: "Sobald ein Projekt fertiggestellt ist, veröffentlichen wir es in unserem Showcase-Bereich mit direktem Link zur fertigen App. Dort findest du auch einen transparenten Bug- und Feedback-Tracker. So können wir Fehler beheben, Kritik einholen und die App gemeinschaftlich optimieren."
     }
 ];
 

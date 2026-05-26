@@ -107,14 +107,6 @@ export default function Stepper() {
     setIsSubmitting(true);
     setFormError(null);
 
-    if (!isSupabaseConfigured()) {
-      setTimeout(() => {
-        setIsSuccess(true);
-        setIsSubmitting(false);
-      }, 1000);
-      return;
-    }
-
     try {
       const { error } = await supabase.from('projects').insert({
         title: formData.title,

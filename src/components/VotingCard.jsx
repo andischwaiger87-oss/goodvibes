@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye } from 'lucide-react';
+import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye, Wrench } from 'lucide-react';
 import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/security';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
@@ -14,19 +15,22 @@ const getAvatarUrl = (seedString, fallbackId = 'default') => {
     return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
 };
 
-export default function VotingCard({ project, onVote }) {
+export default function VotingCard({ project, onVote, isGlobalPhaseReview = false }) {
     const [hasVoted, setHasVoted] = useState(hasAlreadyVotedLocal(project.id));
     const [showConfirm, setShowConfirm] = useState(false);
     const [votes, setVotes] = useState(project.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
     const [shareSuccess, setShareSuccess] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
+    const navigate = useNavigate();
 
     const isRejected = project.status === 'rejected';
+    const isImplementation = project.status === 'implementation';
     const isOwner = project.owner_id === getDeviceId();
 
     const handleInitialVoteClick = () => {
-        if (!hasVoted && !isRejected) {
+        if (isGlobalPhaseReview) return;
+        if (!hasVoted && !isRejected && !isImplementation) {
             setShowConfirm(true);
         }
     };
@@ -36,13 +40,11 @@ export default function VotingCard({ project, onVote }) {
 
         recordVoteLocal(project.id);
 
-        if (isSupabaseConfigured()) {
-            try {
-                const { error } = await supabase.rpc('increment_vote', { project_id: project.id });
-                if (error) console.error("Vote error:", error);
-            } catch (err) {
-                console.error("Vote exception:", err);
-            }
+        try {
+            const { error } = await supabase.rpc('increment_vote', { project_id: project.id });
+            if (error) console.error("Vote error:", error);
+        } catch (err) {
+            console.error("Vote exception:", err);
         }
 
         setShowConfirm(false);
@@ -58,7 +60,7 @@ export default function VotingCard({ project, onVote }) {
         const shareData = {
             title: `GoodVibes: ${project.title}`,
             text: `Schau dir diese Idee an: "${project.title}"`,
-            url: window.location.href
+            url: `${window.location.origin}/voting`
         };
 
         try {
@@ -116,7 +118,7 @@ export default function VotingCard({ project, onVote }) {
                                 </p>
                             </div>
 
-                            {hasVoted && (
+                            {(hasVoted || isImplementation) && (
                                 <div className="text-center py-4 bg-blue-50 rounded-xl border border-blue-100">
                                     <p className="text-blue-700 font-semibold flex items-center justify-center gap-2">
                                         <Heart className="w-5 h-5 fill-current" /> {votes} Stimmen
@@ -126,10 +128,18 @@ export default function VotingCard({ project, onVote }) {
                         </div>
 
                         <div className="p-6 border-t border-gray-100 flex gap-3 sticky bottom-0 bg-white">
-                            {!hasVoted && !isRejected ? (
+                            {isImplementation ? (
+                                <button
+                                    onClick={() => { setShowDetail(false); navigate('/progress'); }}
+                                    className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-semibold flex items-center justify-center gap-2"
+                                >
+                                    <Wrench className="w-5 h-5 animate-pulse" /> Live-Status ansehen
+                                </button>
+                            ) : !hasVoted && !isRejected ? (
                                 <button
                                     onClick={() => { setShowDetail(false); handleInitialVoteClick(); }}
-                                    className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold flex items-center justify-center gap-2"
+                                    disabled={isGlobalPhaseReview}
+                                    className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <ThumbsUp className="w-5 h-5" /> Unterstützen
                                 </button>
@@ -204,7 +214,7 @@ export default function VotingCard({ project, onVote }) {
         return null;
     }
 
-    // Normal Active Card
+    // Normal Active Card or Implementation Card
     return (
         <>
             <DetailModal />
@@ -212,9 +222,17 @@ export default function VotingCard({ project, onVote }) {
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="elgato-card flex flex-col h-full overflow-hidden group bg-white cursor-pointer"
+                className={cn(
+                    "elgato-card flex flex-col h-full overflow-hidden group bg-white cursor-pointer relative",
+                    isImplementation && "border-indigo-200 shadow-indigo-50/50 shadow-md hover:border-indigo-400"
+                )}
                 onClick={() => setShowDetail(true)}
             >
+                {/* Glow effect on implementation cards */}
+                {isImplementation && (
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+                )}
+                
                 <div className="p-6 flex items-start space-x-4">
                     <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
                         <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
@@ -224,7 +242,12 @@ export default function VotingCard({ project, onVote }) {
                             <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 line-clamp-2">{project.title}</h3>
                             <p className="text-xs font-medium text-slate-500">von {project.username}</p>
                         </div>
-                        <span className="inline-flex text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100 shrink-0 w-fit">
+                        <span className={cn(
+                            "inline-flex text-xs font-semibold px-2.5 py-1 rounded border shrink-0 w-fit",
+                            isImplementation
+                                ? "bg-indigo-50 text-indigo-700 border-indigo-100"
+                                : "bg-blue-50 text-blue-700 border-blue-100"
+                        )}>
                             {getCategoryLabel(project.category)}
                         </span>
                     </div>
@@ -246,7 +269,22 @@ export default function VotingCard({ project, onVote }) {
                 <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between mt-auto" onClick={(e) => e.stopPropagation()}>
                     <div className="relative">
                         <AnimatePresence mode="wait">
-                            {!hasVoted ? (
+                            {isImplementation ? (
+                                <motion.div
+                                    key="implementation"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="flex items-center space-x-3 text-indigo-600"
+                                >
+                                    <div className="p-2 rounded-lg bg-indigo-50 border border-indigo-100 animate-pulse">
+                                        <Wrench className="w-4 h-4 text-indigo-600" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold text-slate-900">{votes} Stimmen</span>
+                                        <span className="text-[10px] uppercase tracking-wide font-semibold text-indigo-600">In Umsetzung</span>
+                                    </div>
+                                </motion.div>
+                            ) : !hasVoted ? (
                                 showConfirm ? (
                                     <motion.div
                                         key="confirm"
@@ -276,9 +314,18 @@ export default function VotingCard({ project, onVote }) {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         onClick={handleInitialVoteClick}
-                                        className="flex items-center space-x-2 text-slate-500 hover:text-blue-600 transition-colors group/btn"
+                                        disabled={isGlobalPhaseReview}
+                                        className={cn(
+                                            "flex items-center space-x-2 text-slate-500 transition-colors group/btn",
+                                            isGlobalPhaseReview
+                                                ? "opacity-40 cursor-not-allowed"
+                                                : "hover:text-blue-600"
+                                        )}
                                     >
-                                        <div className="p-2 rounded-lg bg-white border border-gray-200 group-hover/btn:border-blue-200 group-hover/btn:bg-blue-50 transition-all">
+                                        <div className={cn(
+                                            "p-2 rounded-lg bg-white border border-gray-200 transition-all",
+                                            !isGlobalPhaseReview && "group-hover/btn:border-blue-200 group-hover/btn:bg-blue-50"
+                                        )}>
                                             <ThumbsUp className="w-4 h-4" />
                                         </div>
                                         <span className="text-sm font-semibold">Unterstützen</span>
@@ -304,12 +351,21 @@ export default function VotingCard({ project, onVote }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setShowDetail(true)}
-                            className="text-blue-600 hover:text-blue-700 transition-colors text-xs font-semibold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200"
-                        >
-                            Mehr lesen
-                        </button>
+                        {isImplementation ? (
+                            <button
+                                onClick={() => navigate('/progress')}
+                                className="text-indigo-600 hover:text-indigo-700 transition-colors text-xs font-semibold px-2 py-1 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 shadow-sm"
+                            >
+                                Status ansehen
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => setShowDetail(true)}
+                                className="text-blue-600 hover:text-blue-700 transition-colors text-xs font-semibold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200"
+                            >
+                                Mehr lesen
+                            </button>
+                        )}
                         <button
                             onClick={handleShare}
                             className="text-slate-400 hover:text-slate-900 transition-colors relative p-1"

@@ -12,6 +12,9 @@ import Imprint from './pages/Imprint';
 import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import ScrollToTop from './components/ScrollToTop';
+import Progress from './pages/Progress';
+import CompletedProjects from './pages/CompletedProjects';
+import ProjectDetail from './pages/ProjectDetail';
 
 function App() {
     return (
@@ -23,6 +26,9 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/submission" element={<Submission />} />
                     <Route path="/voting" element={<Voting />} />
+                    <Route path="/progress" element={<Progress />} />
+                    <Route path="/projects" element={<CompletedProjects />} />
+                    <Route path="/projects/:id" element={<ProjectDetail />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/imprint" element={<Imprint />} />
                     <Route path="/faq" element={<FAQ />} />

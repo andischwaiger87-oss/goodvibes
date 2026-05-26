@@ -1,80 +1,80 @@
 @import "tailwindcss";
 
-@layer base {
-    :root {
-        --background: 210 20% 98%;
-        /* Light gray/whiteish */
-        --foreground: 222.2 84% 4.9%;
-        /* Sharp dark text */
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 221 83% 53%;
-        /* Strong Elgato-like Blue */
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        /* Slate gray for secondary text */
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 221 83% 53%;
-        --radius: 0.5rem;
-    }
+@theme {
+    /* Behebt den Build-Fehler: Registriert die fehlende Animation in Tailwind v4 */
+    --animate-gradient-x: gradient-x 3s ease infinite;
 
-    body {
-        font-family: 'Inter', sans-serif;
-        @apply bg-gray-50 text-slate-900 antialiased selection:bg-blue-500/20 selection:text-blue-700;
-        font-feature-settings: "rlig" 1, "calt" 1;
-    }
-
-    /* Modern Scrollbar - thinner, cleaner */
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+    @keyframes gradient-x {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
 }
 
-@layer utilities {
+/* Global Base Styles */
+:root {
+    --background: 210 20% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --radius: 0.5rem;
+}
 
-    /* Minimalist Cards - White, very subtle border, clean shadow */
-    .elgato-card {
-        @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300;
-    }
+body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-gray-50 text-slate-900 antialiased selection:bg-blue-500/20 selection:text-blue-700;
+    font-feature-settings: "rlig" 1, "calt" 1;
+}
 
-    /* Typography utilities */
-    .h1-hero {
-        @apply text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900;
-    }
+/* Modern Scrollbar - thinner, cleaner */
+::-webkit-scrollbar {
+    width: 6px;
+}
 
-    .text-subtle {
-        @apply text-slate-500 font-medium;
-    }
+::-webkit-scrollbar-track {
+    background: transparent;
+}
 
-    /* Cleaner Button Styles */
-    .btn-primary {
-        @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors duration-200 shadow-sm;
-    }
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
 
-    .btn-secondary {
-        @apply bg-white hover:bg-gray-50 text-slate-700 border border-gray-300 font-semibold py-2.5 px-6 rounded-lg transition-colors duration-200;
-    }
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Custom Utilities (Tailwind v4 Syntax via @utility) */
+@utility elgato-card {
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300;
+}
+
+@utility h1-hero {
+    @apply text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900;
+}
+
+@utility text-subtle {
+    @apply text-slate-500 font-medium;
+}
+
+@utility btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors duration-200 shadow-sm;
+}
+
+@utility btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-slate-700 border border-gray-300 font-semibold py-2.5 px-6 rounded-lg transition-colors duration-200;
 }
