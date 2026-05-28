@@ -6,11 +6,10 @@ import { cn } from '../utils/cn';
 import { supabase } from '../lib/supabase';
 import AntigravityCursorEffect from './AntigravityCursorEffect';
 
-const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId, onNavClick }) => {
+const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
 
-    // Close mobile menu on path change
     useEffect(() => {
         setMobileMenuOpen(false);
     }, [location.pathname]);
@@ -27,28 +26,32 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId, onNavClick 
 
     return (
         <header className="fixed top-0 w-full z-40 flex flex-col">
-            {/* Phase Banner during Implementation Phase */}
+            {/* Phase Banner - Jetzt voll mobil-optimiert (flex-col auf Mobile, flex-row auf Desktop) */}
             {currentPhase === 'implementation' && activeProjectTitle && (
-                <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-2.5 px-4 text-center text-xs sm:text-sm font-semibold relative z-50 flex items-center justify-center gap-2 shadow-sm border-b border-blue-500/30">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    <span>Wir setzen aktuell das Projekt <strong>{activeProjectTitle}</strong> um!</span>
-                    <Link to="/progress" className="underline hover:text-blue-100 ml-1.5 inline-flex items-center gap-1 font-bold">
+                <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-3 px-4 text-center text-xs sm:text-sm font-semibold relative z-50 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shadow-sm border-b border-blue-500/30">
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="relative flex h-2 w-2 shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span>Wir setzen aktuell das Projekt <strong>{activeProjectTitle}</strong> um!</span>
+                    </div>
+                    <Link to="/progress" className="underline hover:text-blue-100 inline-flex items-center gap-1 font-bold mt-1 sm:mt-0">
                         Live-Status <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                 </div>
             )}
 
-            {/* Review Phase Info Banner */}
+            {/* Review Phase Info Banner - Mobil optimiert */}
             {currentPhase === 'review' && (
-                <div className="bg-amber-500 text-slate-950 py-2.5 px-4 text-center text-xs sm:text-sm font-semibold relative z-50 flex items-center justify-center gap-2 shadow-sm border-b border-amber-400">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-950"></span>
-                    </span>
-                    <span>Abstimmungsrunde beendet! Wir sichten aktuell alle Ideen & werten die Stimmen aus.</span>
+                <div className="bg-amber-500 text-slate-950 py-3 px-4 text-center text-xs sm:text-sm font-semibold relative z-50 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 shadow-sm border-b border-amber-400">
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="relative flex h-2 w-2 shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-950"></span>
+                        </span>
+                        <span>Abstimmungsrunde beendet! Wir sichten aktuell alle Ideen & werten die Stimmen aus.</span>
+                    </div>
                 </div>
             )}
 
@@ -220,18 +223,14 @@ export default function Layout({ children }) {
 
     useEffect(() => {
         fetchAppSettings();
-
-        // Custom event so other components can trigger reload if admin changes settings
         window.addEventListener('gv_settings_updated', fetchAppSettings);
         return () => window.removeEventListener('gv_settings_updated', fetchAppSettings);
     }, []);
 
-    // Padding top offset calculation based on whether banner is active
-    const paddingTopClass = currentPhase === 'implementation' && activeProjectTitle
-        ? "pt-40 sm:pt-32 md:pt-36"
-        : currentPhase === 'review'
-            ? "pt-40 sm:pt-32 md:pt-36"
-            : "pt-24 md:pt-28";
+    // SOTA Mobile-Fix: Großzügigeres Padding-Top (pt-44) auf Mobile für zweizeilige Banner
+    const paddingTopClass = (currentPhase === 'implementation' && activeProjectTitle) || currentPhase === 'review'
+        ? "pt-44 sm:pt-32 md:pt-36"
+        : "pt-24 md:pt-28";
 
     return (
         <div className="min-h-screen flex flex-col relative bg-slate-50 selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden text-slate-900">
@@ -239,8 +238,8 @@ export default function Layout({ children }) {
             {currentPhase === 'implementation' ? (
                 <AntigravityCursorEffect />
             ) : (
-                /* Gentle background blobs for other phases */
-                <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                /* Gentle background blobs for other phases - NEU: z-[-10] verhindert Ebenen-Fehler */
+                <div className="fixed inset-0 z-[-10] overflow-hidden pointer-events-none">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
                     <motion.div
                         animate={{
@@ -269,10 +268,10 @@ export default function Layout({ children }) {
                 currentPhase={currentPhase} 
                 activeProjectTitle={activeProjectTitle} 
                 activeProjectId={activeProjectId} 
-                onNavClick={fetchAppSettings}
             />
             
-            <main className={cn("flex-grow pb-12 px-4 relative z-10 w-full", paddingTopClass)}>
+            {/* FIX: z-10 entfernt, damit Modals global über die Navbar (z-40) gelagert werden können */}
+            <main className={cn("flex-grow pb-12 px-4 relative w-full", paddingTopClass)}>
                 <div className="max-w-7xl mx-auto">
                     {children}
                 </div>
