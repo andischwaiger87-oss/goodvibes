@@ -354,19 +354,36 @@ function PhaseControlTab({ projects, fetchProjects }) {
         }
     };
 
+    const [updateMsg, setUpdateMsg] = useState(''); // Neu: Für die Erfolgs-/Fehlermeldung
+
     const addUpdate = async () => {
         if (!updateTitle.trim() || !updateText.trim() || !activeProjectId) return;
         setSavingUpdate(true);
-        await supabase.from('project_updates').insert({
-            project_id: activeProjectId,
-            progress_percent: updateProgress,
-            update_title: updateTitle.trim(),
-            update_text: updateText.trim()
-        });
-        setUpdateTitle('');
-        setUpdateText('');
-        loadUpdates();
-        setSavingUpdate(false);
+        setUpdateMsg('');
+        try {
+            const { error } = await supabase.from('project_updates').insert({
+                project_id: activeProjectId,
+                progress_percent: updateProgress,
+                update_title: updateTitle.trim(),
+                update_text: updateText.trim()
+            });
+
+            if (error) {
+                setUpdateMsg('Fehler: ' + error.message);
+                setSavingUpdate(false);
+                return;
+            }
+
+            setUpdateTitle('');
+            setUpdateText('');
+            setUpdateMsg('Update erfolgreich hinzugefügt!');
+            loadUpdates();
+        } catch (err) {
+            console.error(err);
+            setUpdateMsg('Systemfehler beim Speichern.');
+        } finally {
+            setSavingUpdate(false);
+        }
     };
 
     const deleteUpdate = async (id) => {
@@ -486,16 +503,29 @@ function PhaseControlTab({ projects, fetchProjects }) {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-slate-600 mb-1">Beschreibung</label>
-                            <textarea rows="3" value={updateText} onChange={(e) => setUpdateText(e.target.value)}
-                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                                placeholder="Was wurde in diesem Schritt erledigt?" />
-                        </div>
+                        <label className="block text-xs font-semibold text-slate-600 mb-1">Beschreibung</label>
+                        <textarea rows="3" value={updateText} onChange={(e) => setUpdateText(e.target.value)}
+                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                            placeholder="Was wurde in diesem Schritt erledigt?" />
+                    </div>
+
+                    {/* HIER GEÄNDERT: Button und Live-Meldung nebeneinander */}
+                    <div className="flex flex-wrap items-center gap-4">
                         <button onClick={addUpdate} disabled={savingUpdate || !updateTitle.trim() || !updateText.trim()}
                             className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-sm disabled:opacity-50 flex items-center gap-2">
                             <PlusCircle className="w-4 h-4" /> {savingUpdate ? 'Wird gespeichert...' : 'Update hinzufügen'}
                         </button>
+                        
+                        {updateMsg && (
+                            <span className={cn(
+                                "text-sm font-semibold",
+                                updateMsg.includes('Fehler') ? "text-red-600" : "text-green-600"
+                            )}>
+                                {updateMsg}
+                            </span>
+                        )}
                     </div>
+                </div>
 
                     {/* Existing updates list */}
                     {updates.length > 0 ? (
