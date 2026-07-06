@@ -60,7 +60,7 @@ const faqs = [
         answer: "BETA heißt einfach: Die App ist noch neu und wird gerade ausprobiert. Sie funktioniert schon, aber es kann noch kleine Fehler geben. Genau deshalb gibt es die Community: Dein Feedback aus dem echten Alltag hilft uns, die App Schritt für Schritt besser zu machen. Eine App mit BETA-Kennzeichen darfst du also gerne testen – und uns sagen, was dir auffällt."
     },
     {
-        question: "Wie wird verhindert, dass Leute pöbeln oder spammen?",
+        question: "Wie sorgt ihr dafür, dass niemand beleidigt oder mit Spam nervt?",
         answer: "Deine Meinung darf offen und ehrlich sein – Beleidigungen, Hass und Spam haben aber keinen Platz. Ein automatischer Schutz prüft jeden Beitrag: Saubere Beiträge erscheinen sofort, auffällige werden kurz von einem Menschen geprüft, bevor sie sichtbar sind. Wer trotzdem stört, kann gesperrt werden. So bleibt der Austausch für alle freundlich und sicher."
     },
     {
