@@ -15,15 +15,14 @@ import ScrollToTop from './components/ScrollToTop';
 import Progress from './pages/Progress';
 import CompletedProjects from './pages/CompletedProjects';
 import ProjectDetail from './pages/ProjectDetail';
+import Apps from './pages/Apps';
+import AppDetail from './pages/AppDetail';
 
 function App() {
     return (
         <Router>
             <ScrollToTop />
-            
-            {/* SOTA-Fix: Der Wizard schwebt jetzt auf globaler Root-Ebene über absolut allem (Navbar, Banner etc.) */}
             <IntroWizard />
-            
             <Layout>
                 <Routes>
                     <Route path="/" element={<Home />} />
@@ -32,6 +31,8 @@ function App() {
                     <Route path="/progress" element={<Progress />} />
                     <Route path="/projects" element={<CompletedProjects />} />
                     <Route path="/projects/:id" element={<ProjectDetail />} />
+                    <Route path="/apps" element={<Apps />} />
+                    <Route path="/apps/:slug" element={<AppDetail />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/imprint" element={<Imprint />} />
                     <Route path="/faq" element={<FAQ />} />

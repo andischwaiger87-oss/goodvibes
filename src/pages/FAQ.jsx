@@ -46,6 +46,30 @@ const faqs = [
     {
         question: "Was passiert nach der Fertigstellung eines Projekts?",
         answer: "Sobald ein Projekt fertiggestellt ist, veröffentlichen wir es in unserem Showcase-Bereich mit direktem Link zur fertigen App. Dort findest du auch einen transparenten Bug- und Feedback-Tracker. So können wir Fehler beheben, Kritik einholen und die App gemeinschaftlich optimieren."
+    },
+    {
+        question: "Was ist der neue Bereich 'Apps & Community'?",
+        answer: "Das ist unser gemeinsamer Treffpunkt – ähnlich wie ein App-Store mit Kommentarbereich. Dort findest du alle fertigen GoodVibes-Apps übersichtlich aufgelistet: mit Beschreibung, Funktionen, Version und einem großen Knopf zum direkten Öffnen. Unter jeder App kannst du bewerten, Wünsche äußern, Fehler melden oder einfach Fragen stellen. So entwickeln wir jede App gemeinsam weiter."
+    },
+    {
+        question: "Muss ich mich anmelden, um mitzureden?",
+        answer: "Nein. Der Community-Bereich ist komplett anonym – kein Konto, kein Name, keine E-Mail nötig. Du bekommst automatisch einen freundlichen Spitznamen und ein kleines Avatar-Bild. So kann jede und jeder sofort und ohne Hürde mitreden."
+    },
+    {
+        question: "Was bedeutet 'BETA' bei einer App?",
+        answer: "BETA heißt einfach: Die App ist noch neu und wird gerade ausprobiert. Sie funktioniert schon, aber es kann noch kleine Fehler geben. Genau deshalb gibt es die Community: Dein Feedback aus dem echten Alltag hilft uns, die App Schritt für Schritt besser zu machen. Eine App mit BETA-Kennzeichen darfst du also gerne testen – und uns sagen, was dir auffällt."
+    },
+    {
+        question: "Wie wird verhindert, dass Leute pöbeln oder spammen?",
+        answer: "Deine Meinung darf offen und ehrlich sein – Beleidigungen, Hass und Spam haben aber keinen Platz. Ein automatischer Schutz prüft jeden Beitrag: Saubere Beiträge erscheinen sofort, auffällige werden kurz von einem Menschen geprüft, bevor sie sichtbar sind. Wer trotzdem stört, kann gesperrt werden. So bleibt der Austausch für alle freundlich und sicher."
+    },
+    {
+        question: "Warum kann ich keine Links posten – und wie melde ich einen Fehler mit Bild?",
+        answer: "Aus Sicherheitsgründen werden Links im Chat automatisch entfernt, damit niemand auf gefährliche Seiten gelockt werden kann. Beim Melden eines Fehlers darfst du aber ein Bildschirmfoto (Screenshot) anhängen – das wird automatisch sicher aufbereitet, sodass keine versteckten Daten übrig bleiben. Wer möchte, kann auch einen Code-Ausschnitt einfügen; dieser wird ausschließlich als reiner Text angezeigt und niemals ausgeführt."
+    },
+    {
+        question: "Wie entscheidet ihr, welche Verbesserungen umgesetzt werden?",
+        answer: "Damit eine App nicht mit tausend Funktionen überladen wird, entscheidet die Community mit. Bei jeder App kannst du Wünsche mit einem Klick unterstützen ('Finde ich auch'). Was die meisten Stimmen bekommt, setzen wir zuerst um. So bekommt die App genau die Verbesserungen, die wirklich vielen Menschen helfen."
     }
 ];
 

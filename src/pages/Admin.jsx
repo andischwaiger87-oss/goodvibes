@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Trash2, CheckCircle, Clock, Search, XCircle, RefreshCw, AlertTriangle, X, Eye, Settings, Activity, MessageSquare, Wrench, Award, CornerDownRight, PlusCircle } from 'lucide-react';
+import { Trash2, CheckCircle, Clock, Search, XCircle, RefreshCw, AlertTriangle, X, Eye, Settings, Activity, MessageSquare, Wrench, Award, CornerDownRight, PlusCircle, LayoutGrid, ShieldAlert, Ban } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryLabel } from '../utils/categories';
 import { cn } from '../utils/cn';
+import { AppManagementTab, CommunityModerationTab, BlocklistTab } from '../components/admin/CommunityAdmin';
 
 const getAvatarUrl = (seedString, fallbackId = 'default') => {
     const seed = String(seedString || fallbackId);
@@ -713,6 +714,9 @@ export default function Admin() {
         { id: 'projects', label: 'Projekte', icon: Eye, mobileLabel: 'Projekte' },
         { id: 'phases', label: 'Phasen & Fortschritt', icon: Settings, mobileLabel: 'Phasen' },
         { id: 'bugs', label: 'Bug-Tracker', icon: MessageSquare, mobileLabel: 'Bugs' },
+        { id: 'apps', label: 'Apps', icon: LayoutGrid, mobileLabel: 'Apps' },
+        { id: 'community', label: 'Community', icon: ShieldAlert, mobileLabel: 'Beiträge' },
+        { id: 'blocklist', label: 'Blockliste', icon: Ban, mobileLabel: 'Sperren' },
     ];
 
     return (
@@ -733,7 +737,7 @@ export default function Admin() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="mb-8 bg-white rounded-xl border border-gray-200 shadow-sm p-1.5 flex gap-1.5">
+            <div className="mb-8 bg-white rounded-xl border border-gray-200 shadow-sm p-1.5 flex flex-wrap gap-1.5">
                 {tabs.map(tab => {
                     const Icon = tab.icon;
                     return (
@@ -764,6 +768,15 @@ export default function Admin() {
             )}
             {activeTab === 'bugs' && (
                 <BugModerationTab />
+            )}
+            {activeTab === 'apps' && (
+                <AppManagementTab />
+            )}
+            {activeTab === 'community' && (
+                <CommunityModerationTab />
+            )}
+            {activeTab === 'blocklist' && (
+                <BlocklistTab />
             )}
         </div>
     );

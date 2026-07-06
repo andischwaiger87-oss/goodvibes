@@ -18,6 +18,7 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
         { path: '/', label: 'Startseite' },
         { path: '/voting', label: 'Abstimmung' },
         ...(activeProjectId ? [{ path: '/progress', label: 'Umsetzung', isStatus: true }] : []),
+        { path: '/apps', label: 'Apps & Community', isApps: true },
         { path: '/projects', label: 'Showcase', isShowcase: true },
         { path: '/faq', label: 'FAQ' }
     ];
@@ -178,6 +179,7 @@ const Footer = () => (
     <footer className="w-full py-12 mt-auto border-t border-gray-100 bg-white/50 backdrop-blur-sm text-slate-500 relative z-10">
         <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="mb-6 flex flex-wrap justify-center gap-6 sm:gap-8 text-sm font-medium">
+                <Link to="/apps" className="hover:text-blue-600 transition-colors">Apps & Community</Link>
                 <Link to="/faq" className="hover:text-blue-600 transition-colors">FAQ</Link>
                 <Link to="/privacy" className="hover:text-blue-600 transition-colors">Datenschutz</Link>
                 <Link to="/imprint" className="hover:text-blue-600 transition-colors">Impressum</Link>
@@ -272,11 +274,9 @@ export default function Layout({ children }) {
             
             {/* FIX: z-10 entfernt, damit Modals global über die Navbar (z-40) gelagert werden können */}
             <main className={cn("flex-grow pb-12 px-4 relative w-full", paddingTopClass)}>
-                <div className="max-w-7xl mx-auto">
-                    {children}
-                </div>
+                {children}
             </main>
-            
+
             <Footer />
         </div>
     );
