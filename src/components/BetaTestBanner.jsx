@@ -53,8 +53,14 @@ export default function BetaTestBanner() {
                 <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
                     {/* App-Icon-Kachel */}
                     <div className="shrink-0 mx-auto sm:mx-0">
-                        <div className="w-20 h-20 rounded-3xl bg-white shadow-lg shadow-blue-900/20 ring-1 ring-white/50 flex items-center justify-center text-4xl">
-                            {single ? (single.icon_emoji || '🧪') : '🧪'}
+                        <div className="w-20 h-20 rounded-3xl bg-white shadow-lg shadow-blue-900/20 ring-1 ring-white/50 flex items-center justify-center overflow-hidden">
+                            <img
+                                src="https://api.dicebear.com/7.x/bottts/svg?seed=avatar-5"
+                                alt=""
+                                aria-hidden="true"
+                                className="w-16 h-16"
+                                loading="lazy"
+                            />
                         </div>
                     </div>
 

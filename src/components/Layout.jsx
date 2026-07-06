@@ -58,7 +58,7 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
 
             {/* Beta-Test Banner */}
             {currentPhase === 'beta' && activeProjectTitle && (
-                <div className="bg-gradient-to-r from-orange-700 via-orange-600 to-rose-600 text-white py-3 px-4 text-center text-xs sm:text-sm font-medium tracking-wide relative z-50 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shadow-sm border-b border-orange-800/30 [text-shadow:0_1px_2px_rgb(0_0_0_/_0.3)]">
+                <div className="bg-gradient-to-r from-orange-700 via-orange-600 to-rose-600 text-white py-3 px-4 text-center text-xs sm:text-sm font-medium tracking-wide relative z-50 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shadow-sm border-b border-orange-800/30">
                     <div className="flex items-center justify-center gap-2">
                         <span className="relative flex h-2 w-2 shrink-0">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
