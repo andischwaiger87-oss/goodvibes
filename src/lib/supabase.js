@@ -145,14 +145,14 @@ const initMockDatabase = () => {
         const initialApps = [
             {
                 id: 'app-meinplan', slug: 'meinplan', name: 'MeinPlan',
-                tagline: 'Dein Tag – klar und einfach strukturiert.',
-                description: 'MeinPlan hilft dir, deinen Tagesablauf übersichtlich zu planen. Mit großen, klaren Symbolen und einfacher Sprache behältst du den Überblick – ganz ohne kompliziertes Menü. Besonders gedacht für Menschen, die eine klare Struktur im Alltag schätzen.',
+                tagline: 'Dein Tag – klar strukturiert und zum Abhaken.',
+                description: 'MeinPlan hilft dir, deinen Alltag klar zu strukturieren. Du legst für jeden Wochentag einen eigenen Ablauf an, siehst deinen Plan in Tages-, Wochen- und Monatsansicht und hakst erledigte Schritte einfach ab. Ein ruhiger Modus mit weniger Animationen und eine Einführung zum Anhören machen die Bedienung angenehm – besonders für Menschen, die von klarer Struktur profitieren, etwa im Autismus-Spektrum.',
                 category: 'community', icon_emoji: '🗓️', accent: 'blue',
-                version: '0.9.0', is_beta: true, status: 'live',
-                live_url: 'https://goodvibes-akz.pages.dev/',
-                scope: 'Kostenlos • Ohne Anmeldung • Ohne Werbung • Funktioniert am Handy und am Computer',
-                features: 'Tagesplan mit großen, klaren Symbolen\nErinnerungen für wichtige Aufgaben\nEinfache Sprache, auch für Einsteiger\nBarrierefrei bedienbar (große Schrift, gute Kontraste)\nFunktioniert auch offline',
-                whats_new: 'Erste öffentliche BETA: Wir testen jetzt gemeinsam mit euch im echten Alltag und verbessern die App anhand eures Feedbacks.',
+                version: '0.6.0', is_beta: true, status: 'live',
+                live_url: 'https://tagesplaner-aut.pages.dev/',
+                scope: 'Kostenlos • Läuft im Browser (Handy & Computer) • BETA • Ohne Werbung',
+                features: 'Eigener Ablauf für jeden Wochentag (Werktag & Wochenende getrennt)\nKalender in Tages-, Wochen- und Monatsansicht\nSchritte abhaken und Tagesfortschritt auf einen Blick\n„Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nKurze Einführung zum Anhören\nFür Vorlese-Programme (Screenreader) optimiert',
+                whats_new: 'Neu: Tagesfortschritt zum Abhaken (x von y erledigt) mit automatischem Reset um Mitternacht – plus ein ruhiger Modus mit weniger Animationen für mehr Reizarmut.',
                 screenshots: [], rating_sum: 13, rating_count: 3, sort_order: 1,
                 created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
             },
