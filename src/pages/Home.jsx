@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Lightbulb, Users, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import BetaTestBanner from '../components/BetaTestBanner';
 
 const container = {
     hidden: { opacity: 0 },
@@ -98,6 +99,9 @@ export default function Home() {
                     </Link>
                 </motion.div>
             </section>
+
+            {/* Hinweis auf Apps in der Test-Phase (BETA) */}
+            <BetaTestBanner />
 
             {/* Feature Grid */}
             <motion.section

@@ -121,6 +121,14 @@ const initMockDatabase = () => {
                 update_title: 'Datenbank-Struktur & Grundgerüst stehen',
                 update_text: 'Das React-Grundgerüst wurde aufgesetzt. Die Anbindung an die Datenbank ist erfolgt. Die ersten Kern-Ansichten zur Tagesplanung funktionieren bereits offline.',
                 created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+                id: 'update-3',
+                project_id: '11111111-1111-1111-1111-111111111111',
+                progress_percent: 65,
+                update_title: 'Testphase gestartet – jetzt bist du dran!',
+                update_text: 'MeinPlan hat den Stand zum Testen erreicht und ist ab sofort als BETA verfügbar. Mit dabei: überarbeitete Erinnerungen (Bild, Text und Stimme), verschiebbare Einträge und eine einfache Einrichtung beim ersten Start. Probier die App im Alltag aus und gib uns Feedback im App-Bereich – jede Rückmeldung hilft!',
+                created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
             }
         ];
         localStorage.setItem('gv_mock_project_updates', JSON.stringify(initialUpdates));
@@ -148,11 +156,11 @@ const initMockDatabase = () => {
                 tagline: 'Dein Tag – klar strukturiert und zum Abhaken.',
                 description: 'MeinPlan hilft dir, deinen Alltag klar zu strukturieren. Du legst für jeden Wochentag einen eigenen Ablauf an, siehst deinen Plan in Tages-, Wochen- und Monatsansicht und hakst erledigte Schritte einfach ab. Ein ruhiger Modus mit weniger Animationen und eine Einführung zum Anhören machen die Bedienung angenehm – besonders für Menschen, die von klarer Struktur profitieren, etwa im Autismus-Spektrum.',
                 category: 'community', icon_emoji: '🗓️', accent: 'blue',
-                version: '0.6.0', is_beta: true, status: 'live',
+                version: '0.7.0', is_beta: true, status: 'live',
                 live_url: 'https://tagesplaner-aut.pages.dev/',
                 scope: 'Kostenlos • Läuft im Browser (Handy & Computer) • BETA • Ohne Werbung',
-                features: 'Eigener Ablauf für jeden Wochentag (Werktag & Wochenende getrennt)\nKalender in Tages-, Wochen- und Monatsansicht\nSchritte abhaken und Tagesfortschritt auf einen Blick\n„Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nKurze Einführung zum Anhören\nFür Vorlese-Programme (Screenreader) optimiert',
-                whats_new: 'Neu: Tagesfortschritt zum Abhaken (x von y erledigt) mit automatischem Reset um Mitternacht – plus ein ruhiger Modus mit weniger Animationen für mehr Reizarmut.',
+                features: 'Eigener Ablauf für jeden Wochentag (Werktag & Wochenende getrennt)\nErinnerungen melden sich mit Bild, Text und Stimme\nKalender in Tages-, Wochen- und Monatsansicht\nEinträge per Fingertipp verschieben – Uhrzeiten passen sich an\nSchritte abhaken und Tagesfortschritt auf einen Blick\n„Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nEinfache Einrichtung beim ersten Start\nFür Vorlese-Programme (Screenreader) optimiert',
+                whats_new: 'Jetzt bereit zum Testen! Neu: überarbeitete Erinnerungen (melden sich mit Bild, Text und Stimme), Einträge per Fingertipp verschieben und eine einfache Einrichtung beim ersten Start.',
                 screenshots: [], rating_sum: 13, rating_count: 3, sort_order: 1,
                 created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
             },

@@ -17,17 +17,17 @@ values
         'meinplan',
         'MeinPlan',
         'Dein Tag – klar strukturiert und zum Abhaken.',
-        'MeinPlan hilft dir, deinen Alltag klar zu strukturieren. Du legst fuer jeden Wochentag einen eigenen Ablauf an, siehst deinen Plan in Tages-, Wochen- und Monatsansicht und hakst erledigte Schritte einfach ab. Ein ruhiger Modus mit weniger Animationen und eine Einfuehrung zum Anhoeren machen die Bedienung angenehm – besonders fuer Menschen, die von klarer Struktur profitieren, etwa im Autismus-Spektrum.',
+        'MeinPlan hilft dir, deinen Alltag klar zu strukturieren. Du legst fuer jeden Wochentag einen eigenen Ablauf an, siehst deinen Plan in Tages-, Wochen- und Monatsansicht und hakst erledigte Schritte einfach ab. Erinnerungen melden sich zuverlaessig mit Bild, Text und Stimme. Ein ruhiger Modus mit weniger Animationen und eine einfache Einrichtung beim ersten Start machen die Bedienung angenehm – besonders fuer Menschen, die von klarer Struktur profitieren, etwa im Autismus-Spektrum.',
         'community',
         '🗓️',
         'blue',
-        '0.6.0',
+        '0.7.0',
         true,
         'live',
         'https://tagesplaner-aut.pages.dev/',
         'Kostenlos • Laeuft im Browser (Handy & Computer) • BETA • Ohne Werbung',
-        E'Eigener Ablauf fuer jeden Wochentag (Werktag & Wochenende getrennt)\nKalender in Tages-, Wochen- und Monatsansicht\nSchritte abhaken und Tagesfortschritt auf einen Blick\n"Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nKurze Einfuehrung zum Anhoeren\nFuer Vorlese-Programme (Screenreader) optimiert',
-        'Neu: Tagesfortschritt zum Abhaken (x von y erledigt) mit automatischem Reset um Mitternacht – plus ein ruhiger Modus mit weniger Animationen fuer mehr Reizarmut.',
+        E'Eigener Ablauf fuer jeden Wochentag (Werktag & Wochenende getrennt)\nErinnerungen melden sich mit Bild, Text und Stimme\nKalender in Tages-, Wochen- und Monatsansicht\nEintraege per Fingertipp verschieben – Uhrzeiten passen sich an\nSchritte abhaken und Tagesfortschritt auf einen Blick\n"Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nEinfache Einrichtung beim ersten Start\nFuer Vorlese-Programme (Screenreader) optimiert',
+        'Jetzt bereit zum Testen! Neu: ueberarbeitete Erinnerungen (melden sich mit Bild, Text und Stimme), Eintraege per Fingertipp verschieben und eine einfache Einrichtung beim ersten Start.',
         1
     )
 on conflict (slug) do update set
