@@ -58,15 +58,15 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
 
             {/* Beta-Test Banner */}
             {currentPhase === 'beta' && activeProjectTitle && (
-                <div className="bg-amber-400 text-slate-900 py-3 px-4 text-center text-xs sm:text-sm font-semibold relative z-50 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shadow-sm border-b border-amber-500/50">
+                <div className="bg-gradient-to-r from-orange-700 via-orange-600 to-rose-600 text-white py-3 px-4 text-center text-xs sm:text-sm font-bold relative z-50 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shadow-sm border-b border-orange-800/30 [text-shadow:0_1px_2px_rgb(0_0_0_/_0.3)]">
                     <div className="flex items-center justify-center gap-2">
                         <span className="relative flex h-2 w-2 shrink-0">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-50"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-900"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                         </span>
                         <span><strong>{activeProjectTitle}</strong> ist jetzt als BETA zum Testen freigegeben!</span>
                     </div>
-                    <Link to="/apps" className="inline-flex items-center gap-1 font-bold underline decoration-2 underline-offset-2 hover:text-slate-950 mt-1 sm:mt-0">
+                    <Link to="/apps" className="inline-flex items-center gap-1 font-extrabold underline decoration-2 underline-offset-2 hover:text-amber-100 mt-1 sm:mt-0">
                         Jetzt testen & Feedback geben <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                 </div>

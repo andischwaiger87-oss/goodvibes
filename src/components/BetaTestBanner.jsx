@@ -5,7 +5,7 @@ import { FlaskConical, ExternalLink, MessageSquare, ArrowRight } from 'lucide-re
 import { supabase } from '../lib/supabase';
 
 /**
- * Moderner, prominenter Hinweis auf Apps in der Test-Phase (BETA).
+ * Prominenter, markenkonformer Hinweis auf Apps in der Test-Phase (BETA).
  * Lädt die Beta-Apps automatisch – bleibt so auch für künftige Apps korrekt.
  */
 export default function BetaTestBanner() {
@@ -41,47 +41,37 @@ export default function BetaTestBanner() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="relative overflow-hidden rounded-[28px] bg-slate-950 p-7 sm:p-10 shadow-xl shadow-slate-900/20 ring-1 ring-white/10"
+                className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 p-7 sm:p-10 shadow-xl shadow-blue-500/20"
             >
-                {/* Glow-Hintergrund */}
+                {/* Sanfte Glow-Flächen */}
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-                    <div className="absolute -top-24 -right-16 w-80 h-80 rounded-full bg-blue-600/30 blur-3xl" />
-                    <div className="absolute -bottom-24 -left-10 w-72 h-72 rounded-full bg-indigo-500/25 blur-3xl" />
-                    <div className="absolute top-10 left-1/2 w-56 h-56 rounded-full bg-amber-400/10 blur-3xl" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/40 to-transparent" />
+                    <div className="absolute -top-20 -right-16 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+                    <div className="absolute -bottom-24 -left-10 w-72 h-72 rounded-full bg-indigo-300/20 blur-3xl" />
+                    <div className="absolute top-6 left-1/3 w-56 h-56 rounded-full bg-amber-300/10 blur-3xl" />
                 </div>
 
                 <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
                     {/* App-Icon-Kachel */}
                     <div className="shrink-0 mx-auto sm:mx-0">
-                        <div className="relative">
-                            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-amber-400 opacity-70 blur-sm" />
-                            <div className="relative w-20 h-20 rounded-3xl bg-slate-900 ring-1 ring-white/15 flex items-center justify-center text-4xl">
-                                {single ? (single.icon_emoji || '🧪') : '🧪'}
-                            </div>
+                        <div className="w-20 h-20 rounded-3xl bg-white shadow-lg shadow-blue-900/20 ring-1 ring-white/50 flex items-center justify-center text-4xl">
+                            {single ? (single.icon_emoji || '🧪') : '🧪'}
                         </div>
                     </div>
 
                     <div className="flex-grow text-center sm:text-left">
-                        <div className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-amber-400/15 text-amber-300 ring-1 ring-amber-300/30 uppercase tracking-wider mb-3">
+                        <div className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25 uppercase tracking-wider mb-3">
                             <span className="relative flex h-1.5 w-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75" />
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-80" />
                                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-300" />
                             </span>
                             <FlaskConical className="w-3.5 h-3.5" /> Jetzt in der Test-Phase
                         </div>
 
-                        {single ? (
-                            <h2 id="beta-heading" className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                                „{single.name}" ist bereit zum Testen.
-                            </h2>
-                        ) : (
-                            <h2 id="beta-heading" className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                                Neue Apps sind bereit zum Testen.
-                            </h2>
-                        )}
+                        <h2 id="beta-heading" className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                            {single ? `„${single.name}" ist bereit zum Testen.` : 'Neue Apps sind bereit zum Testen.'}
+                        </h2>
 
-                        <p className="text-slate-300 mt-2 leading-relaxed max-w-2xl mx-auto sm:mx-0">
+                        <p className="text-blue-50 mt-2 leading-relaxed max-w-2xl mx-auto sm:mx-0">
                             {single
                                 ? 'Probier die App im echten Alltag aus und sag uns, was gut läuft und was noch fehlt. Dein Feedback macht sie besser – ganz anonym, ohne Anmeldung.'
                                 : 'Probier die Test-Versionen aus und teile deine Meinung – ganz anonym. Deine Rückmeldung verbessert die Apps Schritt für Schritt.'}
@@ -94,13 +84,13 @@ export default function BetaTestBanner() {
                                         href={single.live_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold py-3 px-6 rounded-xl shadow-lg shadow-black/20 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-4 focus:ring-white/30"
+                                        className="inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-900/20 hover:bg-blue-50 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
                                     >
                                         <ExternalLink className="w-5 h-5" /> „{single.name}" testen
                                     </a>
                                     <Link
                                         to={`/apps/${single.slug}`}
-                                        className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-semibold py-3 px-6 rounded-xl ring-1 ring-white/20 hover:bg-white/15 transition-colors focus:outline-none focus:ring-4 focus:ring-white/20"
+                                        className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-semibold py-3 px-6 rounded-xl ring-1 ring-white/30 hover:bg-white/20 transition-colors focus:outline-none focus:ring-4 focus:ring-white/25"
                                     >
                                         <MessageSquare className="w-5 h-5" /> Feedback geben
                                     </Link>
@@ -108,7 +98,7 @@ export default function BetaTestBanner() {
                             ) : (
                                 <Link
                                     to="/apps"
-                                    className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold py-3 px-6 rounded-xl shadow-lg shadow-black/20 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-4 focus:ring-white/30"
+                                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-900/20 hover:bg-blue-50 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
                                 >
                                     Zu den Test-Apps <ArrowRight className="w-5 h-5" />
                                 </Link>

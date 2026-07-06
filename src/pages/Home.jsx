@@ -52,7 +52,7 @@ export default function Home() {
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full max-w-6xl mx-auto">
             {/* Hero Section */}
             <section className="text-center py-12 lg:py-32 relative">
                 <motion.div
