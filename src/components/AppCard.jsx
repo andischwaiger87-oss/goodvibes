@@ -27,9 +27,14 @@ export default function AppCard({ app, index = 0, postCount = 0 }) {
                 aria-label={`${app.name} öffnen – Details und Community ansehen`}
             >
                 <div className="flex items-start gap-4">
-                    {/* App-Icon */}
-                    <div className={cn('shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-sm', accent.icon)} aria-hidden="true">
-                        <span>{app.icon_emoji || '📱'}</span>
+                    {/* App-Avatar (Community-Bezug) */}
+                    <div className="shrink-0 w-16 h-16 rounded-2xl bg-white ring-1 ring-gray-200 shadow-sm flex items-center justify-center overflow-hidden" aria-hidden="true">
+                        <img
+                            src="https://api.dicebear.com/7.x/bottts/svg?seed=avatar-5"
+                            alt=""
+                            className="w-14 h-14"
+                            loading="lazy"
+                        />
                     </div>
 
                     <div className="min-w-0 flex-grow">
