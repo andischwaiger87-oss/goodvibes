@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     PlusCircle, ImagePlus, Code2, X, ShieldCheck, AlertCircle,
-    CheckCircle, Loader2, Info
+    CheckCircle, Loader2, Info, ArrowRight, MessageSquare
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getDeviceId } from '../utils/security';
@@ -142,20 +142,24 @@ export default function PostComposer({ app, onPosted }) {
     };
 
     return (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md ring-1 ring-blue-100 overflow-hidden">
             {/* Auslöser */}
             <button
                 onClick={() => setOpen((v) => !v)}
                 aria-expanded={open}
-                className="w-full flex items-center gap-3 p-4 sm:p-5 text-left hover:bg-gray-50/60 transition-colors"
+                className="w-full flex items-center gap-4 p-5 sm:p-6 text-left bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-200"
             >
-                <div className="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <PlusCircle className="w-5 h-5" />
+                <div className="shrink-0 w-12 h-12 rounded-2xl bg-white/20 ring-1 ring-white/30 flex items-center justify-center">
+                    <MessageSquare className="w-6 h-6 text-white" />
                 </div>
-                <div>
-                    <p className="font-bold text-slate-900 text-sm">Sag deine Meinung</p>
-                    <p className="text-xs text-slate-500">Bewertung, Wunsch, Fehler oder Frage – anonym und in wenigen Sekunden.</p>
+                <div className="flex-grow min-w-0">
+                    <p className="font-extrabold text-white text-base sm:text-lg leading-tight">Sag uns deine Meinung</p>
+                    <p className="text-sm text-blue-50">Bewertung, Wunsch, Fehler oder Frage – anonym und in unter einer Minute.</p>
                 </div>
+                <span className="hidden sm:inline-flex items-center gap-1.5 shrink-0 bg-white text-blue-700 font-bold text-sm px-4 py-2.5 rounded-xl shadow-sm">
+                    {open ? 'Schließen' : 'Jetzt schreiben'}
+                    <ArrowRight className={cn('w-4 h-4 transition-transform', open && 'rotate-90')} />
+                </span>
             </button>
 
             <AnimatePresence>
