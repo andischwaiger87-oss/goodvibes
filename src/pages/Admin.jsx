@@ -408,6 +408,7 @@ function PhaseControlTab({ projects, fetchProjects }) {
         { id: 'submission', label: 'Einreichung', desc: 'Ideen werden gesammelt & es wird abgestimmt.', color: 'bg-blue-50 border-blue-200 text-blue-700' },
         { id: 'review', label: 'Review', desc: 'Abstimmungen geschlossen. Ideen werden gesichtet.', color: 'bg-amber-50 border-amber-200 text-amber-700' },
         { id: 'implementation', label: 'Umsetzung', desc: 'Gewinner-Projekt wird aktiv entwickelt.', color: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
+        { id: 'beta', label: 'Beta-Test', desc: 'App ist als BETA zum Testen freigegeben. Der Herz-Effekt ist pausiert.', color: 'bg-amber-50 border-amber-200 text-amber-700' },
     ];
 
     const activeProjects = projects.filter(p => ['active', 'implementation'].includes(p.status));
@@ -421,7 +422,7 @@ function PhaseControlTab({ projects, fetchProjects }) {
                 </h3>
                 <p className="text-sm text-slate-500 mb-6">Wähle die aktuelle Phase der GoodVibes-Plattform. Die Darstellung im Frontend passt sich automatisch an.</p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     {phases.map(ph => (
                         <button
                             key={ph.id}
@@ -440,7 +441,7 @@ function PhaseControlTab({ projects, fetchProjects }) {
                 </div>
 
                 {/* Active project selection */}
-                {currentPhase === 'implementation' && (
+                {(currentPhase === 'implementation' || currentPhase === 'beta') && (
                     <div className="mb-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
                         <label className="block text-sm font-semibold text-slate-700 mb-2">Aktives Umsetzungsprojekt</label>
                         <select
@@ -462,7 +463,7 @@ function PhaseControlTab({ projects, fetchProjects }) {
                         {saving ? 'Speichere...' : 'Phase speichern'}
                     </button>
 
-                    {activeProjectId && currentPhase === 'implementation' && (
+                    {activeProjectId && (currentPhase === 'implementation' || currentPhase === 'beta') && (
                         <button onClick={markCompleted}
                             className="px-6 py-2.5 bg-yellow-500 text-slate-950 rounded-xl hover:bg-yellow-600 font-semibold text-sm shadow-sm flex items-center gap-2">
                             <Award className="w-4 h-4" /> Projekt als fertig markieren

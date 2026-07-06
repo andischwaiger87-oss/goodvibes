@@ -97,7 +97,7 @@ const initMockDatabase = () => {
     // 2. Initial App Settings (Current Phase: Implementation)
     if (!localStorage.getItem('gv_mock_app_settings')) {
         const initialSettings = {
-            current_phase: 'implementation',
+            current_phase: 'beta',
             active_project_id: '11111111-1111-1111-1111-111111111111'
         };
         localStorage.setItem('gv_mock_app_settings', JSON.stringify(initialSettings));

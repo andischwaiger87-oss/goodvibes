@@ -43,6 +43,8 @@ export default function Home() {
                 return 'Abstimmungsrunde beendet';
             case 'implementation':
                 return 'Wir setzen aktuell eine Idee um';
+            case 'beta':
+                return 'Beta-Test läuft – jetzt mittesten';
             case 'submission':
             default:
                 return 'Wir sammeln jetzt Ideen';

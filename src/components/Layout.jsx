@@ -56,6 +56,22 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                 </div>
             )}
 
+            {/* Beta-Test Banner */}
+            {currentPhase === 'beta' && activeProjectTitle && (
+                <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-white py-3 px-4 text-center text-xs sm:text-sm font-semibold relative z-50 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shadow-sm border-b border-amber-400/40">
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="relative flex h-2 w-2 shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </span>
+                        <span><strong>{activeProjectTitle}</strong> ist jetzt als BETA zum Testen freigegeben!</span>
+                    </div>
+                    <Link to="/apps" className="underline hover:text-amber-100 inline-flex items-center gap-1 font-bold mt-1 sm:mt-0">
+                        Jetzt testen & Feedback geben <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                </div>
+            )}
+
             {/* Main Navbar container */}
             <nav className="w-full bg-white/85 backdrop-blur-md border-b border-gray-100/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,6 +97,11 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                                 {currentPhase === 'implementation' && (
                                     <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold border border-blue-200 uppercase tracking-wider hidden sm:inline-block">
                                         Umsetzung
+                                    </span>
+                                )}
+                                {currentPhase === 'beta' && (
+                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold border border-amber-200 uppercase tracking-wider hidden sm:inline-block">
+                                        Beta
                                     </span>
                                 )}
                             </span>
@@ -230,7 +251,7 @@ export default function Layout({ children }) {
     }, []);
 
     // SOTA Mobile-Fix: Großzügigeres Padding-Top (pt-44) auf Mobile für zweizeilige Banner
-    const paddingTopClass = (currentPhase === 'implementation' && activeProjectTitle) || currentPhase === 'review'
+    const paddingTopClass = ((currentPhase === 'implementation' || currentPhase === 'beta') && activeProjectTitle) || currentPhase === 'review'
         ? "pt-44 sm:pt-32 md:pt-36"
         : "pt-24 md:pt-28";
 
