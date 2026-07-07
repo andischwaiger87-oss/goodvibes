@@ -84,8 +84,8 @@ export default function AppDetail() {
             <div className="elgato-card p-6 sm:p-8 relative overflow-hidden">
                 <div className={cn('absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r', accent.ring)} />
                 <div className="flex flex-col sm:flex-row gap-6">
-                    <div className={cn('shrink-0 w-24 h-24 rounded-3xl flex items-center justify-center text-5xl shadow-sm mx-auto sm:mx-0', accent.icon)} aria-hidden="true">
-                        {app.icon_emoji || '📱'}
+                    <div className="shrink-0 w-24 h-24 rounded-3xl bg-white ring-1 ring-gray-200 shadow-sm flex items-center justify-center overflow-hidden mx-auto sm:mx-0" aria-hidden="true">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=avatar-5" alt="" className="w-20 h-20" loading="lazy" />
                     </div>
 
                     <div className="flex-grow min-w-0 text-center sm:text-left">

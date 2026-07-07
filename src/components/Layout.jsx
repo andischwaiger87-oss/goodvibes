@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Menu, X, ArrowRight, Activity, Award } from 'lucide-react';
+import { Heart, Menu, X, ArrowRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { supabase } from '../lib/supabase';
 import AntigravityCursorEffect from './AntigravityCursorEffect';
@@ -100,7 +100,7 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                                     </span>
                                 )}
                                 {currentPhase === 'beta' && (
-                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold border border-amber-200 uppercase tracking-wider hidden sm:inline-block">
+                                    <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold border border-blue-200 uppercase tracking-wider hidden sm:inline-block">
                                         Beta
                                     </span>
                                 )}
@@ -122,8 +122,6 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                                         link.isShowcase && "text-slate-600 flex items-center gap-1"
                                     )}
                                 >
-                                    {link.isStatus && <Activity className="w-4 h-4 text-indigo-500 animate-pulse" />}
-                                    {link.isShowcase && <Award className="w-4 h-4 text-yellow-600" />}
                                     {link.label}
                                     {isActive(link.path) && (
                                         <motion.span
@@ -174,8 +172,6 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                                                 : "text-slate-600 hover:bg-gray-50 hover:text-slate-900"
                                         )}
                                     >
-                                        {link.isStatus && <Activity className="w-5 h-5 text-indigo-500 animate-pulse" />}
-                                        {link.isShowcase && <Award className="w-5 h-5 text-yellow-600" />}
                                         {link.label}
                                     </Link>
                                 ))}
