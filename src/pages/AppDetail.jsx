@@ -4,18 +4,20 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import {
     ArrowLeft, ExternalLink, FlaskConical, CheckCircle2, Sparkles,
-    Info, ImageOff, ShieldCheck
+    Info, ImageOff, ShieldCheck, Maximize2
 } from 'lucide-react';
-import { getAccent, averageRating } from '../utils/apps';
+import { getAccent, averageRating, normalizeScreenshots, screenshotAlt, screenshotFileName } from '../utils/apps';
 import { getCategoryLabel } from '../utils/categories';
 import StarRating from '../components/StarRating';
 import CommunityFeed from '../components/CommunityFeed';
+import Lightbox from '../components/Lightbox';
 import { cn } from '../utils/cn';
 
 export default function AppDetail() {
     const { slug } = useParams();
     const [app, setApp] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [lightboxIndex, setLightboxIndex] = useState(null);
 
     useEffect(() => { fetchApp(); }, [slug]);
 
@@ -54,7 +56,7 @@ export default function AppDetail() {
     const accent = getAccent(app.accent);
     const avg = averageRating(app);
     const features = (app.features || '').split('\n').map((f) => f.trim()).filter(Boolean);
-    const screenshots = Array.isArray(app.screenshots) ? app.screenshots : [];
+    const screenshots = normalizeScreenshots(app.screenshots);
 
     return (
         <div className="max-w-5xl mx-auto py-8 sm:py-12 px-4">
@@ -182,14 +184,26 @@ export default function AppDetail() {
                 <h2 id="bilder-heading" className="text-lg font-bold text-slate-900 mb-3">Vorschau</h2>
                 {screenshots.length > 0 ? (
                     <div className="flex gap-4 overflow-x-auto pb-3 snap-x">
-                        {screenshots.map((src, i) => (
-                            <img
+                        {screenshots.map((shot, i) => (
+                            <button
                                 key={i}
-                                src={src}
-                                alt={`Bildschirmfoto ${i + 1} der App ${app.name}`}
-                                className="h-72 rounded-xl border border-gray-200 shadow-sm snap-start shrink-0"
-                                loading="lazy"
-                            />
+                                type="button"
+                                onClick={() => setLightboxIndex(i)}
+                                className="group relative shrink-0 snap-start rounded-xl overflow-hidden border border-gray-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-100"
+                                aria-label={`${screenshotAlt(app, shot, i)} – groß ansehen`}
+                            >
+                                <img
+                                    src={shot.src}
+                                    alt={screenshotAlt(app, shot, i)}
+                                    title={screenshotFileName(app, shot, i)}
+                                    className="h-72 w-auto object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                    loading="lazy"
+                                />
+                                <span className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors" aria-hidden="true" />
+                                <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-lg bg-slate-900/70 text-white text-[11px] font-semibold px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
+                                    <Maximize2 className="w-3.5 h-3.5" /> Ansehen
+                                </span>
+                            </button>
                         ))}
                     </div>
                 ) : (
@@ -211,6 +225,15 @@ export default function AppDetail() {
 
             {/* Community-Bereich (Forum / Chat) */}
             <CommunityFeed app={app} />
+
+            {lightboxIndex !== null && screenshots.length > 0 && (
+                <Lightbox
+                    shots={screenshots}
+                    startIndex={lightboxIndex}
+                    app={app}
+                    onClose={() => setLightboxIndex(null)}
+                />
+            )}
         </div>
     );
 }

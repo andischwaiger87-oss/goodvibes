@@ -5,7 +5,7 @@ import {
     Ban, ShieldCheck, Pin, PinOff, CornerDownRight, MessageSquare, Loader2, RefreshCw,
     ImagePlus, ImageOff
 } from 'lucide-react';
-import { getPostType, POST_STATUS } from '../../utils/apps';
+import { getPostType, POST_STATUS, normalizeScreenshots } from '../../utils/apps';
 import { categoryLabels } from '../../utils/categories';
 import { avatarUrl, moderateText, sanitizeImage } from '../../utils/moderation';
 import { cn } from '../../utils/cn';
@@ -118,7 +118,7 @@ export function AppManagementTab() {
 }
 
 function AppEditor({ initial, onSave, onCancel }) {
-    const [form, setForm] = useState({ ...initial, screenshots: Array.isArray(initial.screenshots) ? initial.screenshots : [] });
+    const [form, setForm] = useState({ ...initial, screenshots: normalizeScreenshots(initial.screenshots) });
     const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
     const input = 'w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none';
 
@@ -133,7 +133,7 @@ function AppEditor({ initial, onSave, onCancel }) {
         const cleaned = [];
         for (const file of files) {
             const res = await sanitizeImage(file);
-            if (res.ok) cleaned.push(res.dataUrl);
+            if (res.ok) cleaned.push({ src: res.dataUrl, alt: '', name: '' });
             else setImgError(res.reason);
         }
         if (cleaned.length) set('screenshots', [...(form.screenshots || []), ...cleaned]);
@@ -148,6 +148,9 @@ function AppEditor({ initial, onSave, onCancel }) {
         if (j < 0 || j >= arr.length) return;
         [arr[idx], arr[j]] = [arr[j], arr[idx]];
         set('screenshots', arr);
+    };
+    const setScreenshotField = (idx, key, value) => {
+        set('screenshots', (form.screenshots || []).map((sh, i) => (i === idx ? { ...sh, [key]: value } : sh)));
     };
 
     return (
@@ -209,17 +212,25 @@ function AppEditor({ initial, onSave, onCancel }) {
                     {/* Vorschau-Bilder (Screenshots) */}
                     <div>
                         <label className="text-xs font-semibold text-slate-600">Vorschau-Bilder</label>
-                        <p className="text-[11px] text-slate-400 mb-2">PNG/JPG/WEBP. Werden sicher neu gespeichert (versteckte Daten & Metadaten entfernt). Reihenfolge per Pfeilen.</p>
+                        <p className="text-[11px] text-slate-400 mb-2">PNG/JPG/WEBP. Werden sicher neu gespeichert (versteckte Daten & Metadaten entfernt). Gib pro Bild einen Alt-Text an (für Screenreader & SEO), sortiere per Pfeilen.</p>
 
                         {(form.screenshots || []).length > 0 && (
-                            <div className="flex flex-wrap gap-3 mb-3">
-                                {form.screenshots.map((src, idx) => (
-                                    <div key={idx} className="relative group">
-                                        <img src={src} alt={`Vorschau ${idx + 1}`} className="h-28 rounded-lg border border-gray-200" />
-                                        <div className="absolute inset-x-0 bottom-0 flex justify-between p-1 bg-black/40 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button type="button" onClick={() => moveScreenshot(idx, -1)} className="text-white text-xs px-1.5 rounded hover:bg-white/20" aria-label="Nach vorne">◀</button>
-                                            <button type="button" onClick={() => removeScreenshot(idx)} className="text-white text-xs px-1.5 rounded hover:bg-red-500/60" aria-label="Bild entfernen">✕</button>
-                                            <button type="button" onClick={() => moveScreenshot(idx, 1)} className="text-white text-xs px-1.5 rounded hover:bg-white/20" aria-label="Nach hinten">▶</button>
+                            <div className="space-y-2.5 mb-3">
+                                {form.screenshots.map((shot, idx) => (
+                                    <div key={idx} className="flex gap-3 items-start bg-gray-50 border border-gray-200 rounded-lg p-2.5">
+                                        <img src={shot.src} alt={shot.alt || `Vorschau ${idx + 1}`} className="h-20 w-auto rounded-md border border-gray-200 shrink-0" />
+                                        <div className="flex-grow min-w-0 space-y-1.5">
+                                            <input
+                                                value={shot.alt || ''}
+                                                onChange={(e) => setScreenshotField(idx, 'alt', e.target.value)}
+                                                placeholder="Alt-Text: Was ist auf dem Bild zu sehen?"
+                                                className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none"
+                                            />
+                                            <div className="flex items-center gap-1">
+                                                <button type="button" onClick={() => moveScreenshot(idx, -1)} className="text-xs px-2 py-1 rounded border border-gray-200 text-slate-600 hover:bg-white" aria-label="Nach vorne">◀</button>
+                                                <button type="button" onClick={() => moveScreenshot(idx, 1)} className="text-xs px-2 py-1 rounded border border-gray-200 text-slate-600 hover:bg-white" aria-label="Nach hinten">▶</button>
+                                                <button type="button" onClick={() => removeScreenshot(idx)} className="text-xs px-2 py-1 rounded border border-red-100 text-red-600 hover:bg-red-50 ml-auto inline-flex items-center gap-1" aria-label="Bild entfernen"><Trash2 className="w-3.5 h-3.5" /> Entfernen</button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

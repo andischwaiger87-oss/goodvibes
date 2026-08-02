@@ -53,3 +53,41 @@ export function timeAgo(dateStr) {
     const mo = Math.floor(d / 30);
     return `vor ${mo} Monat${mo > 1 ? 'en' : ''}`;
 }
+
+// -------------------------------------------------------------
+// SCREENSHOTS: Normalisierung, Alt-Text & SEO-Dateiname
+// -------------------------------------------------------------
+// Screenshots koennen als reine Strings (alt) oder als Objekte
+// { src, alt, name } gespeichert sein. Diese Helfer vereinheitlichen das.
+export function normalizeScreenshots(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+        .map((s) => (typeof s === 'string'
+            ? { src: s, alt: '', name: '' }
+            : { src: s?.src || '', alt: s?.alt || '', name: s?.name || '' }))
+        .filter((s) => s.src);
+}
+
+export function slugifyName(str) {
+    return (str || '')
+        .toLowerCase()
+        .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+        .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim().replace(/\s+/g, '-').replace(/-+/g, '-')
+        .slice(0, 60);
+}
+
+// Barrierefreier Alt-Text: gepflegter Text, sonst sinnvoller Fallback.
+export function screenshotAlt(app, shot, i) {
+    const custom = (shot?.alt || '').trim();
+    if (custom) return custom;
+    return `Bildschirmfoto ${i + 1} der App ${app?.name || ''}`.trim();
+}
+
+// SEO-freundlicher Dateiname (fuer Download/Title): app-slug + Beschreibung.
+export function screenshotFileName(app, shot, i) {
+    const base = slugifyName(shot?.name || shot?.alt) || `screenshot-${i + 1}`;
+    const prefix = slugifyName(app?.slug || app?.name) || 'app';
+    return `${prefix}-${base}.png`;
+}

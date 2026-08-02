@@ -118,8 +118,8 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                                         isActive(link.path) 
                                             ? "text-blue-600" 
                                             : "text-slate-500 hover:text-slate-900",
-                                        link.isStatus && "text-indigo-600 font-semibold flex items-center gap-1",
-                                        link.isShowcase && "text-slate-600 flex items-center gap-1"
+                                        link.isStatus && "text-indigo-600 font-semibold",
+                                        link.isShowcase && "text-slate-600"
                                     )}
                                 >
                                     {link.label}
