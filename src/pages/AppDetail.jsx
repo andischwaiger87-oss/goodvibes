@@ -11,6 +11,8 @@ import { getCategoryLabel } from '../utils/categories';
 import StarRating from '../components/StarRating';
 import CommunityFeed from '../components/CommunityFeed';
 import Lightbox from '../components/Lightbox';
+import { useSeo } from '../components/Seo';
+import { COMMUNITY_AVATAR } from '../utils/avatar';
 import { cn } from '../utils/cn';
 
 export default function AppDetail() {
@@ -32,6 +34,17 @@ export default function AppDetail() {
             setLoading(false);
         }
     };
+
+    // SEO: echter App-Name/Beschreibung, sobald geladen.
+    // Hook laeuft immer (vor den fruehen returns), damit die Hook-Reihenfolge stabil bleibt.
+    useSeo({
+        title: app ? `${app.name} — App & Community | GoodVibes` : undefined,
+        description: app
+            ? (app.tagline || app.description || '').replace(/\s+/g, ' ').trim().slice(0, 155)
+            : undefined,
+        // Nicht gefundene Apps nicht indexieren lassen
+        noindex: !loading && !app ? true : undefined,
+    });
 
     if (loading) {
         return (
@@ -87,7 +100,7 @@ export default function AppDetail() {
                 <div className={cn('absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r', accent.ring)} />
                 <div className="flex flex-col sm:flex-row gap-6">
                     <div className="shrink-0 w-24 h-24 rounded-3xl bg-white ring-1 ring-gray-200 shadow-sm flex items-center justify-center overflow-hidden mx-auto sm:mx-0" aria-hidden="true">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=avatar-5" alt="" className="w-20 h-20" loading="lazy" />
+                        <img src={COMMUNITY_AVATAR} alt="" className="w-20 h-20" loading="lazy" />
                     </div>
 
                     <div className="flex-grow min-w-0 text-center sm:text-left">

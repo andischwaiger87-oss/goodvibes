@@ -5,15 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryLabel } from '../utils/categories';
 import { cn } from '../utils/cn';
 import { AppManagementTab, CommunityModerationTab, BlocklistTab } from '../components/admin/CommunityAdmin';
+import { avatarUrl } from '../utils/avatar';
 
-const getAvatarUrl = (seedString, fallbackId = 'default') => {
-    const seed = String(seedString || fallbackId);
-    if (seed.includes(':')) {
-        const [style, actualSeed] = seed.split(':');
-        return `https://api.dicebear.com/7.x/${style}/svg?seed=${actualSeed}`;
-    }
-    return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
-};
+// Avatare kommen lokal aus /public/avatars (kein Drittanbieter).
+const getAvatarUrl = (seedString, fallbackId = 'default') => avatarUrl(seedString, fallbackId);
 
 // ──────────────────────────────────────────────
 // Tab 1: Project Moderation (existing functionality)

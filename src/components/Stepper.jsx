@@ -4,6 +4,7 @@ import { Check, ChevronRight, ChevronLeft, ShieldCheck, User, Lightbulb, Heart, 
 import { cn } from '../utils/cn';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getDeviceId } from '../utils/security';
+import { avatarUrl } from '../utils/avatar';
 
 const steps = [
   { id: 1, title: 'Regeln', icon: ShieldCheck },
@@ -138,10 +139,8 @@ export default function Stepper() {
   );
 
   // Helper to parse avatar format
-  const getAvatarUrl = (avatarString) => {
-      const [style, seed] = avatarString.split(':');
-      return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
-  };
+  // Avatare kommen lokal aus /public/avatars (kein Drittanbieter).
+  const getAvatarUrl = (avatarString) => avatarUrl(avatarString);
 
   if (isSuccess) {
     return (

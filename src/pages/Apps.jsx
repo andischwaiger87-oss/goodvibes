@@ -5,8 +5,14 @@ import { Search, LayoutGrid, ShieldCheck, Heart, MessagesSquare } from 'lucide-r
 import AppCard from '../components/AppCard';
 import { categoryLabels } from '../utils/categories';
 import { cn } from '../utils/cn';
+import { useSeo } from '../components/Seo';
 
 export default function Apps() {
+    useSeo({
+        title: 'Apps & Community — GoodVibes',
+        description: 'Alle GoodVibes-Apps im Überblick: ausprobieren, bewerten, Wünsche äußern und Fehler melden — anonym und ohne Anmeldung.',
+    });
+
     const [apps, setApps] = useState([]);
     const [postCounts, setPostCounts] = useState({});
     const [loading, setLoading] = useState(true);

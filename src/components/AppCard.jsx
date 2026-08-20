@@ -6,6 +6,7 @@ import { getAccent, averageRating } from '../utils/apps';
 import { getCategoryLabel } from '../utils/categories';
 import StarRating from './StarRating';
 import { cn } from '../utils/cn';
+import { COMMUNITY_AVATAR } from '../utils/avatar';
 
 /**
  * Eine App-Karte im Play-Store-Stil für die Übersicht.
@@ -30,7 +31,7 @@ export default function AppCard({ app, index = 0, postCount = 0 }) {
                     {/* App-Avatar (Community-Bezug) */}
                     <div className="shrink-0 w-16 h-16 rounded-2xl bg-white ring-1 ring-gray-200 shadow-sm flex items-center justify-center overflow-hidden" aria-hidden="true">
                         <img
-                            src="https://api.dicebear.com/7.x/bottts/svg?seed=avatar-5"
+                            src={COMMUNITY_AVATAR}
                             alt=""
                             className="w-14 h-14"
                             loading="lazy"

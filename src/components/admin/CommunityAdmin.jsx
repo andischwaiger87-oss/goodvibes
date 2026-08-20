@@ -5,7 +5,7 @@ import {
     Ban, ShieldCheck, Pin, PinOff, CornerDownRight, MessageSquare, Loader2, RefreshCw,
     ImagePlus, ImageOff
 } from 'lucide-react';
-import { getPostType, POST_STATUS, normalizeScreenshots } from '../../utils/apps';
+import { getPostType, POST_STATUS, normalizeScreenshots, slugifyName } from '../../utils/apps';
 import { categoryLabels } from '../../utils/categories';
 import { avatarUrl, moderateText, sanitizeImage } from '../../utils/moderation';
 import { cn } from '../../utils/cn';
@@ -45,8 +45,18 @@ export function AppManagementTab() {
 
     const save = async (form) => {
         setMsg('');
-        if (!form.name.trim() || !form.slug.trim()) { setMsg('Name und Kürzel (slug) sind Pflicht.'); return; }
-        const slug = form.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        if (!form.name.trim()) { setMsg('Bitte gib einen Namen an.'); return; }
+
+        const raw = (form.slug || '').trim();
+        // Schutz: Wurde versehentlich eine ganze Web-Adresse ins Kürzel-Feld kopiert?
+        if (/^https?:\/\//i.test(raw) || raw.includes('/') || raw.includes('.')) {
+            setMsg('Das Kürzel ist keine Web-Adresse. Nutze ein kurzes Wort wie „meinplan" – der Link zur App gehört ins Feld „Link zur App".');
+            return;
+        }
+        // Leeres Kürzel? Dann automatisch aus dem Namen ableiten.
+        const slug = slugifyName(raw) || slugifyName(form.name);
+        if (!slug) { setMsg('Bitte gib ein Kürzel an (nur Buchstaben, Zahlen und Bindestriche).'); return; }
+
         const payload = { ...form, slug };
 
         if (form.id) {
@@ -162,8 +172,33 @@ function AppEditor({ initial, onSave, onCancel }) {
                 </div>
                 <div className="p-5 space-y-4">
                     <div className="grid grid-cols-2 gap-3">
-                        <div><label className="text-xs font-semibold text-slate-600">Name</label><input className={input} value={form.name} onChange={(e) => set('name', e.target.value)} /></div>
-                        <div><label className="text-xs font-semibold text-slate-600">Kürzel (URL)</label><input className={input} value={form.slug} onChange={(e) => set('slug', e.target.value)} placeholder="z. B. meinplan" /></div>
+                        <div>
+                            <label className="text-xs font-semibold text-slate-600">Name</label>
+                            <input
+                                className={input}
+                                value={form.name}
+                                onChange={(e) => {
+                                    const name = e.target.value;
+                                    // Bei neuen Apps das Kürzel automatisch mitführen
+                                    setForm((f) => ({
+                                        ...f,
+                                        name,
+                                        slug: (!f.id && (!f.slug || f.slug === slugifyName(f.name))) ? slugifyName(name) : f.slug,
+                                    }));
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-semibold text-slate-600">Kürzel (URL)</label>
+                            <input
+                                className={input}
+                                value={form.slug}
+                                onChange={(e) => set('slug', e.target.value)}
+                                onBlur={(e) => set('slug', slugifyName(e.target.value))}
+                                placeholder="z. B. meinplan"
+                            />
+                            <p className="text-[11px] text-slate-400 mt-1">Kurzes Wort, keine Web-Adresse. Ergibt: /apps/{form.slug || 'meinplan'}</p>
+                        </div>
                     </div>
                     <div><label className="text-xs font-semibold text-slate-600">Kurzbeschreibung (ein Satz)</label><input className={input} value={form.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
                     <div><label className="text-xs font-semibold text-slate-600">Beschreibung</label><textarea rows="3" className={input} value={form.description} onChange={(e) => set('description', e.target.value)} /></div>

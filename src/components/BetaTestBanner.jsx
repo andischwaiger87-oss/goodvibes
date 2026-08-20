@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FlaskConical, ExternalLink, MessageSquare, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { COMMUNITY_AVATAR } from '../utils/avatar';
 
 /**
  * Prominenter, markenkonformer Hinweis auf Apps in der Test-Phase (BETA).
@@ -55,7 +56,7 @@ export default function BetaTestBanner() {
                     <div className="shrink-0 mx-auto sm:mx-0">
                         <div className="w-20 h-20 rounded-3xl bg-white shadow-lg shadow-blue-900/20 ring-1 ring-white/50 flex items-center justify-center overflow-hidden">
                             <img
-                                src="https://api.dicebear.com/7.x/bottts/svg?seed=avatar-5"
+                                src={COMMUNITY_AVATAR}
                                 alt=""
                                 aria-hidden="true"
                                 className="w-16 h-16"

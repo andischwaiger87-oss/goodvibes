@@ -47,16 +47,12 @@ export function generateAvatarSeed(name) {
 }
 
 /**
- * Baut eine Avatar-Bild-URL (Dicebear) aus einem Seed.
+ * Baut eine Avatar-Bild-URL aus einem Seed.
+ * Die Bilder liegen lokal unter /public/avatars – kein Drittanbieter,
+ * es werden keine Besucherdaten nach außen gegeben.
+ * (Umsetzung siehe src/utils/avatar.js)
  */
-export function avatarUrl(seedString, fallback = 'gast') {
-    const seed = String(seedString || fallback);
-    if (seed.includes(':')) {
-        const [style, actualSeed] = seed.split(':');
-        return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(actualSeed)}`;
-    }
-    return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
-}
+export { avatarUrl } from './avatar';
 
 // -------------------------------------------------------------
 // 2) EXTERNE LINKS ERKENNEN & ENTFERNEN
