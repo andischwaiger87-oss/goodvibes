@@ -60,6 +60,8 @@ export function avatarUrl(seedString, fallback = 'gast') {
 }
 
 /**
- * Fester Community-Avatar für Kopfbereiche (App-Karte, Beta-Hinweis).
+ * Fester Community-Avatar für Kopfbereiche (App-Karte, App-Detail, Hinweise).
+ * Bewusst eine eigene Datei: Das ist genau der Avatar, den GoodVibes
+ * vorher über den Fremdanbieter geladen hat (Seed „avatar-5") – jetzt lokal.
  */
-export const COMMUNITY_AVATAR = avatarUrl('bottts:avatar-5');
+export const COMMUNITY_AVATAR = '/avatars/community.svg';

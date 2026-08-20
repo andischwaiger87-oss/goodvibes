@@ -97,7 +97,7 @@ const initMockDatabase = () => {
     // 2. Initial App Settings (Current Phase: Implementation)
     if (!localStorage.getItem('gv_mock_app_settings')) {
         const initialSettings = {
-            current_phase: 'beta',
+            current_phase: 'submission',
             active_project_id: '11111111-1111-1111-1111-111111111111'
         };
         localStorage.setItem('gv_mock_app_settings', JSON.stringify(initialSettings));
@@ -156,11 +156,11 @@ const initMockDatabase = () => {
                 tagline: 'Dein Tag – klar strukturiert und zum Abhaken.',
                 description: 'MeinPlan hilft dir, deinen Alltag klar zu strukturieren. Du legst für jeden Wochentag einen eigenen Ablauf an, siehst deinen Plan in Tages-, Wochen- und Monatsansicht und hakst erledigte Schritte einfach ab. Ein ruhiger Modus mit weniger Animationen und eine Einführung zum Anhören machen die Bedienung angenehm – besonders für Menschen, die von klarer Struktur profitieren, etwa im Autismus-Spektrum.',
                 category: 'community', icon_emoji: '🗓️', accent: 'blue',
-                version: '0.7.0', is_beta: true, status: 'live',
+                version: '1.0.0', is_beta: false, status: 'live',
                 live_url: 'https://tagesplaner-aut.pages.dev/',
-                scope: 'Kostenlos • Läuft im Browser (Handy & Computer) • BETA • Ohne Werbung',
+                scope: 'Kostenlos • Läuft im Browser (Handy & Computer) • Ohne Anmeldung • Ohne Werbung',
                 features: 'Eigener Ablauf für jeden Wochentag (Werktag & Wochenende getrennt)\nErinnerungen melden sich mit Bild, Text und Stimme\nKalender in Tages-, Wochen- und Monatsansicht\nEinträge per Fingertipp verschieben – Uhrzeiten passen sich an\nSchritte abhaken und Tagesfortschritt auf einen Blick\n„Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nEinfache Einrichtung beim ersten Start\nFür Vorlese-Programme (Screenreader) optimiert',
-                whats_new: 'Jetzt bereit zum Testen! Neu: überarbeitete Erinnerungen (melden sich mit Bild, Text und Stimme), Einträge per Fingertipp verschieben und eine einfache Einrichtung beim ersten Start.',
+                whats_new: 'Die Testphase ist abgeschlossen. MeinPlan ist ab sofort frei nutzbar – dauerhaft kostenlos, ohne Anmeldung und ohne Werbung. Dein Feedback ist weiterhin willkommen und fließt in künftige Verbesserungen ein.',
                 screenshots: [], rating_sum: 13, rating_count: 3, sort_order: 1,
                 created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
             },
