@@ -17,11 +17,13 @@ import CompletedProjects from './pages/CompletedProjects';
 import ProjectDetail from './pages/ProjectDetail';
 import Apps from './pages/Apps';
 import AppDetail from './pages/AppDetail';
+import Seo from './components/Seo';
 
 function App() {
     return (
         <Router>
             <ScrollToTop />
+            <Seo />
             <IntroWizard />
             <Layout>
                 <Routes>
