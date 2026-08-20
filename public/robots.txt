@@ -1,0 +1,57 @@
+# robots.txt — goodvibes.mosaik-design.at
+# Stand: 2026-08-20
+#
+# Ablage: public/robots.txt im Projekt, damit Vite die Datei
+# unveraendert nach dist/ kopiert. Nur so wird sie vor dem
+# SPA-Fallback ausgeliefert.
+
+# ------------------------------------------------------------------
+# Alle Bots, die keine eigene Gruppe weiter unten haben.
+# Die Content-Signal-Zeile gilt genau fuer diese Gruppe — deshalb
+# bekommen Antwortmaschinen bewusst KEINE eigene Gruppe.
+# ------------------------------------------------------------------
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+Allow: /
+
+# ------------------------------------------------------------------
+# Reine Trainings-Crawler.
+# Google-Extended bleibt bewusst frei: es steuert auch das Grounding
+# in den Gemini-Apps, eine Sperre wuerde GoodVibes aus Gemini-Antworten
+# entfernen.
+# ------------------------------------------------------------------
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+# ------------------------------------------------------------------
+# Massen-Scraper ohne Gegenwert
+# ------------------------------------------------------------------
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Omgili
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Timpibot
+Disallow: /

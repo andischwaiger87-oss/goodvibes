@@ -1,0 +1,14 @@
+# Nur die pages.dev-Adressen aus dem Index nehmen.
+# Der Doppelpunkt vor project und version ist ein Platzhalter
+# von Cloudflare Pages, kein Tippfehler.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+# Sicherheits-Header fuer alle Adressen, auch die eigene Subdomain.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN

@@ -1,0 +1,30 @@
+# GoodVibes — soziale App-Ideen gemeinsam auswählen und umsetzen
+
+> GoodVibes ist eine Plattform von mosaik – Andreas Schwaiger aus Unken, Salzburg, Österreich. Nutzerinnen und Nutzer reichen Ideen für soziale Anwendungen ein, die Gemeinschaft stimmt darüber ab, und die ausgewählte Idee wird kostenlos als Web-App umgesetzt. Einreichung und Abstimmung sind anonym und ohne Anmeldung möglich; persönliche Daten werden nicht gespeichert. Eingereichte Ideen sollen anderen Menschen oder der Umwelt helfen. Die fertigen Apps laufen im Browser und sind frei zugänglich.
+
+Betreiber: mosaik – Andreas Schwaiger, Einzelunternehmen
+Anschrift: Niederland 162, 5091 Unken, Salzburg, Österreich
+Telefon: +43 677 640 543 47
+E-Mail: hallo@mosaik-design.at
+Sprache: Deutsch
+Stand: 2026-08-20
+
+## Mitmachen
+
+- [Startseite](https://goodvibes.mosaik-design.at/): Einstieg mit Erklärung des Ablaufs
+- [Idee einreichen](https://goodvibes.mosaik-design.at/submission): Formular für neue Projektvorschläge samt Regeln, die eine Idee erfüllen muss
+- [Abstimmung](https://goodvibes.mosaik-design.at/voting): Auswahl unter den eingereichten Ideen; das Ergebnis wird erst nach der eigenen Stimmabgabe sichtbar
+- [Häufige Fragen](https://goodvibes.mosaik-design.at/faq): Antworten zu Kosten, Auswahlverfahren, Betreiber und Umgang mit eingereichten Ideen
+
+## Projekte
+
+- [Apps](https://goodvibes.mosaik-design.at/apps): Übersicht der GoodVibes-Apps mit Möglichkeit zur Rückmeldung
+- [Projekt-Fortschritt](https://goodvibes.mosaik-design.at/progress): Stand der Umsetzung der aktuell gewählten Idee
+- [Realisierte Projekte](https://goodvibes.mosaik-design.at/projects): abgeschlossene Apps, die aus der Abstimmung hervorgegangen sind
+
+## Optional
+
+- [Impressum](https://goodvibes.mosaik-design.at/imprint): Medieninhaber, Anschrift und Kontaktdaten
+- [Datenschutz](https://goodvibes.mosaik-design.at/privacy): Angaben zur Verarbeitung personenbezogener Daten
+- [mosaik App Showroom](https://apps.mosaik-design.at/apps/soziale-projekte-app/): Projektseite zu GoodVibes im Showroom des Betreibers
+- [mosaik](https://mosaik-design.at/): Hauptwebsite des Betreibers
