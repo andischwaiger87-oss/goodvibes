@@ -65,3 +65,16 @@ export function avatarUrl(seedString, fallback = 'gast') {
  * vorher über den Fremdanbieter geladen hat (Seed „avatar-5") – jetzt lokal.
  */
 export const COMMUNITY_AVATAR = '/avatars/community.svg';
+
+/**
+ * Avatar für einen Projekt-Eintrag (Abstimmung, Showcase, Detailseite).
+ *
+ * Projekte, aus denen bereits eine fertige App entstanden ist, zeigen das
+ * App-Avatar – so sieht z. B. MeinPlan überall gleich aus und ist sofort
+ * wiedererkennbar. Alle übrigen Ideen zeigen das Avatar der Person,
+ * die sie eingereicht hat.
+ */
+export function projectAvatarUrl(project) {
+    if (project?.live_url) return COMMUNITY_AVATAR;
+    return avatarUrl(project?.avatar_seed, project?.id);
+}

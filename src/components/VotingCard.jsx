@@ -6,10 +6,10 @@ import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/sec
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
 import { cn } from '../utils/cn';
-import { avatarUrl } from '../utils/avatar';
+import { projectAvatarUrl } from '../utils/avatar';
 
 // Avatare kommen lokal aus /public/avatars (kein Drittanbieter).
-const getAvatarUrl = (seedString, fallbackId = 'default') => avatarUrl(seedString, fallbackId);
+// Projekte mit fertiger App zeigen das App-Avatar (siehe utils/avatar.js).
 
 export default function VotingCard({ project, onVote, isGlobalPhaseReview = false }) {
     const [hasVoted, setHasVoted] = useState(hasAlreadyVotedLocal(project.id));
@@ -92,7 +92,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                         <div className="p-6 space-y-6">
                             <div className="flex items-center space-x-4">
                                 <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden">
-                                    <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
+                                    <img src={projectAvatarUrl(project)} alt="" className="w-full h-full" />
                                 </div>
                                 <div>
                                     <p className="font-semibold text-slate-900">{project.username}</p>
@@ -176,7 +176,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
 
                     <div className="p-6 flex items-start space-x-4">
                         <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0 opacity-50">
-                            <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
+                            <img src={projectAvatarUrl(project)} alt="" className="w-full h-full" />
                         </div>
                         <div className="flex-grow min-w-0">
                             <h3 className="font-bold text-lg text-slate-600 leading-tight mb-1 line-clamp-2 pr-2 line-through">{project.title}</h3>
@@ -231,7 +231,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                 
                 <div className="p-6 flex items-start space-x-4">
                     <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
-                        <img src={getAvatarUrl(project.avatar_seed, project.id)} alt="" className="w-full h-full" />
+                        <img src={projectAvatarUrl(project)} alt="" className="w-full h-full" />
                     </div>
                     <div className="flex-grow min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                         <div className="min-w-0">

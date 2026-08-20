@@ -8,7 +8,7 @@ import {
     ShieldCheck, Award, Code2
 } from 'lucide-react';
 import { getCategoryLabel } from '../utils/categories';
-import { avatarUrl } from '../utils/avatar';
+import { projectAvatarUrl } from '../utils/avatar';
 import { useSeo } from '../components/Seo';
 
 export default function ProjectDetail() {
@@ -119,7 +119,7 @@ export default function ProjectDetail() {
                     {/* Einreicher mit Avatar */}
                     <div className="flex items-center gap-2.5 mt-4">
                         <img
-                            src={avatarUrl(project.avatar_seed, project.id)}
+                            src={projectAvatarUrl(project)}
                             alt=""
                             aria-hidden="true"
                             className="w-9 h-9 rounded-full bg-white ring-2 ring-white/40 shrink-0"
@@ -173,18 +173,18 @@ export default function ProjectDetail() {
 
             {/* ---------- Beschreibung ---------- */}
             <section className="mt-8" aria-labelledby="worum-heading">
-                <h2 id="worum-heading" className="text-lg font-bold text-slate-900 mb-3">Worum geht es?</h2>
-                <div className="bg-white p-5 sm:p-7 rounded-2xl border border-gray-200 shadow-sm">
-                    <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">{project.description}</p>
+                <h2 id="worum-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-4">Worum geht es?</h2>
+                <div className="bg-white p-5 sm:p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    <RichText text={project.description} />
                 </div>
             </section>
 
             {/* ---------- Nutzen ---------- */}
             {project.benefit && (
                 <section className="mt-6" aria-labelledby="nutzen-heading">
-                    <h2 id="nutzen-heading" className="text-lg font-bold text-slate-900 mb-3">Wem hilft das?</h2>
+                    <h2 id="nutzen-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-4">Wem hilft das?</h2>
                     <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 sm:p-6">
-                        <p className="text-slate-700 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">{project.benefit}</p>
+                        <RichText text={project.benefit} tone="benefit" />
                     </div>
                 </section>
             )}
@@ -192,7 +192,7 @@ export default function ProjectDetail() {
             {/* ---------- Funktionen ---------- */}
             {featureList.length > 0 && (
                 <section className="mt-6" aria-labelledby="funktionen-heading">
-                    <h2 id="funktionen-heading" className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <h2 id="funktionen-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-4 flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-amber-500" aria-hidden="true" /> Das kann die App
                     </h2>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -214,17 +214,17 @@ export default function ProjectDetail() {
                     href={project.live_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-8 flex items-center justify-between gap-4 bg-slate-900 hover:bg-slate-800 transition-colors rounded-2xl p-5 sm:p-6 shadow-lg group"
+                    className="mt-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-700 hover:via-indigo-700 hover:to-violet-700 transition-colors rounded-3xl p-6 sm:p-7 shadow-lg shadow-indigo-500/20 group"
                 >
                     <span className="min-w-0">
                         <span className="block font-extrabold text-white text-base sm:text-lg leading-tight">
                             Lust, {project.title} auszuprobieren?
                         </span>
-                        <span className="block text-slate-300 text-sm mt-0.5">
+                        <span className="block text-blue-100 text-sm mt-1">
                             Öffnet sich direkt im Browser – ohne Installation.
                         </span>
                     </span>
-                    <span className="shrink-0 inline-flex items-center gap-2 bg-white text-slate-900 font-bold text-sm py-3 px-5 rounded-xl group-hover:bg-blue-50 transition-colors">
+                    <span className="shrink-0 inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold text-sm py-3.5 px-6 rounded-xl group-hover:bg-blue-50 transition-colors w-full sm:w-auto">
                         Öffnen <ExternalLink className="w-4 h-4" />
                     </span>
                 </a>
@@ -243,6 +243,75 @@ export default function ProjectDetail() {
 
                 <BugTracker projectId={project.id} />
             </section>
+        </div>
+    );
+}
+
+/**
+ * Wandelt einfachen Text aus der Datenbank in sauber gesetzte Absätze
+ * und Aufzählungen um. Begrenzt die Zeilenlänge auf rund 70 Zeichen –
+ * das ist die für Menschen angenehmste Lesebreite.
+ */
+function RichText({ text, tone = 'default' }) {
+    const raw = String(text || '').replace(/\r\n/g, '\n').trim();
+    if (!raw) return null;
+
+    const bodyClass = tone === 'benefit' ? 'text-slate-700' : 'text-slate-600';
+
+    // In Blöcke teilen (Leerzeile = neuer Absatz)
+    const blocks = raw.split(/\n\s*\n/);
+
+    return (
+        <div className={`max-w-[68ch] ${bodyClass} space-y-4 leading-[1.75]`}>
+            {blocks.map((block, bi) => {
+                const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
+                const isList = lines.length > 1 && lines.every((l) => /^[•\-*]\s?/.test(l));
+
+                // Reine Aufzählung
+                if (isList) {
+                    return (
+                        <ul key={bi} className="space-y-2 pl-1">
+                            {lines.map((l, li) => (
+                                <li key={li} className="flex items-start gap-2.5">
+                                    <span className="mt-[0.6em] w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" aria-hidden="true" />
+                                    <span>{l.replace(/^[•\-*]\s?/, '')}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    );
+                }
+
+                // Kurze Zeile ohne Satzzeichen am Ende = Zwischenüberschrift
+                const isHeading =
+                    lines.length === 1 &&
+                    lines[0].length <= 60 &&
+                    !/[.!?:,]$/.test(lines[0]) &&
+                    blocks.length > 1;
+
+                if (isHeading) {
+                    return (
+                        <h3 key={bi} className="text-base font-bold text-slate-900 pt-2">
+                            {lines[0]}
+                        </h3>
+                    );
+                }
+
+                // Gemischter Block: normale Zeilen + evtl. Aufzählungspunkte
+                return (
+                    <div key={bi} className="space-y-2">
+                        {lines.map((l, li) =>
+                            /^[•\-*]\s?/.test(l) ? (
+                                <div key={li} className="flex items-start gap-2.5 pl-1">
+                                    <span className="mt-[0.6em] w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" aria-hidden="true" />
+                                    <span>{l.replace(/^[•\-*]\s?/, '')}</span>
+                                </div>
+                            ) : (
+                                <p key={li}>{l}</p>
+                            )
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 }

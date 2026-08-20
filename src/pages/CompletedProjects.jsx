@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Award, ArrowRight, Sparkles, ExternalLink, Heart } from 'lucide-react';
 import { getCategoryLabel } from '../utils/categories';
-import { avatarUrl } from '../utils/avatar';
+import { projectAvatarUrl } from '../utils/avatar';
 import { useSeo } from '../components/Seo';
 
 export default function CompletedProjects() {
@@ -98,7 +98,7 @@ export default function CompletedProjects() {
                                 {/* Einreicher mit Avatar – hilft beim Wiedererkennen */}
                                 <div className="flex items-center gap-2.5 mb-4">
                                     <img
-                                        src={avatarUrl(project.avatar_seed, project.id)}
+                                        src={projectAvatarUrl(project)}
                                         alt=""
                                         aria-hidden="true"
                                         className="w-9 h-9 rounded-full bg-gray-50 ring-1 ring-gray-200 shrink-0"
