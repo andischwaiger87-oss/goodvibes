@@ -436,7 +436,7 @@ function PhaseControlTab({ projects, fetchProjects }) {
                 </div>
 
                 {/* Active project selection */}
-                {(currentPhase === 'implementation' || currentPhase === 'beta') && (
+                {(currentPhase === 'implementation' || currentPhase === 'beta' || activeProjectId) && (
                     <div className="mb-6 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
                         <label className="block text-sm font-semibold text-slate-700 mb-2">Aktives Umsetzungsprojekt</label>
                         <select
@@ -458,7 +458,7 @@ function PhaseControlTab({ projects, fetchProjects }) {
                         {saving ? 'Speichere...' : 'Phase speichern'}
                     </button>
 
-                    {activeProjectId && (currentPhase === 'implementation' || currentPhase === 'beta') && (
+                    {activeProjectId && (
                         <button onClick={markCompleted}
                             className="px-6 py-2.5 bg-yellow-500 text-slate-950 rounded-xl hover:bg-yellow-600 font-semibold text-sm shadow-sm flex items-center gap-2">
                             <Award className="w-4 h-4" /> Projekt als fertig markieren

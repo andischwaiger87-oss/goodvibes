@@ -4,11 +4,18 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Award, ArrowRight, Sparkles, ExternalLink, Heart } from 'lucide-react';
 import { getCategoryLabel } from '../utils/categories';
+import { avatarUrl } from '../utils/avatar';
+import { useSeo } from '../components/Seo';
 
 export default function CompletedProjects() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    useSeo({
+        title: 'Umgesetzte Projekte — GoodVibes',
+        description: 'Alle Apps, die durch eure Ideen und Stimmen ausgewählt und kostenlos umgesetzt wurden. Direkt ausprobieren und Feedback geben.',
+    });
 
     useEffect(() => {
         fetchCompletedProjects();
@@ -84,12 +91,23 @@ export default function CompletedProjects() {
                                     </span>
                                 </div>
 
-                                <h3 className="text-2xl font-bold text-slate-900 mb-2 leading-tight group-hover:text-yellow-600 transition-colors">
+                                <h3 className="text-2xl font-bold text-slate-900 mb-3 leading-tight group-hover:text-yellow-600 transition-colors">
                                     {project.title}
                                 </h3>
-                                <p className="text-xs text-slate-400 mb-4">
-                                    Idee von <span className="font-semibold">{project.username}</span>
-                                </p>
+
+                                {/* Einreicher mit Avatar – hilft beim Wiedererkennen */}
+                                <div className="flex items-center gap-2.5 mb-4">
+                                    <img
+                                        src={avatarUrl(project.avatar_seed, project.id)}
+                                        alt=""
+                                        aria-hidden="true"
+                                        className="w-9 h-9 rounded-full bg-gray-50 ring-1 ring-gray-200 shrink-0"
+                                        loading="lazy"
+                                    />
+                                    <p className="text-xs text-slate-500">
+                                        Idee von <span className="font-bold text-slate-700">{project.username}</span>
+                                    </p>
+                                </div>
                                 
                                 <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-6 line-clamp-3">
                                     {project.description}
@@ -103,22 +121,22 @@ export default function CompletedProjects() {
                                 </div>
                             </div>
 
-                            <div className="px-6 py-4 sm:px-8 sm:py-5 border-t border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between gap-4 mt-auto">
+                            <div className="px-5 py-4 sm:px-8 sm:py-5 border-t border-gray-100 bg-gray-50/50 flex flex-wrap items-center gap-3 mt-auto">
                                 {project.live_url && (
                                     <a
                                         href={project.live_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5"
+                                        className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3 px-5 rounded-xl shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-slate-200"
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        App öffnen <ExternalLink className="w-3.5 h-3.5" />
+                                        App öffnen <ExternalLink className="w-4 h-4" />
                                     </a>
                                 )}
                                 
                                 <button
-                                    onClick={() => navigate(`/projects/${project.id}`)}
-                                    className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 text-xs sm:text-sm font-bold rounded-lg flex items-center gap-1.5 shadow-sm hover:shadow transition-all ml-auto"
+                                    onClick={() => navigate(`/projects/${project.slug || project.id}`)}
+                                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-3 bg-white hover:bg-gray-50 text-slate-700 text-sm font-bold rounded-xl border border-gray-200 transition-colors focus:outline-none focus:ring-4 focus:ring-gray-100"
                                 >
                                     Details & Feedback <ArrowRight className="w-4 h-4" />
                                 </button>
