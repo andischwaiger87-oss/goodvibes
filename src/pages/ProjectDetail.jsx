@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import BugTracker from '../components/BugTracker';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
     ArrowLeft, ExternalLink, Heart, Check, Sparkles, MessageSquare,
     ShieldCheck, Award, Code2
@@ -15,6 +15,9 @@ export default function ProjectDetail() {
     const { id } = useParams();
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showSticky, setShowSticky] = useState(false);
+    const heroCtaRef = useRef(null);
+    const reduce = useReducedMotion();
 
     useEffect(() => { fetchProjectDetails(); }, [id]);
 
@@ -52,6 +55,15 @@ export default function ProjectDetail() {
         noindex: !loading && !project ? true : undefined,
     });
 
+    // Mobile Aktionsleiste einblenden, sobald der Hero-Button aus dem Bild scrollt
+    useEffect(() => {
+        const el = heroCtaRef.current;
+        if (!el || typeof IntersectionObserver === 'undefined') return;
+        const io = new IntersectionObserver(([entry]) => setShowSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0));
+        io.observe(el);
+        return () => io.disconnect();
+    }, [project]);
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-32">
@@ -77,172 +89,230 @@ export default function ProjectDetail() {
         .map((f) => f.replace(/^[•\-\s*]+/, '').trim())
         .filter(Boolean);
 
+    const trust = [
+        { icon: Heart, title: 'Kostenlos', desc: 'Ehrenamtlich umgesetzt' },
+        { icon: ShieldCheck, title: 'Ohne Anmeldung', desc: 'Keine persönlichen Daten' },
+        { icon: Code2, title: 'Quelloffen', desc: 'MIT-Lizenz' },
+    ];
+
     return (
-        <div className="max-w-5xl mx-auto py-5 sm:py-10">
+        <div className="max-w-5xl mx-auto py-5 sm:py-10 pb-28 sm:pb-10">
             <Link
                 to="/projects"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-5"
+                className="inline-flex items-center gap-1.5 min-h-[44px] text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-2"
             >
-                <ArrowLeft className="w-4 h-4" /> Alle umgesetzten Projekte
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Alle umgesetzten Projekte
             </Link>
 
-            {/* ---------- Kopfbereich ---------- */}
+            {/* ---------- Hero ---------- */}
             <motion.header
-                initial={{ opacity: 0, y: 12 }}
+                initial={reduce ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 p-6 sm:p-9 shadow-xl shadow-blue-500/20"
+                transition={{ duration: 0.45 }}
+                className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 px-6 py-8 sm:p-12 shadow-xl shadow-indigo-500/20"
             >
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-                    <div className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
-                    <div className="absolute -bottom-24 -left-10 w-64 h-64 rounded-full bg-indigo-300/20 blur-3xl" />
+                    <div className="absolute -top-24 -right-20 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+                    <div className="absolute -bottom-28 -left-16 w-72 h-72 rounded-full bg-violet-300/25 blur-3xl" />
                 </div>
 
-                <div className="relative">
-                    {/* Auszeichnungen */}
-                    <div className="flex flex-wrap items-center gap-2 mb-4">
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-white text-blue-700 uppercase tracking-wider">
-                            <Award className="w-3.5 h-3.5" /> Umgesetzt
-                        </span>
-                        <span className="inline-flex text-[11px] font-semibold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25">
-                            {getCategoryLabel(project.category)}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25">
-                            <Heart className="w-3.5 h-3.5 fill-current" /> {project.votes} Stimmen
-                        </span>
+                <div className="relative flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10">
+                    <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-5">
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-white text-indigo-700 uppercase tracking-wider">
+                                <Award className="w-3.5 h-3.5" aria-hidden="true" /> Umgesetzt
+                            </span>
+                            <span className="inline-flex text-[11px] font-semibold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25">
+                                {getCategoryLabel(project.category)}
+                            </span>
+                        </div>
+
+                        <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-[1.05]">
+                            {project.title}
+                        </h1>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-5 text-sm text-blue-50">
+                            <span className="inline-flex items-center gap-2">
+                                <img
+                                    src={projectAvatarUrl(project)}
+                                    alt=""
+                                    aria-hidden="true"
+                                    className="w-8 h-8 rounded-full bg-white ring-2 ring-white/40 shrink-0"
+                                    loading="lazy"
+                                />
+                                Idee von <span className="font-semibold text-white">{project.username}</span>
+                            </span>
+                            <span className="inline-flex items-center gap-1.5">
+                                <Heart className="w-4 h-4 fill-current" aria-hidden="true" />
+                                <span><span className="font-semibold text-white">{project.votes}</span> Stimmen aus der Community</span>
+                            </span>
+                        </div>
+
+                        <div ref={heroCtaRef} className="mt-8">
+                            {project.live_url ? (
+                                <a
+                                    href={project.live_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold text-base min-h-[56px] px-8 rounded-2xl shadow-lg shadow-indigo-900/25 hover:bg-blue-50 hover:-translate-y-0.5 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-white/50"
+                                >
+                                    App jetzt öffnen <ExternalLink className="w-5 h-5" aria-hidden="true" />
+                                </a>
+                            ) : (
+                                <span className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 text-white/80 font-semibold min-h-[56px] px-8 rounded-2xl ring-1 ring-white/25">
+                                    Link in Kürze verfügbar
+                                </span>
+                            )}
+                        </div>
                     </div>
 
-                    <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-                        {project.title}
-                    </h1>
-
-                    {/* Einreicher mit Avatar */}
-                    <div className="flex items-center gap-2.5 mt-4">
-                        <img
-                            src={projectAvatarUrl(project)}
-                            alt=""
-                            aria-hidden="true"
-                            className="w-9 h-9 rounded-full bg-white ring-2 ring-white/40 shrink-0"
-                            loading="lazy"
-                        />
-                        <p className="text-blue-50 text-sm">
-                            Idee von <span className="font-bold text-white">{project.username}</span>
-                        </p>
+                    {/* App-Symbol, nur auf grösseren Bildschirmen */}
+                    <div aria-hidden="true" className="hidden sm:flex shrink-0 w-40 h-40 rounded-[2.25rem] bg-white/95 shadow-2xl shadow-indigo-900/30 ring-1 ring-white/60 items-center justify-center rotate-3">
+                        <img src={projectAvatarUrl(project)} alt="" className="w-28 h-28" />
                     </div>
+                </div>
+            </motion.header>
 
-                    {/* Haupt-Aktion: auf dem Handy zuerst und gross */}
-                    {project.live_url ? (
+            {/* ---------- Vertrauen: offen, ohne Kästen ---------- */}
+            <ul className="mt-6 sm:mt-8 grid grid-cols-3 gap-2 sm:gap-6 px-1 sm:px-4">
+                {trust.map((t) => (
+                    <li key={t.title} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 sm:gap-3">
+                        <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 text-indigo-600 flex items-center justify-center shrink-0">
+                            <t.icon className="w-5 h-5" aria-hidden="true" />
+                        </span>
+                        <span>
+                            <span className="block text-sm font-semibold text-slate-900 leading-tight">{t.title}</span>
+                            <span className="hidden sm:block text-sm text-slate-500 mt-0.5">{t.desc}</span>
+                        </span>
+                    </li>
+                ))}
+            </ul>
+
+            <div className="px-1 sm:px-4">
+                {/* ---------- Beschreibung ---------- */}
+                <Reveal as="section" className="mt-14 sm:mt-20" aria-labelledby="worum-heading">
+                    <SectionHeading id="worum-heading" eyebrow="Die Idee" title="Worum geht es?" />
+                    <RichText text={project.description} />
+                </Reveal>
+
+                {/* ---------- Nutzen: hervorgehoben, aber ohne Box ---------- */}
+                {project.benefit && (
+                    <Reveal as="section" className="mt-14 sm:mt-20" aria-labelledby="nutzen-heading">
+                        <SectionHeading id="nutzen-heading" eyebrow="Der Nutzen" title="Wem hilft das?" />
+                        <div className="relative pl-5 sm:pl-7">
+                            <span aria-hidden="true" className="absolute left-0 top-1 bottom-1 w-1 rounded-full bg-gradient-to-b from-blue-500 to-violet-500" />
+                            <RichText text={project.benefit} tone="benefit" />
+                        </div>
+                    </Reveal>
+                )}
+
+                {/* ---------- Funktionen ---------- */}
+                {featureList.length > 0 && (
+                    <Reveal as="section" className="mt-14 sm:mt-20" aria-labelledby="funktionen-heading">
+                        <SectionHeading id="funktionen-heading" eyebrow="Funktionen" title="Das kann die App" />
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 max-w-4xl">
+                            {featureList.map((feature, i) => (
+                                <li key={i} className="flex items-start gap-3">
+                                    <span className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 text-white flex items-center justify-center shrink-0 mt-0.5" aria-hidden="true">
+                                        <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                                    </span>
+                                    <span className="text-slate-700 leading-relaxed">{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </Reveal>
+                )}
+            </div>
+
+            {/* ---------- Zweiter Aufruf zur App ---------- */}
+            {project.live_url && (
+                <Reveal className="mt-16 sm:mt-24">
+                    <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-6 py-9 sm:p-12 text-center shadow-lg shadow-indigo-500/20">
+                        <div aria-hidden="true" className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 w-96 h-48 rounded-full bg-white/10 blur-3xl" />
+                        <Sparkles className="relative w-7 h-7 text-white/90 mx-auto mb-3" aria-hidden="true" />
+                        <h2 className="relative text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                            Lust, {project.title} auszuprobieren?
+                        </h2>
+                        <p className="relative text-blue-100 mt-2">Öffnet sich direkt im Browser – ohne Installation.</p>
                         <a
                             href={project.live_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-blue-700 font-extrabold text-base py-4 px-8 rounded-2xl shadow-lg shadow-blue-900/25 hover:bg-blue-50 transition-colors focus:outline-none focus:ring-4 focus:ring-white/40"
+                            className="relative mt-7 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold min-h-[52px] px-8 rounded-2xl hover:bg-blue-50 hover:-translate-y-0.5 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-white/50"
                         >
-                            <ExternalLink className="w-5 h-5" /> App jetzt öffnen
+                            App öffnen <ExternalLink className="w-4 h-4" aria-hidden="true" />
                         </a>
-                    ) : (
-                        <span className="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 text-white/70 font-semibold py-4 px-8 rounded-2xl ring-1 ring-white/20">
-                            Link in Kürze verfügbar
-                        </span>
-                    )}
-
-                    <p className="text-blue-100/80 text-xs mt-3">
-                        Kostenlos · Ohne Anmeldung · Ohne Werbung
-                    </p>
-                </div>
-            </motion.header>
-
-            {/* ---------- Vertrauens-Zeile ---------- */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                {[
-                    { icon: Heart, title: '100 % gratis', desc: 'Ehrenamtlich umgesetzt, ohne Kosten.' },
-                    { icon: ShieldCheck, title: 'Ohne Anmeldung', desc: 'Keine persönlichen Daten nötig.' },
-                    { icon: Code2, title: 'Quelloffen', desc: 'MIT-Lizenz, Code ist einsehbar.' },
-                ].map((item) => (
-                    <div key={item.title} className="bg-white border border-gray-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                            <item.icon className="w-4.5 h-4.5" aria-hidden="true" />
-                        </div>
-                        <div className="min-w-0">
-                            <p className="font-bold text-slate-900 text-sm leading-tight">{item.title}</p>
-                            <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{item.desc}</p>
-                        </div>
                     </div>
-                ))}
-            </div>
-
-            {/* ---------- Beschreibung ---------- */}
-            <section className="mt-8" aria-labelledby="worum-heading">
-                <h2 id="worum-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-4">Worum geht es?</h2>
-                <div className="bg-white p-5 sm:p-8 rounded-2xl border border-gray-200 shadow-sm">
-                    <RichText text={project.description} />
-                </div>
-            </section>
-
-            {/* ---------- Nutzen ---------- */}
-            {project.benefit && (
-                <section className="mt-6" aria-labelledby="nutzen-heading">
-                    <h2 id="nutzen-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-4">Wem hilft das?</h2>
-                    <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 sm:p-6">
-                        <RichText text={project.benefit} tone="benefit" />
-                    </div>
-                </section>
-            )}
-
-            {/* ---------- Funktionen ---------- */}
-            {featureList.length > 0 && (
-                <section className="mt-6" aria-labelledby="funktionen-heading">
-                    <h2 id="funktionen-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-4 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-amber-500" aria-hidden="true" /> Das kann die App
-                    </h2>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {featureList.map((feature, i) => (
-                            <li key={i} className="flex items-start gap-2.5 bg-white border border-gray-200 rounded-xl p-3.5 shadow-sm">
-                                <span className="w-5 h-5 rounded-full bg-green-50 border border-green-100 flex items-center justify-center shrink-0 mt-0.5" aria-hidden="true">
-                                    <Check className="w-3 h-3 text-green-600" />
-                                </span>
-                                <span className="text-sm text-slate-700 leading-relaxed">{feature}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-            )}
-
-            {/* ---------- Zweiter Aufruf zur App ---------- */}
-            {project.live_url && (
-                <a
-                    href={project.live_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-700 hover:via-indigo-700 hover:to-violet-700 transition-colors rounded-3xl p-6 sm:p-7 shadow-lg shadow-indigo-500/20 group"
-                >
-                    <span className="min-w-0">
-                        <span className="block font-extrabold text-white text-base sm:text-lg leading-tight">
-                            Lust, {project.title} auszuprobieren?
-                        </span>
-                        <span className="block text-blue-100 text-sm mt-1">
-                            Öffnet sich direkt im Browser – ohne Installation.
-                        </span>
-                    </span>
-                    <span className="shrink-0 inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold text-sm py-3.5 px-6 rounded-xl group-hover:bg-blue-50 transition-colors w-full sm:w-auto">
-                        Öffnen <ExternalLink className="w-4 h-4" />
-                    </span>
-                </a>
+                </Reveal>
             )}
 
             {/* ---------- Feedback ---------- */}
-            <section className="border-t border-gray-200 pt-10 mt-12" aria-labelledby="feedback-heading">
-                <h2 id="feedback-heading" className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
-                    <MessageSquare className="w-6 h-6 text-blue-600" aria-hidden="true" />
-                    Gemeinsam verbessern
-                </h2>
-                <p className="text-slate-500 text-sm sm:text-base max-w-2xl mb-8">
+            <section id="feedback" className="mt-16 sm:mt-24 px-1 sm:px-4 scroll-mt-24" aria-labelledby="feedback-heading">
+                <SectionHeading id="feedback-heading" eyebrow="Mitmachen" title="Gemeinsam verbessern" />
+                <p className="text-slate-600 max-w-2xl -mt-2 mb-8 leading-relaxed">
                     Etwas funktioniert nicht wie erwartet oder dir fehlt eine Funktion?
                     Schreib es hier hinein – anonym und ohne Anmeldung.
                 </p>
-
                 <BugTracker projectId={project.id} />
             </section>
+
+            {/* ---------- Mobile: feste Aktionsleiste, sobald der Hero-Button weg ist ---------- */}
+            <AnimatePresence>
+                {project.live_url && showSticky && (
+                    <motion.div
+                        initial={reduce ? false : { y: 100 }}
+                        animate={{ y: 0 }}
+                        exit={reduce ? { opacity: 0 } : { y: 100 }}
+                        transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+                        className="sm:hidden fixed inset-x-0 bottom-0 z-40 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white/90 backdrop-blur-xl border-t border-slate-200/70"
+                    >
+                        <div className="flex items-center gap-3">
+                            <a
+                                href="#feedback"
+                                className="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-xl text-slate-600 ring-1 ring-slate-200 bg-white"
+                                aria-label="Zum Feedback"
+                            >
+                                <MessageSquare className="w-5 h-5" aria-hidden="true" />
+                            </a>
+                            <a
+                                href={project.live_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-primary flex-1 inline-flex items-center justify-center gap-2 min-h-[48px]"
+                            >
+                                {project.title} öffnen <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                            </a>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+/** Sanftes Einblenden beim Scrollen (respektiert „Bewegung reduzieren"). */
+function Reveal({ as = 'div', children, className, ...rest }) {
+    const reduce = useReducedMotion();
+    const Comp = motion[as] || motion.div;
+    return (
+        <Comp
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className={className}
+            {...rest}
+        >
+            {children}
+        </Comp>
+    );
+}
+
+function SectionHeading({ id, eyebrow, title }) {
+    return (
+        <div className="mb-6">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-600 mb-2">{eyebrow}</p>
+            <h2 id={id} className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{title}</h2>
         </div>
     );
 }
@@ -256,7 +326,7 @@ function RichText({ text, tone = 'default' }) {
     const raw = String(text || '').replace(/\r\n/g, '\n').trim();
     if (!raw) return null;
 
-    const bodyClass = tone === 'benefit' ? 'text-slate-700' : 'text-slate-600';
+    const bodyClass = tone === 'benefit' ? 'text-slate-700 text-base sm:text-lg' : 'text-slate-600';
 
     // In Blöcke teilen (Leerzeile = neuer Absatz)
     const blocks = raw.split(/\n\s*\n/);
