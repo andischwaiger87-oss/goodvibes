@@ -49,7 +49,7 @@ export default function Apps() {
     }, [apps, query, category]);
 
     return (
-        <div className="max-w-6xl mx-auto py-10 sm:py-14 px-4">
+        <div className="max-w-6xl mx-auto py-6 sm:py-14">
             {/* Header */}
             <div className="text-center mb-10">
                 <motion.div

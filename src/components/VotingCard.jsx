@@ -195,7 +195,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                         </div>
                     </div>
 
-                    <div className="px-6 pb-6 flex-grow">
+                    <div className="px-5 sm:px-6 pb-5 sm:pb-6 flex-grow">
                         <div className="p-4 rounded-lg bg-white border border-red-200">
                             <p className="text-xs text-slate-500 mb-2 flex items-center">
                                 <AlertTriangle className="w-4 h-4 mr-2 text-red-500" />
@@ -230,18 +230,25 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={cn(
-                    "elgato-card flex flex-col h-full overflow-hidden group bg-white cursor-pointer relative",
-                    isImplementation && "border-indigo-200 shadow-indigo-50/50 shadow-md hover:border-indigo-400"
+                    "elgato-card flex flex-col h-full overflow-hidden group bg-white cursor-pointer relative hover:border-blue-200 hover:-translate-y-0.5",
+                    isImplementation && "border-indigo-200 hover:border-indigo-400"
                 )}
                 onClick={() => setShowDetail(true)}
+                role="button"
+                tabIndex={0}
+                aria-label={`${project.title} – Details ansehen`}
+                onKeyDown={(e) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowDetail(true); }
+                }}
             >
                 {/* Glow effect on implementation cards */}
                 {isImplementation && (
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
                 )}
                 
-                <div className="p-6 flex items-start space-x-4">
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0">
+                <div className="p-5 sm:p-6 flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 ring-1 ring-slate-200 overflow-hidden flex-shrink-0">
                         <img src={projectAvatarUrl(project)} alt="" className="w-full h-full" />
                     </div>
                     <div className="flex-grow min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
@@ -250,7 +257,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                             <p className="text-xs font-medium text-slate-500">von {project.username}</p>
                         </div>
                         <span className={cn(
-                            "inline-flex text-xs font-semibold px-2.5 py-1 rounded border shrink-0 w-fit",
+                            "inline-flex text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 w-fit",
                             isImplementation
                                 ? "bg-indigo-50 text-indigo-700 border-indigo-100"
                                 : "bg-blue-50 text-blue-700 border-blue-100"
@@ -260,12 +267,12 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                     </div>
                 </div>
 
-                <div className="px-6 pb-6 flex-grow">
+                <div className="px-5 sm:px-6 pb-5 sm:pb-6 flex-grow">
                     <p className="text-sm text-slate-600 mb-5 leading-relaxed line-clamp-3">
                         {project.description}
                     </p>
 
-                    <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
+                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                         <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
                             <strong className="text-slate-900 block mb-1">Gut für:</strong>
                             {project.benefit}
@@ -273,7 +280,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                     </div>
                 </div>
 
-                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between mt-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 mt-auto min-h-[64px]" onClick={(e) => e.stopPropagation()}>
                     <div className="relative">
                         <AnimatePresence mode="wait">
                             {isImplementation ? (

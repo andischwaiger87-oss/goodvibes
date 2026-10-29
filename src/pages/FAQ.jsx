@@ -75,49 +75,63 @@ const faqs = [
 
 export default function FAQ() {
     return (
-        <div className="max-w-3xl mx-auto py-16 px-4">
-            <div className="text-center mb-16">
+        <div className="max-w-3xl mx-auto py-6 sm:py-14">
+            <div className="text-center mb-8 sm:mb-14">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mb-6">
                     <HelpCircle className="w-8 h-8" />
                 </div>
-                <h1 className="text-4xl font-bold text-slate-900 mb-4">Häufige Fragen</h1>
-                <p className="text-xl text-slate-500">
+                <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Häufige Fragen</h1>
+                <p className="text-base sm:text-xl text-slate-500">
                     Alles, was du über GoodVibes wissen musst.
                 </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
                 {faqs.map((faq, index) => (
-                    <FAQItem key={index} faq={faq} />
+                    <FAQItem key={index} faq={faq} index={index} />
                 ))}
             </div>
         </div>
     );
 }
 
-function FAQItem({ faq }) {
+function FAQItem({ faq, index }) {
     const [isOpen, setIsOpen] = useState(false);
+    const panelId = `faq-antwort-${index}`;
+    const buttonId = `faq-frage-${index}`;
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:border-blue-200 hover:shadow-sm">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
-            >
-                <span className="text-lg font-semibold text-slate-900 pr-8">{faq.question}</span>
-                <ChevronDown
-                    className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-600' : ''}`}
-                />
-            </button>
-            <AnimatePresence>
+        <div className={`elgato-card overflow-hidden transition-colors ${isOpen ? 'border-blue-200' : 'hover:border-blue-200'}`}>
+            <h2 className="m-0">
+                <button
+                    id={buttonId}
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    className="w-full flex items-center justify-between gap-4 p-5 sm:p-6 text-left min-h-[64px] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 rounded-2xl"
+                >
+                    <span className="text-base sm:text-lg font-semibold text-slate-900 leading-snug">{faq.question}</span>
+                    <span className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                        <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                            aria-hidden="true"
+                        />
+                    </span>
+                </button>
+            </h2>
+            <AnimatePresence initial={false}>
                 {isOpen && (
                     <motion.div
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={buttonId}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+                        <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-slate-600 leading-relaxed max-w-[68ch]">
                             {faq.answer}
                         </div>
                     </motion.div>

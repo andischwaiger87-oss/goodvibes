@@ -1,38 +1,37 @@
 import { v4 as uuidv4 } from 'uuid';
+import { getItem, setItem, getJSON, setJSON } from './storage';
 
 const STORAGE_KEY_VOTES = 'gv_votes_local';
 const STORAGE_KEY_DEVICE_ID = 'gv_device_uuid';
 
 /**
- * Holt oder erstellt eine einzigartige, anonyme ID für diesen Browser.
- * Dies ersetzt das invasive Fingerprinting durch einen einfachen Cookie-ähnlichen Ansatz.
- * Vorteile: 100% datenschutzkonform, keine Berechtigungen nötig, "vergisst" nicht so leicht.
+ * Holt oder erstellt eine anonyme Kennung fuer diesen Browser.
+ * Kein Fingerprinting, keine Berechtigungen noetig.
  */
 export const getDeviceId = () => {
-    let id = localStorage.getItem(STORAGE_KEY_DEVICE_ID);
+    let id = getItem(STORAGE_KEY_DEVICE_ID);
     if (!id) {
         id = uuidv4();
-        localStorage.setItem(STORAGE_KEY_DEVICE_ID, id);
+        setItem(STORAGE_KEY_DEVICE_ID, id);
     }
     return id;
 };
 
 /**
- * Prüft lokal (für schnelles Feedback), ob für eine ID schon gestimmt wurde.
- * Die "echte" Sicherheit kommt dann über die Datenbank (Unique constraint auf device_id + project_id).
+ * Prueft lokal (fuer schnelle Anzeige), ob hier schon abgestimmt wurde.
+ * Die eigentliche Pruefung macht der Server (increment_vote).
  */
 export const hasAlreadyVotedLocal = (projectId) => {
-    const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '[]');
-    return votes.includes(projectId);
+    const votes = getJSON(STORAGE_KEY_VOTES, []);
+    return Array.isArray(votes) && votes.includes(projectId);
 };
 
-/**
- * Speichert den Vote lokal.
- */
+/** Merkt sich die Stimme lokal. */
 export const recordVoteLocal = (projectId) => {
-    const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '[]');
-    if (!votes.includes(projectId)) {
-        votes.push(projectId);
-        localStorage.setItem(STORAGE_KEY_VOTES, JSON.stringify(votes));
+    const votes = getJSON(STORAGE_KEY_VOTES, []);
+    const list = Array.isArray(votes) ? votes : [];
+    if (!list.includes(projectId)) {
+        list.push(projectId);
+        setJSON(STORAGE_KEY_VOTES, list);
     }
 };

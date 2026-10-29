@@ -34,18 +34,32 @@ export default function CommunityFeed({ app }) {
 
     useEffect(() => { fetchAll(); /* eslint-disable-next-line */ }, [app?.id]);
 
+    // Nur die oeffentlich freigegebenen Spalten laden (Geraete-Kennungen bleiben verborgen)
+    const POST_COLUMNS = 'id, app_id, type, rating, title, body, author_name, avatar_seed, status, votes, pinned, screenshot_url, code_snippet, admin_reply, created_at';
+    const REPLY_COLUMNS = 'id, post_id, body, author_name, avatar_seed, status, created_at';
+
     const fetchAll = async () => {
         setLoading(true);
         try {
             const deviceId = getDeviceId();
-            const { data: postData } = await supabase.from('app_posts').select('*').eq('app_id', app.id);
+            const { data: postData } = await supabase
+                .from('app_posts').select(POST_COLUMNS).eq('app_id', app.id);
             const published = (postData || []).filter((p) => p.status === 'published');
-            const { data: replyData } = await supabase.from('app_post_replies').select('*');
-            const { data: voteData } = await supabase.from('app_post_votes').select('*').eq('device_id', deviceId);
+
+            // Nur Antworten zu den Beitraegen DIESER App laden
+            const postIds = published.map((p) => p.id);
+            let replyData = [];
+            if (postIds.length) {
+                const res = await supabase.from('app_post_replies').select(REPLY_COLUMNS).in('post_id', postIds);
+                replyData = res.data || [];
+            }
+
+            // Eigene Likes sicher ueber den Server abfragen
+            const { data: voteData } = await supabase.rpc('gv_my_post_votes', { p_device_id: deviceId });
 
             setPosts(published);
-            setReplies((replyData || []).filter((r) => r.status === 'published'));
-            setMyVotes((voteData || []).map((v) => v.post_id));
+            setReplies(replyData.filter((r) => r.status === 'published'));
+            setMyVotes((voteData || []).map((v) => (typeof v === 'object' && v !== null ? Object.values(v)[0] : v)));
         } catch (err) {
             console.error('Fehler beim Laden der Beiträge:', err);
         } finally {
@@ -54,27 +68,20 @@ export default function CommunityFeed({ app }) {
     };
 
     const handleVote = async (postId) => {
-        if (await isDeviceBlocked(supabase)) return;
         const deviceId = getDeviceId();
         const voted = myVotes.includes(postId);
+        // Sofort im UI zeigen, danach mit dem echten Zaehler vom Server abgleichen
+        setMyVotes((prev) => voted ? prev.filter((id) => id !== postId) : [...prev, postId]);
         try {
-            if (voted) {
-                await supabase.from('app_post_votes').delete().eq('post_id', postId).eq('device_id', deviceId);
-                setMyVotes((prev) => prev.filter((id) => id !== postId));
-                const cur = posts.find((p) => p.id === postId);
-                const next = Math.max(0, (cur?.votes || 1) - 1);
-                setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, votes: next } : p));
-                await supabase.from('app_posts').update({ votes: next }).eq('id', postId);
-            } else {
-                await supabase.from('app_post_votes').insert({ post_id: postId, device_id: deviceId, created_at: new Date().toISOString() });
-                setMyVotes((prev) => [...prev, postId]);
-                const cur = posts.find((p) => p.id === postId);
-                const next = (cur?.votes || 0) + 1;
-                setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, votes: next } : p));
-                await supabase.from('app_posts').update({ votes: next }).eq('id', postId);
+            const { data, error } = await supabase.rpc('gv_toggle_vote', { p_post_id: postId, p_device_id: deviceId });
+            if (error) throw error;
+            if (typeof data === 'number') {
+                setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, votes: data } : p));
             }
         } catch (err) {
             console.error('Fehler beim Abstimmen:', err);
+            // Rueckgaengig machen, wenn der Server ablehnt
+            setMyVotes((prev) => voted ? [...prev, postId] : prev.filter((id) => id !== postId));
         }
     };
 

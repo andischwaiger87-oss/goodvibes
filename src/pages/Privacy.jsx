@@ -6,7 +6,7 @@ export default function Privacy() {
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl mx-auto py-12 px-4"
+            className="max-w-2xl mx-auto py-6 sm:py-12"
         >
             <h1 className="text-3xl font-bold text-slate-900 mb-8">Datenschutzerklärung</h1>
 

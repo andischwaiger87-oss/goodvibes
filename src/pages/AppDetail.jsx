@@ -72,7 +72,7 @@ export default function AppDetail() {
     const screenshots = normalizeScreenshots(app.screenshots);
 
     return (
-        <div className="max-w-5xl mx-auto py-8 sm:py-12 px-4">
+        <div className="max-w-5xl mx-auto py-5 sm:py-12">
             <Link to="/apps" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 mb-6 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Alle Apps
             </Link>

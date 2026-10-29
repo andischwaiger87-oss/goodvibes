@@ -77,12 +77,12 @@ export default function Voting() {
     };
 
     return (
-        <div className="py-16 px-4">
-            <div className="text-center mb-16">
+        <div className="py-6 sm:py-12 max-w-7xl mx-auto">
+            <div className="text-center mb-8 sm:mb-14">
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-6"
+                    className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 sm:mb-5"
                 >
                     Deine Stimme zählt
                 </motion.h1>
@@ -90,7 +90,7 @@ export default function Voting() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed"
+                    className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed"
                 >
                     Welches Projekt findest du am besten? <br className="hidden sm:block" />
                     Entscheide mit, was wir als nächstes bauen.
@@ -100,7 +100,7 @@ export default function Voting() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="mt-8 inline-flex flex-col sm:flex-row items-center gap-3 p-6 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 max-w-2xl mx-auto text-left shadow-sm"
+                        className="mt-6 sm:mt-8 inline-flex flex-col sm:flex-row items-center gap-3 p-5 sm:p-6 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 max-w-2xl mx-auto text-left shadow-sm"
                     >
                         <Clock className="w-10 h-10 text-amber-500 shrink-0" />
                         <div>
@@ -115,9 +115,9 @@ export default function Voting() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        className="mt-8 inline-flex items-center px-4 py-2 bg-gray-100 rounded-lg text-slate-600 text-sm"
+                        className="mt-6 sm:mt-8 inline-flex items-start sm:items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur border border-slate-200 rounded-xl text-slate-600 text-sm text-left shadow-sm max-w-xl"
                     >
-                        <span className="w-2 h-2 rounded-full bg-slate-400 mr-2"></span>
+                        <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1.5 sm:mt-0" aria-hidden="true"></span>
                         Hinweis: Du siehst das Ergebnis erst, nachdem du abgestimmt hast. So bleibt es fair.
                     </motion.div>
                 )}
@@ -125,7 +125,7 @@ export default function Voting() {
 
             {loading ? (
                 <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-100 border-t-blue-600" role="status" aria-label="Ideen werden geladen"></div>
                 </div>
             ) : projects.length > 0 ? (
                 <div className="relative">
@@ -133,7 +133,7 @@ export default function Voting() {
                     {currentPhase === 'review' && (
                         <div className="absolute inset-0 bg-slate-50/40 backdrop-blur-[2px] z-20 rounded-2xl pointer-events-none" />
                     )}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-7">
                         {projects.map((project) => (
                             <VotingCard 
                                 key={project.id} 
@@ -145,7 +145,7 @@ export default function Voting() {
                     </div>
                 </div>
             ) : (
-                <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-100 max-w-2xl mx-auto">
+                <div className="text-center py-16 px-6 bg-white rounded-3xl border border-slate-200/70 max-w-2xl mx-auto">
                     <Database className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                     <h3 className="text-xl font-bold text-slate-900 mb-2">Noch keine Projekte</h3>
                     <p className="text-slate-500 max-w-md mx-auto mb-6">

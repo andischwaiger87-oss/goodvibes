@@ -420,6 +420,32 @@ const createMockSupabase = () => {
                 localStorage.setItem('gv_mock_projects', JSON.stringify(nextProjects));
                 return { data: true, error: null };
             }
+            // Lokaler Testmodus: Likes/Stimmen wie die echten Server-Funktionen nachbilden
+            const read = (k) => JSON.parse(localStorage.getItem(k) || '[]');
+            const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+            const toggle = (votesKey, itemsKey, idField, id, device) => {
+                let votes = read(votesKey);
+                const has = votes.some((v) => String(v[idField]) === String(id) && v.device_id === device);
+                votes = has
+                    ? votes.filter((v) => !(String(v[idField]) === String(id) && v.device_id === device))
+                    : [...votes, { [idField]: id, device_id: device }];
+                write(votesKey, votes);
+                const count = votes.filter((v) => String(v[idField]) === String(id)).length;
+                write(itemsKey, read(itemsKey).map((it) => String(it.id) === String(id) ? { ...it, votes: count } : it));
+                return count;
+            };
+            if (fn === 'gv_toggle_vote') {
+                return { data: toggle('gv_mock_app_post_votes', 'gv_mock_app_posts', 'post_id', args.p_post_id, args.p_device_id), error: null };
+            }
+            if (fn === 'gv_my_post_votes') {
+                return { data: read('gv_mock_app_post_votes').filter((v) => v.device_id === args.p_device_id).map((v) => v.post_id), error: null };
+            }
+            if (fn === 'gv_toggle_bug_vote') {
+                return { data: toggle('gv_mock_bug_report_votes', 'gv_mock_bug_reports', 'report_id', args.p_report_id, args.p_device_id), error: null };
+            }
+            if (fn === 'gv_my_bug_votes') {
+                return { data: read('gv_mock_bug_report_votes').filter((v) => v.device_id === args.p_device_id).map((v) => String(v.report_id)), error: null };
+            }
             return { error: { message: `Function ${fn} not implemented in mock.` } };
         }
     };

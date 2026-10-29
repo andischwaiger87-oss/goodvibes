@@ -329,15 +329,7 @@ export function CommunityModerationTab() {
     const appName = (id) => apps.find((a) => a.id === id)?.name || '—';
 
     const setStatus = async (post, status) => {
-        if (status === 'published' && post.status !== 'published' && post.type === 'review' && post.rating) {
-            const app = apps.find((a) => a.id === post.app_id);
-            if (app) {
-                await supabase.from('apps').update({
-                    rating_sum: (app.rating_sum || 0) + post.rating,
-                    rating_count: (app.rating_count || 0) + 1,
-                }).eq('id', app.id);
-            }
-        }
+        // Die App-Bewertung rechnet die Datenbank bei jeder Statusaenderung selbst neu.
         await supabase.from('app_posts').update({ status }).eq('id', post.id);
         fetchAll();
     };

@@ -14,6 +14,7 @@
 //  (Supabase RLS + Trigger) passieren. Siehe SICHERHEIT.md.
 // =============================================================
 
+import { getJSON, setJSON } from './storage';
 import { v4 as uuidv4 } from 'uuid';
 import { getDeviceId } from './security';
 
@@ -180,7 +181,7 @@ const RL_MIN_GAP_MS = 8 * 1000;   // min. 8 Sek. zwischen zwei Beiträgen
 
 export function checkRateLimit() {
     let stamps = [];
-    try { stamps = JSON.parse(localStorage.getItem(RL_KEY) || '[]'); } catch { stamps = []; }
+    stamps = getJSON(RL_KEY, []); if (!Array.isArray(stamps)) stamps = [];
     const now = Date.now();
     stamps = stamps.filter((t) => now - t < RL_WINDOW_MS);
 
@@ -196,9 +197,9 @@ export function checkRateLimit() {
 
 export function recordPost() {
     let stamps = [];
-    try { stamps = JSON.parse(localStorage.getItem(RL_KEY) || '[]'); } catch { stamps = []; }
+    stamps = getJSON(RL_KEY, []); if (!Array.isArray(stamps)) stamps = [];
     stamps.push(Date.now());
-    localStorage.setItem(RL_KEY, JSON.stringify(stamps.slice(-10)));
+    setJSON(RL_KEY, stamps.slice(-10));
 }
 
 // -------------------------------------------------------------

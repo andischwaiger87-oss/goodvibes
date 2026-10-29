@@ -118,13 +118,7 @@ export default function PostComposer({ app, onPosted }) {
             const { error: insErr } = await supabase.from('app_posts').insert(newPost);
             if (insErr) throw insErr;
 
-            // Bewertung sofort auf App zählen, wenn direkt sichtbar
-            if (status === 'published' && type === 'review') {
-                await supabase.from('apps').update({
-                    rating_sum: (app.rating_sum || 0) + rating,
-                    rating_count: (app.rating_count || 0) + 1,
-                }).eq('id', app.id);
-            }
+            // Die App-Bewertung berechnet die Datenbank automatisch neu.
 
             recordPost();
             reset();

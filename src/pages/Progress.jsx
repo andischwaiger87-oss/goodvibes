@@ -84,7 +84,7 @@ export default function Progress() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto py-12 px-4">
+        <div className="max-w-4xl mx-auto py-6 sm:py-12">
             
             {/* DIAGNOSE-OVERLAY: Wird nur angezeigt, wenn Supabase auf dem Gerät blockiert wird */}
             {errorMessage && (
@@ -99,7 +99,7 @@ export default function Progress() {
             )}
 
             {/* Header */}
-            <div className="text-center mb-16">
+            <div className="text-center mb-8 sm:mb-14">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}

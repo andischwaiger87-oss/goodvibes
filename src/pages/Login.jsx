@@ -16,7 +16,7 @@ export default function Login() {
         setError(null);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
@@ -24,17 +24,25 @@ export default function Login() {
             if (error) throw error;
             navigate('/admin');
         } catch (err) {
-            setError(err.message || 'Login fehlgeschlagen');
+            // Verstaendliche, deutsche Meldung – ohne zu verraten, ob die E-Mail existiert
+            const msg = String(err?.message || '').toLowerCase();
+            if (msg.includes('rate') || msg.includes('too many')) {
+                setError('Zu viele Versuche. Bitte warte kurz und probiere es dann erneut.');
+            } else if (msg.includes('network') || msg.includes('fetch')) {
+                setError('Keine Verbindung. Bitte prüfe deine Internetverbindung.');
+            } else {
+                setError('E-Mail oder Passwort stimmen nicht.');
+            }
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
+            <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/60 p-6 sm:p-8 border border-gray-100">
                 <div className="text-center mb-8">
-                    <div className="mx-auto w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center mb-4">
+                    <div className="mx-auto w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/25">
                         <ShieldCheck className="w-6 h-6" />
                     </div>
                     <h1 className="text-2xl font-bold text-slate-900">Admin Login</h1>
@@ -42,38 +50,43 @@ export default function Login() {
                 </div>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-center text-red-600 text-sm">
-                        <AlertCircle className="w-4 h-4 mr-2" />
+                    <div role="alert" className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center text-red-700 text-sm">
+                        <AlertCircle className="w-4 h-4 mr-2 shrink-0" aria-hidden="true" />
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleLogin} className="space-y-5">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Email Adresse</label>
+                        <label htmlFor="login-email" className="block text-sm font-semibold text-slate-700 mb-1.5">E-Mail-Adresse</label>
                         <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" aria-hidden="true" />
                             <input
+                                id="login-email"
                                 type="email"
+                                autoComplete="username"
+                                inputMode="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                placeholder="admin@goodvibes.org"
+                                className="w-full pl-10 pr-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                placeholder="name@beispiel.at"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Passwort</label>
+                        <label htmlFor="login-password" className="block text-sm font-semibold text-slate-700 mb-1.5">Passwort</label>
                         <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" aria-hidden="true" />
                             <input
+                                id="login-password"
                                 type="password"
+                                autoComplete="current-password"
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
                                 placeholder="••••••••"
                             />
                         </div>

@@ -48,20 +48,17 @@ export default function BugTracker({ projectId }) {
         try {
             const deviceId = getDeviceId();
 
-            // 1. Fetch bug reports for this project
+            // 1. Meldungen laden – nur oeffentliche Spalten (Kontaktangaben bleiben privat)
             const { data: reportsData } = await supabase
                 .from('bug_reports')
-                .select('*')
+                .select('id, project_id, title, description, category, status, votes, admin_reply, created_at')
                 .eq('project_id', projectId);
 
-            // 2. Fetch current user's upvotes for this project's bug reports
-            const { data: votesData } = await supabase
-                .from('bug_report_votes')
-                .select('report_id')
-                .eq('device_id', deviceId);
+            // 2. Eigene Stimmen sicher ueber den Server abfragen
+            const { data: votesData } = await supabase.rpc('gv_my_bug_votes', { p_device_id: deviceId });
 
             if (reportsData) setReports(reportsData);
-            if (votesData) setMyVotes(votesData.map(v => v.report_id));
+            if (votesData) setMyVotes(votesData.map((v) => String(typeof v === 'object' && v !== null ? Object.values(v)[0] : v)));
         } catch (err) {
             console.error("Error loading bug reports:", err);
         } finally {
@@ -71,46 +68,19 @@ export default function BugTracker({ projectId }) {
 
     const handleVote = async (reportId) => {
         const deviceId = getDeviceId();
-        const hasVoted = myVotes.includes(reportId);
-        
+        const key = String(reportId);
+        const hasVoted = myVotes.includes(key);
+        // Sofort im UI zeigen, danach mit dem echten Zaehler abgleichen
+        setMyVotes((prev) => hasVoted ? prev.filter((id) => id !== key) : [...prev, key]);
         try {
-            if (hasVoted) {
-                // Remove vote
-                await supabase
-                    .from('bug_report_votes')
-                    .delete()
-                    .eq('report_id', reportId)
-                    .eq('device_id', deviceId);
-
-                // Decrement in UI state & DB
-                setReports(prev => prev.map(r => 
-                    r.id === reportId ? { ...r, votes: Math.max(0, (r.votes || 0) - 1) } : r
-                ));
-                setMyVotes(prev => prev.filter(id => id !== reportId));
-
-                // Update report table count
-                const currentReport = reports.find(r => r.id === reportId);
-                const nextVotes = Math.max(0, (currentReport?.votes || 1) - 1);
-                await supabase.from('bug_reports').update({ votes: nextVotes }).eq('id', reportId);
-            } else {
-                // Add vote
-                await supabase
-                    .from('bug_report_votes')
-                    .insert({ report_id: reportId, device_id: deviceId });
-
-                // Increment in UI state & DB
-                setReports(prev => prev.map(r => 
-                    r.id === reportId ? { ...r, votes: (r.votes || 0) + 1 } : r
-                ));
-                setMyVotes(prev => [...prev, reportId]);
-
-                // Update report table count
-                const currentReport = reports.find(r => r.id === reportId);
-                const nextVotes = (currentReport?.votes || 0) + 1;
-                await supabase.from('bug_reports').update({ votes: nextVotes }).eq('id', reportId);
+            const { data, error } = await supabase.rpc('gv_toggle_bug_vote', { p_report_id: key, p_device_id: deviceId });
+            if (error) throw error;
+            if (typeof data === 'number') {
+                setReports((prev) => prev.map((r) => String(r.id) === key ? { ...r, votes: data } : r));
             }
         } catch (err) {
-            console.error("Error toggling vote:", err);
+            console.error('Fehler beim Abstimmen:', err);
+            setMyVotes((prev) => hasVoted ? [...prev, key] : prev.filter((id) => id !== key));
         }
     };
 
@@ -243,14 +213,14 @@ export default function BugTracker({ projectId }) {
                                 value={contactInfo}
                                 onChange={(e) => setContactInfo(e.target.value)}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 outline-none transition-all"
-                                placeholder="z. B. Email oder Fantasiename (für Rückfragen)"
+                                placeholder="z. B. E-Mail – nur für Rückfragen, wird nicht veröffentlicht"
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full btn-primary bg-indigo-600 hover:bg-indigo-700 py-3 font-semibold text-white rounded-xl shadow-md flex justify-center items-center gap-2"
+                            className="w-full btn-primary py-3 flex justify-center items-center gap-2"
                         >
                             {isSubmitting ? 'Wird gesendet...' : 'Jetzt absenden'}
                         </button>
@@ -370,7 +340,7 @@ export default function BugTracker({ projectId }) {
                             {filteredReports.map((report) => {
                                 const catObj = categories.find(c => c.id === report.category);
                                 const statusObj = statuses[report.status] || { label: 'Unbekannt', style: 'bg-gray-100 border-gray-200' };
-                                const votedByUser = myVotes.includes(report.id);
+                                const votedByUser = myVotes.includes(String(report.id));
 
                                 return (
                                     <motion.div
@@ -419,13 +389,7 @@ export default function BugTracker({ projectId }) {
 
                                             {/* Footer vote button */}
                                             <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-1">
-                                                {report.contact_info ? (
-                                                    <span className="text-[10px] text-slate-400 italic">
-                                                        Meldung von: {report.contact_info}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-[10px] text-slate-400 italic">Anonyme Meldung</span>
-                                                )}
+                                                <span className="text-[10px] text-slate-400 italic">Anonyme Meldung</span>
 
                                                 <button
                                                     onClick={() => handleVote(report.id)}

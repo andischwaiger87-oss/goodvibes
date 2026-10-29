@@ -78,7 +78,7 @@ export default function ProjectDetail() {
         .filter(Boolean);
 
     return (
-        <div className="max-w-5xl mx-auto py-6 sm:py-10 px-4">
+        <div className="max-w-5xl mx-auto py-5 sm:py-10">
             <Link
                 to="/projects"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-5"

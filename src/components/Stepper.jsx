@@ -5,6 +5,7 @@ import { cn } from '../utils/cn';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getDeviceId } from '../utils/security';
 import { avatarUrl } from '../utils/avatar';
+import { getCategoryLabel } from '../utils/categories';
 
 const steps = [
   { id: 1, title: 'Regeln', icon: ShieldCheck },
@@ -368,7 +369,7 @@ export default function Stepper() {
 
             <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 text-left text-sm sm:text-base text-slate-600 max-w-md mx-auto shadow-sm">
               <p className="mb-3 border-b border-gray-100 pb-2 flex justify-between"><span className="text-slate-900 font-semibold">Projekt:</span> <span className="truncate ml-2">{formData.title}</span></p>
-              <p className="mb-3 border-b border-gray-100 pb-2 flex justify-between"><span className="text-slate-900 font-semibold">Bereich:</span> <span className="truncate ml-2">{formData.category === 'other' ? 'Sonstiges' : formData.category}</span></p>
+              <p className="mb-3 border-b border-gray-100 pb-2 flex justify-between"><span className="text-slate-900 font-semibold">Bereich:</span> <span className="truncate ml-2">{getCategoryLabel(formData.category)}</span></p>
               <p className="flex items-center justify-between"><span className="text-slate-900 font-semibold">Von:</span> 
                 <span className="flex items-center truncate ml-2">
                     <img src={getAvatarUrl(formData.avatar)} className="w-6 h-6 mr-2 rounded-full bg-gray-100" alt="" />
@@ -437,13 +438,13 @@ export default function Stepper() {
           <span>Schritt {currentStep} von 5</span>
           <span className="text-blue-600 font-semibold">{currentStep <= 4 ? steps[currentStep - 1].title : 'Abschluss'}</span>
         </div>
-        <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-blue-600 transition-all duration-500" style={{ width: `${(currentStep / 5) * 100}%` }} />
+        <div className="h-2 w-full bg-slate-200/70 rounded-full overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={5} aria-valuenow={currentStep} aria-label="Fortschritt">
+          <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500" style={{ width: `${(currentStep / 5) * 100}%` }} />
         </div>
       </div>
 
       {/* Content Card with optimized padding for mobile */}
-      <div className="elgato-card p-4 sm:p-10 min-h-[400px] sm:min-h-[500px] flex flex-col justify-between shadow-xl shadow-gray-200/50">
+      <div className="elgato-card p-5 sm:p-10 sm:min-h-[500px] flex flex-col justify-between shadow-xl shadow-slate-200/50">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -462,7 +463,7 @@ export default function Stepper() {
             onClick={prevStep}
             disabled={currentStep === 1 || isSubmitting}
             className={cn(
-              "flex items-center justify-center px-6 py-3 rounded-xl text-base font-semibold transition-all w-full sm:w-auto",
+              "flex items-center justify-center px-6 min-h-[48px] rounded-xl text-base font-semibold transition-all w-full sm:w-auto",
               currentStep === 1 ? "hidden sm:flex sm:opacity-0 sm:cursor-default" : "text-slate-600 bg-gray-50 sm:bg-transparent hover:text-slate-900 hover:bg-gray-100"
             )}
           >
@@ -473,7 +474,7 @@ export default function Stepper() {
           {currentStep <= 4 ? (
             <button
               onClick={nextStep}
-              className="flex items-center justify-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg font-semibold transition-all shadow-lg shadow-blue-200 hover:shadow-xl hover:translate-y-[-1px] w-full sm:w-auto"
+              className="btn-primary flex items-center justify-center px-8 min-h-[52px] text-base sm:text-lg w-full sm:w-auto"
             >
               Weiter
               <ChevronRight className="w-5 h-5 ml-1" />
@@ -482,7 +483,7 @@ export default function Stepper() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="flex items-center justify-center px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-lg font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed w-full sm:w-auto"
+              className="btn-primary flex items-center justify-center px-8 min-h-[52px] text-base sm:text-lg w-full sm:w-auto"
             >
               {isSubmitting ? (
                 <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Senden...</>
