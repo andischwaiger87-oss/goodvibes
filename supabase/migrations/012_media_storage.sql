@@ -26,8 +26,12 @@ drop policy if exists "app_media_admin_insert" on storage.objects;
 drop policy if exists "app_media_admin_update" on storage.objects;
 drop policy if exists "app_media_admin_delete" on storage.objects;
 
-create policy "app_media_public_read" on storage.objects
-    for select using (bucket_id = 'app-media');
+-- Kein oeffentliches Auflisten noetig: Bilder sind ueber ihre Adresse
+-- abrufbar, weil der Speicher "public" ist. Auflisten darf nur der Admin.
+drop policy if exists "app_media_admin_read" on storage.objects;
+create policy "app_media_admin_read" on storage.objects
+    for select to authenticated
+    using (bucket_id = 'app-media' and public.is_admin());
 
 create policy "app_media_admin_insert" on storage.objects
     for insert to authenticated

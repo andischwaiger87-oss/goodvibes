@@ -13,6 +13,7 @@
 --   5. App-Bewertungen werden automatisch aus den freigegebenen
 --      Bewertungen berechnet (kein Verzaehlen mehr moeglich).
 --
+--  Voraussetzung: Migration 011 (Admin-Liste) ist ausgefuehrt.
 --  Komplett markieren, im SQL-Editor einfuegen, "Run".
 --  Gefahrlos mehrfach ausfuehrbar.
 -- =============================================================
@@ -35,6 +36,7 @@ begin
 
     execute format('revoke select on public.%I from anon', p_table);
     execute format('grant select (%s) on public.%I to anon', v_cols, p_table);
+    -- Eingeloggte sehen alle Spalten; WELCHE Zeilen, regelt die Admin-Pruefung (Migration 011)
     execute format('grant select on public.%I to authenticated', p_table);
 end $$;
 
@@ -60,11 +62,11 @@ create policy "bug_public_read"   on public.bug_reports for select using (true);
 create policy "bug_public_insert" on public.bug_reports for insert
     with check (status = 'new' and coalesce(votes, 0) = 0);
 create policy "bug_admin_all"     on public.bug_reports for all to authenticated
-    using (true) with check (true);
+    using (public.is_admin()) with check (public.is_admin());
 
 -- Stimmen: nur der Admin liest/aendert direkt, Besucher gehen ueber die Funktionen unten
 create policy "bugvotes_admin_all" on public.bug_report_votes for all to authenticated
-    using (true) with check (true);
+    using (public.is_admin()) with check (public.is_admin());
 
 -- Kontaktangabe + Geraete-Kennung fuer Besucher unsichtbar machen
 select pg_temp.hide_columns('bug_reports', array['contact_info', 'reporter_device_id']);
@@ -117,7 +119,7 @@ drop policy if exists "votes_anon_delete" on public.app_post_votes;
 drop policy if exists "votes_public_read" on public.app_post_votes;
 drop policy if exists "votes_admin_all"   on public.app_post_votes;
 create policy "votes_admin_all" on public.app_post_votes for all to authenticated
-    using (true) with check (true);
+    using (public.is_admin()) with check (public.is_admin());
 revoke select on public.app_post_votes from anon;
 
 -- Geraete-Kennungen verbergen
