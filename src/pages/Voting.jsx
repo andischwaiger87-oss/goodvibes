@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { Database, AlertTriangle, Vote, Clock } from 'lucide-react';
 import { getDeviceId } from '../utils/security';
+import { CardGridSkeleton } from '../components/Skeleton';
 
 export default function Voting() {
     const [projects, setProjects] = useState([]);
@@ -115,18 +116,19 @@ export default function Voting() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        className="mt-6 sm:mt-8 inline-flex items-start sm:items-center gap-2 px-4 py-2.5 bg-white/80 backdrop-blur border border-slate-200 rounded-xl text-slate-600 text-sm text-left shadow-sm max-w-xl"
+                        className="mt-6 sm:mt-8 inline-flex items-center gap-2.5 px-4 py-2.5 bg-white/80 backdrop-blur border border-slate-200 rounded-2xl sm:rounded-full text-slate-600 text-sm text-left shadow-sm max-w-md sm:max-w-none"
                     >
-                        <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1.5 sm:mt-0" aria-hidden="true"></span>
-                        Hinweis: Du siehst das Ergebnis erst, nachdem du abgestimmt hast. So bleibt es fair.
+                        <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-60" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                        </span>
+                        <span className="text-balance sm:whitespace-nowrap">Das Ergebnis siehst du erst nach deiner Stimme – so bleibt es fair.</span>
                     </motion.div>
                 )}
             </div>
 
             {loading ? (
-                <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-100 border-t-blue-600" role="status" aria-label="Ideen werden geladen"></div>
-                </div>
+                <CardGridSkeleton count={6} />
             ) : projects.length > 0 ? (
                 <div className="relative">
                     {/* Overlay block on voting dashboard during review phase */}

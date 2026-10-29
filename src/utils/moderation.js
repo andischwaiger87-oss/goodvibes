@@ -253,7 +253,9 @@ export function validateImageFile(file) {
  *
  * Gibt Promise<{ ok, dataUrl?, reason? }> zurück.
  */
-export function sanitizeImage(file) {
+export function sanitizeImage(file, options = {}) {
+    // options.keepTransparency: Transparenz erhalten (z. B. fuer Mockups mit Geraeterahmen)
+    const keepTransparency = !!options.keepTransparency;
     return new Promise((resolve) => {
         const valid = validateImageFile(file);
         if (!valid.ok) return resolve(valid);
@@ -276,11 +278,17 @@ export function sanitizeImage(file) {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     // weißer Hintergrund (falls Transparenz), dann Bild neu zeichnen
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, width, height);
+                    if (!keepTransparency) {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, width, height);
+                    }
                     ctx.drawImage(img, 0, 0, width, height);
-                    // Neu-Kodierung als JPEG => EXIF/Payloads sind weg
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    // Neu-Kodierung => EXIF/Payloads sind weg.
+                    // Mit Transparenz: WebP (klein, mit Alphakanal); Browser ohne
+                    // WebP-Kodierung liefern automatisch PNG.
+                    const dataUrl = keepTransparency
+                        ? canvas.toDataURL('image/webp', 0.88)
+                        : canvas.toDataURL('image/jpeg', 0.85);
                     resolve({ ok: true, dataUrl });
                 } catch {
                     resolve({ ok: false, reason: 'Bild konnte nicht sicher verarbeitet werden.' });

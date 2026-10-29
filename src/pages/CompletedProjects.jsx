@@ -6,6 +6,7 @@ import { Award, ArrowRight, Sparkles, ExternalLink, Heart } from 'lucide-react';
 import { getCategoryLabel } from '../utils/categories';
 import { projectAvatarUrl } from '../utils/avatar';
 import { useSeo } from '../components/Seo';
+import { CardGridSkeleton } from '../components/Skeleton';
 
 export default function CompletedProjects() {
     const [projects, setProjects] = useState([]);
@@ -42,9 +43,7 @@ export default function CompletedProjects() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center py-32">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            </div>
+            <div className="max-w-6xl mx-auto py-10"><CardGridSkeleton count={2} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" /></div>
         );
     }
 

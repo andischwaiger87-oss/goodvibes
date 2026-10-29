@@ -24,7 +24,16 @@ function usePrefersReducedMotion() {
 
 const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+
+    // Feiner Schatten unter der Navigation, sobald gescrollt wird
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     useEffect(() => {
         setMobileMenuOpen(false);
@@ -108,7 +117,7 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
             )}
 
             {/* Main Navbar container */}
-            <nav aria-label="Hauptnavigation" className="w-full bg-white/80 backdrop-blur-xl backdrop-saturate-150 border-b border-slate-200/60 supports-[backdrop-filter]:bg-white/70">
+            <nav aria-label="Hauptnavigation" className={cn("w-full bg-white/80 backdrop-blur-xl backdrop-saturate-150 border-b transition-[box-shadow,border-color] duration-300 supports-[backdrop-filter]:bg-white/70", scrolled ? "border-slate-200/80 shadow-[0_6px_24px_-12px_rgba(15,23,42,0.18)]" : "border-transparent")}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}

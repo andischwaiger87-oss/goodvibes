@@ -91,3 +91,19 @@ export function screenshotFileName(app, shot, i) {
     const prefix = slugifyName(app?.slug || app?.name) || 'app';
     return `${prefix}-${base}.png`;
 }
+
+// -------------------------------------------------------------
+// EINSATZBEISPIELE (Mockups): Bild + Titel + kurze Erklaerung
+// -------------------------------------------------------------
+// Zeigen anschaulich, WOFUER eine App im Alltag genutzt wird.
+export function normalizeUseCases(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+        .map((u) => ({
+            src: u?.src || '',
+            alt: u?.alt || '',
+            title: u?.title || '',
+            text: u?.text || '',
+        }))
+        .filter((u) => u.src || u.title || u.text);
+}

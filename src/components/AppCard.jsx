@@ -24,7 +24,7 @@ export default function AppCard({ app, index = 0, postCount = 0 }) {
         >
             <Link
                 to={`/apps/${app.slug}`}
-                className="elgato-card group flex flex-col h-full p-5 sm:p-6 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-100"
+                className="elgato-card group flex flex-col h-full p-5 sm:p-6 hover:border-blue-200 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
                 aria-label={`${app.name} öffnen – Details und Community ansehen`}
             >
                 <div className="flex items-start gap-4">

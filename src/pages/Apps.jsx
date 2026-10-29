@@ -6,6 +6,7 @@ import AppCard from '../components/AppCard';
 import { categoryLabels } from '../utils/categories';
 import { cn } from '../utils/cn';
 import { useSeo } from '../components/Seo';
+import { CardGridSkeleton } from '../components/Skeleton';
 
 export default function Apps() {
     useSeo({
@@ -125,9 +126,7 @@ export default function Apps() {
 
             {/* Liste */}
             {loading ? (
-                <div className="flex justify-center items-center py-24">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" role="status" aria-label="Lädt" />
-                </div>
+                <CardGridSkeleton count={2} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" />
             ) : filtered.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {filtered.map((app, i) => (

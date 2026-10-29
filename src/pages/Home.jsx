@@ -75,7 +75,7 @@ export default function Home() {
                     className="h1-hero mb-5 sm:mb-7 max-w-4xl mx-auto leading-[1.08] text-[2.15rem] sm:text-5xl md:text-6xl lg:text-7xl"
                 >
                     Deine Idee für <br />
-                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">ein besseres Miteinander.</span>
+                    <span className="text-gradient-flow">ein besseres Miteinander.</span>
                 </motion.h1>
 
                 <motion.p

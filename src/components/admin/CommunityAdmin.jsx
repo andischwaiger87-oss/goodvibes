@@ -5,7 +5,7 @@ import {
     Ban, ShieldCheck, Pin, PinOff, CornerDownRight, MessageSquare, Loader2, RefreshCw,
     ImagePlus, ImageOff
 } from 'lucide-react';
-import { getPostType, POST_STATUS, normalizeScreenshots, slugifyName } from '../../utils/apps';
+import { getPostType, POST_STATUS, normalizeScreenshots, normalizeUseCases, slugifyName } from '../../utils/apps';
 import { categoryLabels } from '../../utils/categories';
 import { avatarUrl, moderateText, sanitizeImage } from '../../utils/moderation';
 import { cn } from '../../utils/cn';
@@ -59,10 +59,16 @@ export function AppManagementTab() {
 
         const payload = { ...form, slug };
 
-        if (form.id) {
-            await supabase.from('apps').update(payload).eq('id', form.id);
-        } else {
-            await supabase.from('apps').insert({ ...payload, created_at: new Date().toISOString() });
+        const { error } = form.id
+            ? await supabase.from('apps').update(payload).eq('id', form.id)
+            : await supabase.from('apps').insert({ ...payload, created_at: new Date().toISOString() });
+
+        if (error) {
+            const m = String(error.message || '');
+            setMsg(m.includes('use_cases')
+                ? 'Speichern nicht möglich: Für die Einsatzbeispiele fehlt noch die Datenbank-Spalte. Bitte Migration 010 in Supabase ausführen.'
+                : `Speichern fehlgeschlagen: ${m || 'unbekannter Fehler'}`);
+            return;
         }
         setEditing(null);
         fetchApps();
@@ -122,13 +128,13 @@ export function AppManagementTab() {
                 </div>
             )}
 
-            {editing && <AppEditor initial={editing} onSave={save} onCancel={() => setEditing(null)} />}
+            {editing && <AppEditor initial={editing} onSave={save} onCancel={() => { setEditing(null); setMsg(''); }} error={msg} />}
         </div>
     );
 }
 
-function AppEditor({ initial, onSave, onCancel }) {
-    const [form, setForm] = useState({ ...initial, screenshots: normalizeScreenshots(initial.screenshots) });
+function AppEditor({ initial, onSave, onCancel, error }) {
+    const [form, setForm] = useState({ ...initial, screenshots: normalizeScreenshots(initial.screenshots), use_cases: normalizeUseCases(initial.use_cases) });
     const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
     const input = 'w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none';
 
@@ -161,6 +167,34 @@ function AppEditor({ initial, onSave, onCancel }) {
     };
     const setScreenshotField = (idx, key, value) => {
         set('screenshots', (form.screenshots || []).map((sh, i) => (i === idx ? { ...sh, [key]: value } : sh)));
+    };
+
+    // ---------- Einsatzbeispiele (Mockups) ----------
+    const [ucBusy, setUcBusy] = useState(false);
+    const addUseCaseImages = async (e) => {
+        setImgError('');
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        setUcBusy(true);
+        const added = [];
+        for (const file of files) {
+            const res = await sanitizeImage(file, { keepTransparency: true });
+            if (res.ok) added.push({ src: res.dataUrl, alt: '', title: '', text: '' });
+            else setImgError(res.reason);
+        }
+        if (added.length) set('use_cases', [...(form.use_cases || []), ...added]);
+        setUcBusy(false);
+        e.target.value = '';
+    };
+    const setUseCaseField = (idx, key, value) =>
+        set('use_cases', (form.use_cases || []).map((u, i) => (i === idx ? { ...u, [key]: value } : u)));
+    const removeUseCase = (idx) => set('use_cases', (form.use_cases || []).filter((_, i) => i !== idx));
+    const moveUseCase = (idx, dir) => {
+        const arr = [...(form.use_cases || [])];
+        const j = idx + dir;
+        if (j < 0 || j >= arr.length) return;
+        [arr[idx], arr[j]] = [arr[j], arr[idx]];
+        set('use_cases', arr);
     };
 
     return (
@@ -284,6 +318,51 @@ function AppEditor({ initial, onSave, onCancel }) {
                         )}
                     </div>
 
+                    {/* Einsatzbeispiele (Mockups) */}
+                    <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-3.5">
+                        <label className="text-xs font-semibold text-slate-700">Einsatzbeispiele (Mockups)</label>
+                        <p className="text-[11px] text-slate-500 mb-2.5">
+                            Zeig anschaulich, wofür die App im Alltag genutzt wird: ein Bild (z. B. Handy-Mockup) plus kurzer Titel und ein, zwei Sätze.
+                            Transparente PNGs bleiben transparent. Erscheint auf der App-Seite als eigener Abschnitt.
+                        </p>
+
+                        {(form.use_cases || []).length > 0 && (
+                            <div className="space-y-2.5 mb-3">
+                                {form.use_cases.map((uc, idx) => (
+                                    <div key={idx} className="flex gap-3 items-start bg-white border border-gray-200 rounded-lg p-2.5">
+                                        {uc.src ? (
+                                            <img src={uc.src} alt="" className="h-24 w-20 object-contain rounded-md bg-slate-50 border border-gray-100 shrink-0" />
+                                        ) : (
+                                            <div className="h-24 w-20 rounded-md bg-slate-50 border border-dashed border-gray-200 shrink-0" />
+                                        )}
+                                        <div className="flex-grow min-w-0 space-y-1.5">
+                                            <input value={uc.title} onChange={(e) => setUseCaseField(idx, 'title', e.target.value)}
+                                                placeholder="Titel, z. B. „Der Morgen läuft wie von selbst“"
+                                                className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none" />
+                                            <textarea rows="2" value={uc.text} onChange={(e) => setUseCaseField(idx, 'text', e.target.value)}
+                                                placeholder="Ein, zwei Sätze: Wer nutzt das wie und was bringt es?"
+                                                className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none" />
+                                            <input value={uc.alt} onChange={(e) => setUseCaseField(idx, 'alt', e.target.value)}
+                                                placeholder="Alt-Text: Was ist auf dem Bild zu sehen?"
+                                                className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none" />
+                                            <div className="flex items-center gap-1">
+                                                <button type="button" onClick={() => moveUseCase(idx, -1)} className="text-xs px-2 py-1 rounded border border-gray-200 text-slate-600 hover:bg-gray-50" aria-label="Nach oben">▲</button>
+                                                <button type="button" onClick={() => moveUseCase(idx, 1)} className="text-xs px-2 py-1 rounded border border-gray-200 text-slate-600 hover:bg-gray-50" aria-label="Nach unten">▼</button>
+                                                <button type="button" onClick={() => removeUseCase(idx)} className="text-xs px-2 py-1 rounded border border-red-100 text-red-600 hover:bg-red-50 ml-auto inline-flex items-center gap-1" aria-label="Beispiel entfernen"><Trash2 className="w-3.5 h-3.5" /> Entfernen</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <label className={cn('inline-flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-lg border cursor-pointer bg-white', ucBusy ? 'opacity-60 pointer-events-none border-gray-200' : 'border-blue-200 text-blue-700 hover:bg-blue-50')}>
+                            {ucBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+                            {ucBusy ? 'Wird verarbeitet…' : 'Beispiel mit Bild hinzufügen'}
+                            <input type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={addUseCaseImages} className="hidden" />
+                        </label>
+                    </div>
+
                     <div className="flex items-center gap-6 pt-2">
                         <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer">
                             <input type="checkbox" checked={form.is_beta} onChange={(e) => set('is_beta', e.target.checked)} className="w-4 h-4" />
@@ -296,6 +375,7 @@ function AppEditor({ initial, onSave, onCancel }) {
                     </div>
                 </div>
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-100">
+                    {error && <p role="alert" className="mr-auto self-center text-xs text-red-600 max-w-sm">{error}</p>}
                     <button onClick={onCancel} className="btn-secondary text-sm">Abbrechen</button>
                     <button onClick={() => onSave(form)} className="btn-primary text-sm inline-flex items-center gap-2"><Save className="w-4 h-4" /> Speichern</button>
                 </div>

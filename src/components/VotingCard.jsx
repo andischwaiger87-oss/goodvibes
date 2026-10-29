@@ -294,7 +294,15 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                         <Wrench className="w-4 h-4 text-indigo-600" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-slate-900">{votes} Stimmen</span>
+                                        <motion.span
+                                            key={votes}
+                                            initial={{ scale: 1.35, color: '#2563eb' }}
+                                            animate={{ scale: 1, color: '#0f172a' }}
+                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                            className="text-sm font-bold text-slate-900 origin-left inline-block"
+                                        >
+                                            {votes} Stimmen
+                                        </motion.span>
                                         <span className="text-[10px] uppercase tracking-wide font-semibold text-indigo-600">In Umsetzung</span>
                                     </div>
                                 </motion.div>
@@ -356,7 +364,15 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                         <Heart className="w-4 h-4 fill-current" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-slate-900">{votes} Stimmen</span>
+                                        <motion.span
+                                            key={votes}
+                                            initial={{ scale: 1.35, color: '#2563eb' }}
+                                            animate={{ scale: 1, color: '#0f172a' }}
+                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                            className="text-sm font-bold text-slate-900 origin-left inline-block"
+                                        >
+                                            {votes} Stimmen
+                                        </motion.span>
                                         <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-400">{alreadyCounted ? 'Bereits gezählt' : 'Gestimmt'}</span>
                                     </div>
                                 </motion.div>

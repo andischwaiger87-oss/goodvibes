@@ -105,17 +105,17 @@ export default function CommunityFeed({ app }) {
 
             {/* Top-Wünsche (Priorisierung durch die Community) */}
             {featureRequests.length > 0 && (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 ring-1 ring-blue-100 rounded-3xl p-5 sm:p-6">
                     <h3 className="text-sm font-bold text-blue-900 mb-1 flex items-center gap-2">
                         <ThumbsUp className="w-4 h-4" /> Meist-gewünschte Verbesserungen
                     </h3>
                     <p className="text-xs text-blue-700/80 mb-3">Was viele wichtig finden, setzen wir zuerst um. Stimm mit einem Klick ab!</p>
                     <div className="space-y-2">
                         {featureRequests.map((p) => (
-                            <div key={p.id} className="flex items-center gap-3 bg-white/70 rounded-lg px-3 py-2">
+                            <div key={p.id} className="flex items-center gap-3 bg-white/80 rounded-xl px-3 py-2.5 shadow-sm">
                                 <button
                                     onClick={() => handleVote(p.id)}
-                                    className={cn('flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md border shrink-0 transition-all',
+                                    className={cn('flex items-center gap-1 text-xs font-bold px-2.5 min-h-[32px] rounded-lg border shrink-0 transition-all active:scale-95',
                                         myVotes.includes(p.id) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50')}
                                     aria-label={`Für „${p.title || 'diesen Wunsch'}" stimmen`}
                                 >
@@ -129,36 +129,78 @@ export default function CommunityFeed({ app }) {
             )}
 
             {/* Filter + Sortierung */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap gap-2" role="tablist" aria-label="Beiträge filtern">
-                        {TABS.map((t) => (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+                <div
+                    className="-mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    role="tablist"
+                    aria-label="Beiträge filtern"
+                >
+                    {TABS.map((t) => {
+                        const count = t.id === 'all' ? posts.length : posts.filter((p) => p.type === t.id).length;
+                        const active = tab === t.id;
+                        return (
                             <button
                                 key={t.id}
                                 role="tab"
-                                aria-selected={tab === t.id}
+                                aria-selected={active}
                                 onClick={() => setTab(t.id)}
-                                className={cn('px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all',
-                                    tab === t.id ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-50')}
+                                className={cn(
+                                    'shrink-0 inline-flex items-center gap-1.5 px-3.5 min-h-[40px] rounded-full text-sm font-semibold border transition-all active:scale-95',
+                                    active
+                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-md shadow-blue-600/20'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-blue-200 hover:text-blue-700'
+                                )}
                             >
                                 {t.label}
+                                <span className={cn('text-[11px] tabular-nums px-1.5 rounded-full', active ? 'bg-white/20' : 'bg-slate-100 text-slate-500')}>
+                                    {count}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                    <div className="inline-flex p-1 rounded-full bg-slate-100" role="group" aria-label="Sortierung">
+                        {[['top', 'Beliebteste'], ['new', 'Neueste']].map(([id, label]) => (
+                            <button
+                                key={id}
+                                onClick={() => setSortBy(id)}
+                                aria-pressed={sortBy === id}
+                                className={cn(
+                                    'px-3.5 min-h-[34px] rounded-full text-xs font-bold transition-all',
+                                    sortBy === id ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                                )}
+                            >
+                                {label}
                             </button>
                         ))}
                     </div>
-                    <button onClick={fetchAll} className="p-1.5 rounded-lg text-slate-400 hover:bg-gray-100 hover:text-slate-700 shrink-0" aria-label="Aktualisieren">
-                        <RotateCw className="w-4 h-4" />
+                    <button
+                        onClick={fetchAll}
+                        className="w-10 h-10 inline-flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors group"
+                        aria-label="Beiträge aktualisieren"
+                    >
+                        <RotateCw className="w-4 h-4 transition-transform duration-500 group-active:rotate-180" />
                     </button>
-                </div>
-                <div className="flex items-center gap-3 pt-2 border-t border-gray-100 text-xs">
-                    <span className="text-slate-400 font-medium">Sortieren:</span>
-                    <button onClick={() => setSortBy('top')} className={cn('font-bold py-1 px-2.5 rounded', sortBy === 'top' ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-slate-900')}>Beliebteste</button>
-                    <button onClick={() => setSortBy('new')} className={cn('font-bold py-1 px-2.5 rounded', sortBy === 'new' ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-slate-900')}>Neueste</button>
                 </div>
             </div>
 
             {/* Liste */}
             {loading ? (
-                <div className="flex justify-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" role="status" aria-label="Lädt" /></div>
+                <div className="space-y-4" role="status" aria-label="Beiträge werden geladen">
+                    {[0, 1].map((i) => (
+                        <div key={i} className="elgato-card p-5 animate-pulse" aria-hidden="true">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-9 h-9 rounded-full bg-slate-200" />
+                                <div className="h-3 w-32 bg-slate-200 rounded" />
+                            </div>
+                            <div className="h-4 w-2/3 bg-slate-200 rounded mb-3" />
+                            <div className="h-3 w-full bg-slate-100 rounded mb-2" />
+                            <div className="h-3 w-5/6 bg-slate-100 rounded" />
+                        </div>
+                    ))}
+                </div>
             ) : visible.length > 0 ? (
                 <div className="space-y-4">
                     <AnimatePresence>

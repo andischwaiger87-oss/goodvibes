@@ -3,6 +3,8 @@
 @theme {
     /* Behebt den Build-Fehler: Registriert die fehlende Animation in Tailwind v4 */
     --animate-gradient-x: gradient-x 3s ease infinite;
+    /* Langsamer, fliessender Farbwechsel fuer Headlines */
+    --animate-gradient-flow: gradient-x 8s ease-in-out infinite;
 
     @keyframes gradient-x {
         0%, 100% { background-position: 0% 50%; }
@@ -109,6 +111,13 @@ p, li { text-wrap: pretty; }
 @utility h1-hero {
     @apply text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900;
     text-wrap: balance;
+}
+
+/* Text mit sanft fliessendem Marken-Verlauf (Blau -> Indigo -> Violett -> Blau) */
+@utility text-gradient-flow {
+    @apply bg-clip-text text-transparent animate-gradient-flow;
+    background-image: linear-gradient(90deg, #2563eb, #4f46e5, #7c3aed, #4f46e5, #2563eb);
+    background-size: 300% auto;
 }
 
 @utility text-subtle {

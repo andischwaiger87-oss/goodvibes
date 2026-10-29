@@ -1,25 +1,76 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import {
-    ArrowLeft, ExternalLink, FlaskConical, CheckCircle2, Sparkles,
-    Info, ImageOff, ShieldCheck, Maximize2
+    ArrowLeft, ExternalLink, FlaskConical, Check, Sparkles,
+    MessageSquare, Maximize2, ChevronRight, Star,
 } from 'lucide-react';
-import { getAccent, averageRating, normalizeScreenshots, screenshotAlt, screenshotFileName } from '../utils/apps';
+import {
+    averageRating, normalizeScreenshots, normalizeUseCases,
+    screenshotAlt, screenshotFileName,
+} from '../utils/apps';
 import { getCategoryLabel } from '../utils/categories';
-import StarRating from '../components/StarRating';
 import CommunityFeed from '../components/CommunityFeed';
 import Lightbox from '../components/Lightbox';
 import { useSeo } from '../components/Seo';
 import { COMMUNITY_AVATAR } from '../utils/avatar';
 import { cn } from '../utils/cn';
 
+/** Sanftes Einblenden beim Scrollen – entfaellt bei "weniger Bewegung". */
+function Reveal({ children, className, delay = 0 }) {
+    const reduce = useReducedMotion();
+    if (reduce) return <div className={className}>{children}</div>;
+    return (
+        <motion.div
+            className={className}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay }}
+        >
+            {children}
+        </motion.div>
+    );
+}
+
+/** Einheitlicher Abschnittskopf: kleine Ueberzeile + klare Ueberschrift. */
+function SectionHeading({ id, eyebrow, children }) {
+    return (
+        <div className="mb-6 sm:mb-8">
+            {eyebrow && (
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-600 mb-2">{eyebrow}</p>
+            )}
+            <h2 id={id} className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                {children}
+            </h2>
+        </div>
+    );
+}
+
+/** Platzhalter beim Laden – wirkt ruhiger als ein Dreh-Kreis. */
+function DetailSkeleton() {
+    return (
+        <div className="max-w-5xl mx-auto py-5 sm:py-12 animate-pulse" role="status" aria-label="App wird geladen">
+            <div className="h-4 w-24 bg-slate-200 rounded mb-6" />
+            <div className="rounded-[2rem] bg-slate-200/80 h-80 sm:h-96" />
+            <div className="mt-14 space-y-3 max-w-2xl">
+                <div className="h-6 w-48 bg-slate-200 rounded" />
+                <div className="h-4 w-full bg-slate-200 rounded" />
+                <div className="h-4 w-11/12 bg-slate-200 rounded" />
+                <div className="h-4 w-4/5 bg-slate-200 rounded" />
+            </div>
+        </div>
+    );
+}
+
 export default function AppDetail() {
     const { slug } = useParams();
     const [app, setApp] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [lightboxIndex, setLightboxIndex] = useState(null);
+    const [lightbox, setLightbox] = useState(null); // { shots, index }
+    const [showStickyCta, setShowStickyCta] = useState(false);
+    const heroRef = useRef(null);
 
     useEffect(() => { fetchApp(); }, [slug]);
 
@@ -35,28 +86,28 @@ export default function AppDetail() {
         }
     };
 
-    // SEO: echter App-Name/Beschreibung, sobald geladen.
-    // Hook laeuft immer (vor den fruehen returns), damit die Hook-Reihenfolge stabil bleibt.
+    // Handy: "App öffnen"-Leiste einblenden, sobald der Kopfbereich aus dem Bild ist
+    useEffect(() => {
+        const el = heroRef.current;
+        if (!el || !('IntersectionObserver' in window)) return;
+        const io = new IntersectionObserver(([entry]) => setShowStickyCta(!entry.isIntersecting), { threshold: 0 });
+        io.observe(el);
+        return () => io.disconnect();
+    }, [app]);
+
     useSeo({
         title: app ? `${app.name} — App & Community | GoodVibes` : undefined,
         description: app
             ? (app.tagline || app.description || '').replace(/\s+/g, ' ').trim().slice(0, 155)
             : undefined,
-        // Nicht gefundene Apps nicht indexieren lassen
         noindex: !loading && !app ? true : undefined,
     });
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center py-32">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" role="status" aria-label="Lädt" />
-            </div>
-        );
-    }
+    if (loading) return <DetailSkeleton />;
 
     if (!app) {
         return (
-            <div className="max-w-2xl mx-auto text-center py-24 px-4">
+            <div className="max-w-2xl mx-auto text-center py-24">
                 <h1 className="text-2xl font-bold text-slate-900 mb-3">App nicht gefunden</h1>
                 <p className="text-slate-500 mb-6">Diese App gibt es nicht (mehr). Schau dich gerne im App-Bereich um.</p>
                 <Link to="/apps" className="btn-primary inline-flex items-center gap-2">
@@ -66,185 +117,314 @@ export default function AppDetail() {
         );
     }
 
-    const accent = getAccent(app.accent);
     const avg = averageRating(app);
     const features = (app.features || '').split('\n').map((f) => f.trim()).filter(Boolean);
     const screenshots = normalizeScreenshots(app.screenshots);
+    const useCases = normalizeUseCases(app.use_cases);
+    const scopeItems = (app.scope || '').split('•').map((s) => s.trim()).filter(Boolean);
+    const heroImage = useCases.find((u) => u.src) || screenshots[0] || null;
+
+    const openShots = (shots, index) => setLightbox({ shots, index });
+    const useCaseShots = useCases.filter((u) => u.src).map((u) => ({ src: u.src, alt: u.alt || u.title, name: u.title }));
 
     return (
-        <div className="max-w-5xl mx-auto py-5 sm:py-12">
-            <Link to="/apps" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Alle Apps
+        <div className="max-w-5xl mx-auto pt-4 pb-24 sm:pt-10 lg:pb-10">
+            <Link
+                to="/apps"
+                className="group inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 mb-5 transition-colors"
+            >
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" /> Alle Apps
             </Link>
 
-            {/* BETA-Hinweis-Banner */}
-            {app.is_beta && (
-                <motion.div
-                    initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5 flex items-start gap-3"
-                    role="note"
-                >
-                    <FlaskConical className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+            {/* ================= HERO ================= */}
+            <header
+                ref={heroRef}
+                className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 text-white shadow-xl shadow-indigo-500/20"
+            >
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+                    <div className="absolute -top-24 -right-20 w-80 h-80 rounded-full bg-white/15 blur-3xl" />
+                    <div className="absolute -bottom-28 -left-16 w-72 h-72 rounded-full bg-violet-300/25 blur-3xl" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.12)_1px,transparent_0)] [background-size:22px_22px] opacity-40" />
+                </div>
+
+                <div className={cn('relative grid gap-8 p-6 sm:p-10', heroImage && 'lg:grid-cols-[1.15fr_0.85fr] lg:items-center')}>
                     <div>
-                        <p className="font-bold text-amber-900 text-sm">Diese App ist in der Test-Phase (BETA)</p>
-                        <p className="text-sm text-amber-800 leading-relaxed">
-                            Das heißt: Die App ist neu und wird gerade ausprobiert. Es kann noch kleine Fehler geben.
-                            Genau dafür sind wir hier – <strong>dein Feedback hilft uns</strong>, sie besser zu machen. Danke, dass du dabei bist!
-                        </p>
-                    </div>
-                </motion.div>
-            )}
-
-            {/* Kopfbereich */}
-            <div className="elgato-card p-6 sm:p-8 relative overflow-hidden">
-                <div className={cn('absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r', accent.ring)} />
-                <div className="flex flex-col sm:flex-row gap-6">
-                    <div className="shrink-0 w-24 h-24 rounded-3xl bg-white ring-1 ring-gray-200 shadow-sm flex items-center justify-center overflow-hidden mx-auto sm:mx-0" aria-hidden="true">
-                        <img src={COMMUNITY_AVATAR} alt="" className="w-20 h-20" loading="lazy" />
-                    </div>
-
-                    <div className="flex-grow min-w-0 text-center sm:text-left">
-                        <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
-                            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{app.name}</h1>
-                            {app.is_beta && (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wide">
-                                    <FlaskConical className="w-3 h-3" /> Beta
-                                </span>
-                            )}
+                        <div className="flex items-center gap-4">
+                            <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-white shadow-lg shadow-indigo-900/20 flex items-center justify-center">
+                                <img src={COMMUNITY_AVATAR} alt="" aria-hidden="true" className="w-12 h-12 sm:w-16 sm:h-16" />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-none">{app.name}</h1>
+                                    {app.is_beta && (
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-300 text-amber-950 uppercase tracking-wide">
+                                            <FlaskConical className="w-3 h-3" aria-hidden="true" /> Beta
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-blue-100 text-sm mt-2">
+                                    {getCategoryLabel(app.category)} · Version {app.version}
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-slate-500 mt-1">{app.tagline}</p>
 
-                        <div className="flex items-center gap-x-4 gap-y-2 flex-wrap mt-3 justify-center sm:justify-start text-sm text-slate-500">
-                            <span className={cn('inline-flex px-2 py-0.5 rounded border font-medium', accent.soft)}>
-                                {getCategoryLabel(app.category)}
-                            </span>
+                        {app.tagline && (
+                            <p className="mt-6 text-xl sm:text-2xl font-semibold leading-snug text-white/95 max-w-xl text-balance">
+                                {app.tagline}
+                            </p>
+                        )}
+
+                        {/* Bewertung */}
+                        <div className="mt-4 flex items-center gap-2 text-sm text-blue-50">
                             {app.rating_count > 0 ? (
-                                <span className="inline-flex items-center gap-1.5">
-                                    <StarRating value={avg} readOnly size="sm" showValue />
-                                    <span className="text-slate-400">({app.rating_count} Bewertungen)</span>
-                                </span>
+                                <>
+                                    <span className="inline-flex items-center gap-1 font-bold text-white">
+                                        <Star className="w-4 h-4 fill-amber-300 text-amber-300" aria-hidden="true" />
+                                        {avg.toFixed(1)}
+                                    </span>
+                                    <span>aus {app.rating_count} {app.rating_count === 1 ? 'Bewertung' : 'Bewertungen'}</span>
+                                </>
                             ) : (
-                                <span className="text-slate-400">Noch keine Bewertung</span>
+                                <a href="#feedback" className="underline decoration-white/40 underline-offset-4 hover:decoration-white">
+                                    Noch keine Bewertung – sei die erste Person!
+                                </a>
                             )}
-                            <span className="font-medium">Version {app.version}</span>
                         </div>
 
-                        {/* Prominenter Öffnen-Button */}
-                        <div className="mt-5">
+                        {/* Aktionen */}
+                        <div className="mt-7 flex flex-col sm:flex-row gap-3">
                             {app.live_url ? (
                                 <a
                                     href={app.live_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn-primary inline-flex items-center gap-2 text-base py-3 px-8 shadow-lg shadow-blue-500/20"
+                                    className="group inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold text-base min-h-[52px] px-7 rounded-2xl shadow-lg shadow-indigo-900/25 hover:bg-blue-50 active:scale-[0.98] transition-all"
                                 >
-                                    <ExternalLink className="w-5 h-5" /> App öffnen
+                                    App öffnen
+                                    <ExternalLink className="w-5 h-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
                                 </a>
                             ) : (
-                                <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 bg-gray-50 border border-gray-200 rounded-lg py-3 px-6">
+                                <span className="inline-flex items-center justify-center min-h-[52px] px-7 rounded-2xl bg-white/10 ring-1 ring-white/25 text-white/80 font-semibold">
                                     Bald verfügbar
                                 </span>
                             )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Umfang / Kurz-Infos */}
-            {app.scope && (
-                <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-2.5 text-sm text-slate-600 shadow-sm">
-                    <ShieldCheck className="w-4 h-4 text-green-600 shrink-0 mt-0.5" aria-hidden="true" />
-                    <span>{app.scope}</span>
-                </div>
-            )}
-
-            {/* Beschreibung */}
-            <section className="mt-8" aria-labelledby="beschreibung-heading">
-                <h2 id="beschreibung-heading" className="text-lg font-bold text-slate-900 mb-3">Worum geht es?</h2>
-                <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">{app.description}</p>
-            </section>
-
-            {/* Funktionen */}
-            {features.length > 0 && (
-                <section className="mt-8" aria-labelledby="funktionen-heading">
-                    <h2 id="funktionen-heading" className="text-lg font-bold text-slate-900 mb-3">Das kann die App</h2>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {features.map((f, i) => (
-                            <li key={i} className="flex items-start gap-2.5 bg-white border border-gray-200 rounded-xl p-3.5 shadow-sm">
-                                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" aria-hidden="true" />
-                                <span className="text-sm text-slate-700 leading-relaxed">{f}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-            )}
-
-            {/* Was ist neu */}
-            {app.whats_new && (
-                <section className="mt-8" aria-labelledby="neu-heading">
-                    <h2 id="neu-heading" className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-amber-500" aria-hidden="true" /> Was ist neu?
-                    </h2>
-                    <div className="bg-amber-50/60 border border-amber-100 rounded-xl p-4 text-sm text-slate-700 leading-relaxed">
-                        <p className="text-xs font-bold text-amber-700 mb-1">Version {app.version}</p>
-                        {app.whats_new}
-                    </div>
-                </section>
-            )}
-
-            {/* Screenshots */}
-            <section className="mt-8" aria-labelledby="bilder-heading">
-                <h2 id="bilder-heading" className="text-lg font-bold text-slate-900 mb-3">Vorschau</h2>
-                {screenshots.length > 0 ? (
-                    <div className="flex gap-4 overflow-x-auto pb-3 snap-x">
-                        {screenshots.map((shot, i) => (
-                            <button
-                                key={i}
-                                type="button"
-                                onClick={() => setLightboxIndex(i)}
-                                className="group relative shrink-0 snap-start rounded-xl overflow-hidden border border-gray-200 shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-100"
-                                aria-label={`${screenshotAlt(app, shot, i)} – groß ansehen`}
+                            <a
+                                href="#feedback"
+                                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-white/10 ring-1 ring-white/30 text-white font-semibold hover:bg-white/20 active:scale-[0.98] transition-all"
                             >
-                                <img
-                                    src={shot.src}
-                                    alt={screenshotAlt(app, shot, i)}
-                                    title={screenshotFileName(app, shot, i)}
-                                    className="h-72 w-auto object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                                    loading="lazy"
-                                />
-                                <span className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors" aria-hidden="true" />
-                                <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-lg bg-slate-900/70 text-white text-[11px] font-semibold px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
-                                    <Maximize2 className="w-3.5 h-3.5" /> Ansehen
-                                </span>
-                            </button>
-                        ))}
+                                <MessageSquare className="w-5 h-5" aria-hidden="true" /> Feedback geben
+                            </a>
+                        </div>
+
+                        {/* Kurz-Infos */}
+                        {scopeItems.length > 0 && (
+                            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-blue-50" aria-label="Auf einen Blick">
+                                {scopeItems.map((item) => (
+                                    <li key={item} className="inline-flex items-center gap-1.5">
+                                        <Check className="w-4 h-4 text-emerald-300" aria-hidden="true" /> {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
-                ) : (
-                    <div className="flex items-center gap-2.5 text-sm text-slate-400 bg-gray-50 border border-dashed border-gray-200 rounded-xl p-5">
-                        <ImageOff className="w-5 h-5" aria-hidden="true" />
-                        Noch keine Vorschau-Bilder. Am schnellsten siehst du die App über „App öffnen".
+
+                    {/* Vorschaubild im Hero (Desktop) */}
+                    {heroImage && (
+                        <div className="hidden lg:flex justify-center">
+                            <img
+                                src={heroImage.src}
+                                alt={heroImage.alt || heroImage.title || `Vorschau der App ${app.name}`}
+                                className="max-h-[420px] w-auto object-contain drop-shadow-2xl rotate-2 transition-transform duration-500 hover:rotate-0 hover:scale-[1.02]"
+                            />
+                        </div>
+                    )}
+                </div>
+            </header>
+
+            {/* BETA-Hinweis */}
+            {app.is_beta && (
+                <p role="note" className="mt-4 flex items-start gap-2.5 text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
+                    <FlaskConical className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>
+                        <strong>Test-Phase:</strong> Die App ist neu und kann noch kleine Fehler haben.
+                        Dein Feedback hilft, sie besser zu machen.
+                    </span>
+                </p>
+            )}
+
+            {/* ================= WORUM GEHT ES ================= */}
+            {app.description && (
+                <Reveal className="mt-14 sm:mt-20">
+                    <section aria-labelledby="beschreibung-heading" className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
+                        <SectionHeading id="beschreibung-heading" eyebrow="Die Idee">Worum geht es?</SectionHeading>
+                        <p className="text-lg text-slate-600 leading-[1.75] max-w-[65ch] whitespace-pre-wrap lg:pt-7">
+                            {app.description}
+                        </p>
+                    </section>
+                </Reveal>
+            )}
+
+            {/* ================= EINSATZBEISPIELE ================= */}
+            {useCases.length > 0 && (
+                <section aria-labelledby="beispiele-heading" className="mt-16 sm:mt-24">
+                    <Reveal>
+                        <SectionHeading id="beispiele-heading" eyebrow="Im Alltag">So hilft {app.name}</SectionHeading>
+                    </Reveal>
+                    <div className="space-y-12 sm:space-y-20">
+                        {useCases.map((uc, i) => {
+                            const imgIndex = useCaseShots.findIndex((s) => s.src === uc.src);
+                            return (
+                                <Reveal key={i}>
+                                    <article className="grid items-center gap-6 sm:gap-10 md:grid-cols-2">
+                                        {uc.src && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openShots(useCaseShots, imgIndex)}
+                                                className={cn(
+                                                    'group relative rounded-[1.75rem] bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 ring-1 ring-indigo-100/70 p-6 sm:p-10 flex items-center justify-center overflow-hidden',
+                                                    i % 2 === 1 && 'md:order-2'
+                                                )}
+                                                aria-label={`${uc.alt || uc.title || 'Beispielbild'} – groß ansehen`}
+                                            >
+                                                <div aria-hidden="true" className="absolute -bottom-16 -right-16 w-56 h-56 rounded-full bg-indigo-200/40 blur-3xl" />
+                                                <img
+                                                    src={uc.src}
+                                                    alt={uc.alt || uc.title || ''}
+                                                    loading="lazy"
+                                                    className="relative max-h-[380px] w-auto object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-[1.03]"
+                                                />
+                                            </button>
+                                        )}
+                                        <div className={cn(!uc.src && 'md:col-span-2')}>
+                                            <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-sm font-bold shadow-md shadow-blue-600/20 mb-4">
+                                                {i + 1}
+                                            </span>
+                                            {uc.title && (
+                                                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-3 text-balance">{uc.title}</h3>
+                                            )}
+                                            {uc.text && (
+                                                <p className="text-slate-600 leading-relaxed text-base sm:text-lg max-w-[52ch]">{uc.text}</p>
+                                            )}
+                                        </div>
+                                    </article>
+                                </Reveal>
+                            );
+                        })}
                     </div>
-                )}
+                </section>
+            )}
+
+            {/* ================= FUNKTIONEN ================= */}
+            {features.length > 0 && (
+                <Reveal className="mt-16 sm:mt-24">
+                    <section aria-labelledby="funktionen-heading">
+                        <SectionHeading id="funktionen-heading" eyebrow="Funktionen">Das kann die App</SectionHeading>
+                        <ul className="grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                            {features.map((f, i) => (
+                                <li key={i} className="flex items-start gap-3.5">
+                                    <span className="shrink-0 mt-0.5 w-7 h-7 rounded-full bg-gradient-to-br from-emerald-50 to-teal-50 ring-1 ring-emerald-100 flex items-center justify-center">
+                                        <Check className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+                                    </span>
+                                    <span className="text-slate-700 leading-relaxed">{f}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                </Reveal>
+            )}
+
+            {/* ================= VORSCHAU ================= */}
+            {screenshots.length > 0 && (
+                <Reveal className="mt-16 sm:mt-24">
+                    <section aria-labelledby="bilder-heading">
+                        <div className="flex items-end justify-between gap-4">
+                            <SectionHeading id="bilder-heading" eyebrow="Einblicke">So sieht es aus</SectionHeading>
+                            <p className="sm:hidden text-xs text-slate-400 mb-8 inline-flex items-center gap-1 shrink-0">
+                                Wischen <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
+                            </p>
+                        </div>
+                        <div className="-mx-4 sm:mx-0 px-4 sm:px-0 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-px-4 [scrollbar-width:thin]">
+                            {screenshots.map((shot, i) => (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => openShots(screenshots, i)}
+                                    className="group relative shrink-0 snap-start rounded-2xl overflow-hidden ring-1 ring-slate-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                                    aria-label={`${screenshotAlt(app, shot, i)} – groß ansehen`}
+                                >
+                                    <img
+                                        src={shot.src}
+                                        alt={screenshotAlt(app, shot, i)}
+                                        title={screenshotFileName(app, shot, i)}
+                                        className="h-80 sm:h-96 w-auto object-cover"
+                                        loading="lazy"
+                                    />
+                                    <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur text-slate-700 text-xs font-semibold px-2.5 py-1 shadow-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 transition-all" aria-hidden="true">
+                                        <Maximize2 className="w-3.5 h-3.5" /> Vergrößern
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+                </Reveal>
+            )}
+
+            {/* ================= WAS IST NEU ================= */}
+            {app.whats_new && (
+                <Reveal className="mt-16 sm:mt-24">
+                    <section aria-labelledby="neu-heading" className="relative pl-5 sm:pl-6">
+                        <span aria-hidden="true" className="absolute left-[-2px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-600 via-indigo-500 to-violet-500 rounded-full" />
+                        <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-blue-600 mb-2">
+                            <Sparkles className="w-3.5 h-3.5" aria-hidden="true" /> Neu in Version {app.version}
+                        </p>
+                        <h2 id="neu-heading" className="sr-only">Was ist neu?</h2>
+                        <p className="text-slate-700 leading-relaxed max-w-[65ch]">{app.whats_new}</p>
+                    </section>
+                </Reveal>
+            )}
+
+            {/* ================= FEEDBACK ================= */}
+            <section id="feedback" aria-labelledby="feedback-heading" className="mt-16 sm:mt-24 scroll-mt-28">
+                <Reveal>
+                    <SectionHeading id="feedback-heading" eyebrow="Austausch & Feedback">Was meinst du?</SectionHeading>
+                </Reveal>
+                <CommunityFeed app={app} />
             </section>
 
-            {/* Info-Trenner */}
-            <div className="mt-12 mb-6 flex items-center gap-3">
-                <div className="h-px bg-gray-200 flex-grow" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 inline-flex items-center gap-1.5">
-                    <Info className="w-4 h-4" /> Austausch & Feedback
-                </span>
-                <div className="h-px bg-gray-200 flex-grow" />
-            </div>
+            {/* ================= HANDY: Aktionsleiste ================= */}
+            {app.live_url && (
+                <div
+                    className={cn(
+                        'lg:hidden fixed inset-x-0 bottom-0 z-30 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white/90 backdrop-blur-xl border-t border-slate-200/70 shadow-[0_-8px_24px_-12px_rgba(15,23,42,0.18)] transition-transform duration-300',
+                        showStickyCta ? 'translate-y-0' : 'translate-y-full'
+                    )}
+                    aria-hidden={!showStickyCta}
+                >
+                    <div className="max-w-5xl mx-auto flex items-center gap-3">
+                        <img src={COMMUNITY_AVATAR} alt="" aria-hidden="true" className="w-10 h-10 rounded-xl bg-slate-50 ring-1 ring-slate-200 shrink-0" />
+                        <div className="min-w-0 flex-grow">
+                            <p className="font-bold text-slate-900 leading-tight truncate">{app.name}</p>
+                            <p className="text-xs text-slate-500 truncate">Kostenlos · ohne Anmeldung</p>
+                        </div>
+                        <a
+                            href={app.live_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            tabIndex={showStickyCta ? 0 : -1}
+                            className="btn-primary inline-flex items-center gap-1.5 px-5 text-sm shrink-0"
+                        >
+                            Öffnen <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                        </a>
+                    </div>
+                </div>
+            )}
 
-            {/* Community-Bereich (Forum / Chat) */}
-            <CommunityFeed app={app} />
-
-            {lightboxIndex !== null && screenshots.length > 0 && (
+            {lightbox && lightbox.shots.length > 0 && (
                 <Lightbox
-                    shots={screenshots}
-                    startIndex={lightboxIndex}
+                    shots={lightbox.shots}
+                    startIndex={Math.max(0, lightbox.index)}
                     app={app}
-                    onClose={() => setLightboxIndex(null)}
+                    onClose={() => setLightbox(null)}
                 />
             )}
         </div>
