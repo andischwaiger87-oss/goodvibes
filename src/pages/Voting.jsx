@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import VotingCard from '../components/VotingCard';
 import { motion } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Database, AlertTriangle, Vote, Clock } from 'lucide-react';
+import { Database, AlertTriangle, Vote, Clock, Target } from 'lucide-react';
 import { getDeviceId } from '../utils/security';
 import { CardGridSkeleton } from '../components/Skeleton';
 
@@ -11,6 +11,7 @@ export default function Voting() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPhase, setCurrentPhase] = useState('submission');
+    const [voteGoal, setVoteGoal] = useState(100);
 
     useEffect(() => {
         fetchPhaseAndProjects();
@@ -26,6 +27,9 @@ export default function Voting() {
                 if (phaseSetting) {
                     setCurrentPhase(phaseSetting.value);
                 }
+                const goalSetting = settings.find(s => s.key === 'vote_goal');
+                const goal = parseInt(goalSetting?.value, 10);
+                if (goal > 0) setVoteGoal(goal);
             }
 
             // 2. Fetch projects (active + implementation + user rejected)
@@ -125,6 +129,22 @@ export default function Voting() {
                         <span className="text-balance sm:whitespace-nowrap">Das Ergebnis siehst du erst nach deiner Stimme – so bleibt es fair.</span>
                     </motion.div>
                 )}
+
+                {/* So funktioniert die Zielmarke */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-6 sm:mt-8 max-w-2xl mx-auto flex items-start gap-4 text-left"
+                >
+                    <span className="shrink-0 w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                        <Target className="w-5 h-5" aria-hidden="true" />
+                    </span>
+                    <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                        <strong className="text-slate-900">Ziel: {voteGoal} Stimmen.</strong>{' '}
+                        Erreicht eine Idee die Marke, kommt sie auf die Umsetzungsliste. GoodVibes ist ehrenamtlich – ich setze eine Idee nach der anderen um, in der Reihenfolge der Stimmen.
+                    </p>
+                </motion.div>
             </div>
 
             {loading ? (
@@ -142,6 +162,7 @@ export default function Voting() {
                                 project={project} 
                                 onVote={handleVoteUpdate} 
                                 isGlobalPhaseReview={currentPhase === 'review'}
+                                voteGoal={voteGoal}
                             />
                         ))}
                     </div>

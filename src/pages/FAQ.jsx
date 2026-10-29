@@ -16,6 +16,10 @@ const faqs = [
         answer: "In erster Linie fürs Handy – dort werden die Apps im Alltag gebraucht, und von dort kommen auch die meisten Besuche. Alle Apps laufen direkt im Browser, ohne Installation aus dem App Store. Am Computer funktionieren sie ebenfalls."
     },
     {
+        question: "Ab wann wird eine Idee umgesetzt?",
+        answer: "Jede Idee hat ein Ziel von 100 Stimmen. Erreicht sie die Marke, kommt sie auf die Umsetzungsliste. Da GoodVibes ehrenamtlich neben meiner Arbeit läuft, setze ich eine Idee nach der anderen um – in der Reihenfolge der Stimmen. Einen fixen Termin gibt es daher nicht, aber du kannst den Fortschritt jederzeit verfolgen. Kommen mehr Menschen auf GoodVibes, kann die Marke steigen."
+    },
+    {
         question: "Wer entscheidet, welche Idee umgesetzt wird?",
         answer: "Wir alle gemeinsam. Jede eingereichte Idee wird (nach einer kurzen Spam-Prüfung) veröffentlicht. Danach kann die Community abstimmen. Das Projekt mit den meisten Stimmen gewinnt und wird von mir entwickelt."
     },

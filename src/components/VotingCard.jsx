@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye, Wrench } from 'lucide-react';
+import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye, Wrench, Target, Trophy } from 'lucide-react';
 import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/security';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
@@ -11,7 +11,7 @@ import { projectAvatarUrl } from '../utils/avatar';
 // Avatare kommen lokal aus /public/avatars (kein Drittanbieter).
 // Projekte mit fertiger App zeigen das App-Avatar (siehe utils/avatar.js).
 
-export default function VotingCard({ project, onVote, isGlobalPhaseReview = false }) {
+export default function VotingCard({ project, onVote, isGlobalPhaseReview = false, voteGoal = 100 }) {
     const [hasVoted, setHasVoted] = useState(hasAlreadyVotedLocal(project.id));
     const [showConfirm, setShowConfirm] = useState(false);
     const [votes, setVotes] = useState(project.votes || 0);
@@ -25,6 +25,8 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
     const isRejected = project.status === 'rejected';
     const isImplementation = project.status === 'implementation';
     const isOwner = project.owner_id === getDeviceId();
+    const goalReached = votes >= voteGoal;
+    const goalPercent = Math.min(100, Math.round((votes / voteGoal) * 100));
 
     const handleInitialVoteClick = () => {
         if (isGlobalPhaseReview) return;
@@ -278,6 +280,41 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                             {project.benefit}
                         </p>
                     </div>
+
+                    {/* Fortschritt zur Zielmarke */}
+                    {!isImplementation && (
+                        <div className="mt-5">
+                            {goalReached ? (
+                                <p className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white">
+                                    <Trophy className="w-3.5 h-3.5" aria-hidden="true" /> Ziel erreicht – auf der Umsetzungsliste
+                                </p>
+                            ) : hasVoted ? (
+                                <div>
+                                    <div className="flex items-center justify-between text-xs mb-1.5">
+                                        <span className="font-semibold text-slate-700">{votes} von {voteGoal} Stimmen</span>
+                                        <span className="text-slate-400">noch {voteGoal - votes}</span>
+                                    </div>
+                                    <div
+                                        className="h-2 rounded-full bg-slate-100 overflow-hidden"
+                                        role="progressbar" aria-valuemin={0} aria-valuemax={voteGoal} aria-valuenow={votes}
+                                        aria-label={`${votes} von ${voteGoal} Stimmen bis zur Umsetzungsliste`}
+                                    >
+                                        <motion.div
+                                            className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${goalPercent}%` }}
+                                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                                    <Target className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" />
+                                    Ziel: {voteGoal} Stimmen – den Stand siehst du nach deiner Stimme.
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 mt-auto min-h-[64px]" onClick={(e) => e.stopPropagation()}>

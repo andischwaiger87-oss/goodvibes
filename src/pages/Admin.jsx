@@ -284,6 +284,7 @@ function ProjectModerationTab({ projects, fetchProjects, loading }) {
 function PhaseControlTab({ projects, fetchProjects }) {
     const [currentPhase, setCurrentPhase] = useState('submission');
     const [activeProjectId, setActiveProjectId] = useState('');
+    const [voteGoal, setVoteGoal] = useState('100');
     const [saving, setSaving] = useState(false);
     const [saveMsg, setSaveMsg] = useState('');
 
@@ -309,6 +310,8 @@ function PhaseControlTab({ projects, fetchProjects }) {
             const proj = data.find(s => s.key === 'active_project_id');
             if (phase) setCurrentPhase(phase.value);
             if (proj) setActiveProjectId(proj.value);
+            const goal = data.find(s => s.key === 'vote_goal');
+            if (goal) setVoteGoal(goal.value);
         }
     };
 
@@ -327,6 +330,14 @@ function PhaseControlTab({ projects, fetchProjects }) {
             // SOTA-Fix: Wir fangen Fehler beim Schreiben aktiv ab, anstatt Erfolg blind zu vermuten
             const { error: phaseError } = await supabase.from('app_settings').update({ value: currentPhase }).eq('key', 'current_phase');
             const { error: projectError } = await supabase.from('app_settings').update({ value: activeProjectId }).eq('key', 'active_project_id');
+
+            const goalNum = Math.max(1, parseInt(voteGoal, 10) || 100);
+            const { error: goalError } = await supabase.from('app_settings').update({ value: String(goalNum) }).eq('key', 'vote_goal');
+            if (goalError) {
+                setSaveMsg('Zielmarke konnte nicht gespeichert werden: ' + goalError.message + ' (Migration 013 ausgeführt?)');
+                setSaving(false);
+                return;
+            }
 
             if (phaseError || projectError) {
                 setSaveMsg('Datenbank-Fehler: ' + (phaseError?.message || projectError?.message));
@@ -451,6 +462,18 @@ function PhaseControlTab({ projects, fetchProjects }) {
                         </select>
                     </div>
                 )}
+
+                {/* Zielmarke fuer die Abstimmung */}
+                <div className="mb-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                    <label htmlFor="vote-goal" className="block text-sm font-semibold text-slate-700 mb-1">Zielmarke (Stimmen)</label>
+                    <p className="text-xs text-slate-500 mb-2">Ab dieser Zahl kommt eine Idee auf die Umsetzungsliste. Bei mehr Besuchern einfach erhöhen.</p>
+                    <input
+                        id="vote-goal" type="number" min="1" step="10" inputMode="numeric"
+                        value={voteGoal}
+                        onChange={(e) => setVoteGoal(e.target.value)}
+                        className="w-32 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                </div>
 
                 <div className="flex flex-wrap items-center gap-4">
                     <button onClick={savePhaseSettings} disabled={saving}
