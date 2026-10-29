@@ -291,46 +291,36 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                         </p>
                     </div>
 
-                    {project.admin_note && (
-                        <div className="mt-4 flex items-start gap-2.5 p-3.5 rounded-xl bg-blue-50/70 border border-blue-100">
-                            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" aria-hidden="true" />
-                            <p className="text-xs text-slate-700 leading-relaxed line-clamp-3">
-                                <strong className="text-blue-700">Hinweis von Andi:</strong> {project.admin_note}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Fortschritt zur Zielmarke */}
+                    {/* Fortschritt zur Zielmarke (+ optionaler Hinweis als Tooltip) */}
                     {!isImplementation && (
-                        <div className="mt-5">
-                            {goalReached ? (
-                                <p className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-                                    <Trophy className="w-3.5 h-3.5" aria-hidden="true" /> Ziel erreicht – auf der Umsetzungsliste
-                                </p>
-                            ) : hasVoted ? (
-                                <div>
-                                    <div className="flex items-center justify-between text-xs mb-1.5">
-                                        <span className="font-semibold text-slate-700">{votes} von {voteGoal} Stimmen</span>
-                                        <span className="text-slate-400">noch {voteGoal - votes}</span>
-                                    </div>
-                                    <div
-                                        className="h-2 rounded-full bg-slate-100 overflow-hidden"
-                                        role="progressbar" aria-valuemin={0} aria-valuemax={voteGoal} aria-valuenow={votes}
-                                        aria-label={`${votes} von ${voteGoal} Stimmen bis zur Umsetzungsliste`}
-                                    >
-                                        <motion.div
-                                            className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${goalPercent}%` }}
-                                            transition={{ duration: 0.8, ease: 'easeOut' }}
-                                        />
-                                    </div>
+                        <div className="mt-5 relative">
+                            <div className="flex items-center justify-between gap-3 text-xs mb-1.5 min-h-[24px]">
+                                {goalReached ? (
+                                    <span className="inline-flex items-center gap-1.5 font-semibold px-2.5 py-1 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white">
+                                        <Trophy className="w-3.5 h-3.5" aria-hidden="true" /> Ziel erreicht
+                                    </span>
+                                ) : hasVoted ? (
+                                    <span className="font-semibold text-slate-700">{votes} von {voteGoal} Stimmen</span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1.5 text-slate-500">
+                                        <Target className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" /> Ziel: {voteGoal} Stimmen
+                                    </span>
+                                )}
+                                {project.admin_note && <NoteTip id={`note-${project.id}`} note={project.admin_note} />}
+                            </div>
+                            {hasVoted && !goalReached && (
+                                <div
+                                    className="h-2 rounded-full bg-slate-100 overflow-hidden"
+                                    role="progressbar" aria-valuemin={0} aria-valuemax={voteGoal} aria-valuenow={votes}
+                                    aria-label={`${votes} von ${voteGoal} Stimmen bis zur Umsetzungsliste`}
+                                >
+                                    <motion.div
+                                        className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${goalPercent}%` }}
+                                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                                    />
                                 </div>
-                            ) : (
-                                <p className="flex items-center gap-1.5 text-xs text-slate-500">
-                                    <Target className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" />
-                                    Ziel: {voteGoal} Stimmen – den Stand siehst du nach deiner Stimme.
-                                </p>
                             )}
                         </div>
                     )}
@@ -471,6 +461,49 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                     </div>
                 </div>
             </motion.div>
+        </>
+    );
+}
+/**
+ * Kleiner "Hinweis"-Knopf mit Tooltip.
+ * Desktop: Hover oder Tastatur-Fokus. Handy: antippen (nochmal tippen schließt).
+ * Öffnet nach oben innerhalb der Karte, damit nichts abgeschnitten wird.
+ */
+function NoteTip({ id, note }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <>
+            <button
+                type="button"
+                aria-expanded={open}
+                aria-controls={id}
+                onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}
+                onMouseEnter={() => setOpen(true)}
+                onMouseLeave={() => setOpen(false)}
+                onFocus={() => setOpen(true)}
+                onBlur={() => setOpen(false)}
+                onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Escape') setOpen(false); }}
+                className="shrink-0 inline-flex items-center gap-1 min-h-[32px] -my-1.5 px-2 rounded-full text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+            >
+                <Info className="w-3.5 h-3.5" aria-hidden="true" /> Hinweis
+            </button>
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        id={id}
+                        role="tooltip"
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.15 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute left-0 right-0 bottom-full mb-2 z-30 p-4 rounded-2xl bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 text-left"
+                    >
+                        <p className="text-xs font-semibold text-blue-700 mb-1">Hinweis von Andi</p>
+                        <p className="text-xs text-slate-600 leading-relaxed">{note}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 }
