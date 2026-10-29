@@ -7,6 +7,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
 import { cn } from '../utils/cn';
 import { projectAvatarUrl } from '../utils/avatar';
+import RichText from './RichText';
 
 // Avatare kommen lokal aus /public/avatars (kein Drittanbieter).
 // Projekte mit fertiger App zeigen das App-Avatar (siehe utils/avatar.js).
@@ -113,20 +114,6 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                 </div>
                             </div>
 
-                            <div>
-                                <h3 className="text-sm font-semibold text-slate-500 uppercase mb-2">Beschreibung</h3>
-                                <p className="text-slate-700 whitespace-pre-wrap leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    {project.description}
-                                </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-sm font-semibold text-slate-500 uppercase mb-2">Nutzen / Zielgruppe</h3>
-                                <p className="text-slate-700 whitespace-pre-wrap leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    {project.benefit || 'Keine Angabe'}
-                                </p>
-                            </div>
-
                             {project.admin_note && (
                                 <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-50/70 border border-blue-100">
                                     <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" aria-hidden="true" />
@@ -136,6 +123,19 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                     </div>
                                 </div>
                             )}
+
+                            <div>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600 mb-3">Die Idee</h3>
+                                <RichText text={project.description} size="sm" />
+                            </div>
+
+                            <div>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-blue-600 mb-3">Wem hilft das?</h3>
+                                <div className="relative pl-4">
+                                    <span aria-hidden="true" className="absolute left-0 top-1 bottom-1 w-1 rounded-full bg-gradient-to-b from-blue-500 to-violet-500" />
+                                    {project.benefit ? <RichText text={project.benefit} size="sm" /> : <p className="text-sm text-slate-500">Keine Angabe</p>}
+                                </div>
+                            </div>
 
                             {(hasVoted || isImplementation) && (
                                 <div className="text-center py-4 bg-blue-50 rounded-xl border border-blue-100">
