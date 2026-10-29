@@ -418,7 +418,7 @@ const createMockSupabase = () => {
                     return p;
                 });
                 localStorage.setItem('gv_mock_projects', JSON.stringify(nextProjects));
-                return { error: null };
+                return { data: true, error: null };
             }
             return { error: { message: `Function ${fn} not implemented in mock.` } };
         }

@@ -16,6 +16,8 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
     const [showConfirm, setShowConfirm] = useState(false);
     const [votes, setVotes] = useState(project.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
+    // true, wenn der Server meldet: von diesem Geraet/Anschluss wurde schon abgestimmt
+    const [alreadyCounted, setAlreadyCounted] = useState(false);
     const [shareSuccess, setShareSuccess] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const navigate = useNavigate();
@@ -33,21 +35,30 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
 
     const confirmVote = async () => {
         setIsVoting(true);
-
-        recordVoteLocal(project.id);
-
         try {
-            const { error } = await supabase.rpc('increment_vote', { project_id: project.id });
-            if (error) console.error("Vote error:", error);
-        } catch (err) {
-            console.error("Vote exception:", err);
-        }
+            // Der Server prueft fair (Geraet + Anschluss) und meldet, ob gezaehlt wurde.
+            const { data, error } = await supabase.rpc('increment_vote', {
+                project_id: project.id,
+                device_id: getDeviceId(),
+            });
+            if (error) throw error;
 
-        setShowConfirm(false);
-        setHasVoted(true);
-        setVotes(prev => prev + 1);
-        onVote(project.id);
-        setIsVoting(false);
+            recordVoteLocal(project.id);
+            setHasVoted(true);
+
+            if (data === false) {
+                // Nicht gezaehlt: schon abgestimmt (z. B. im Inkognito-Tab erneut)
+                setAlreadyCounted(true);
+            } else {
+                setVotes(prev => prev + 1);
+                onVote(project.id);
+            }
+        } catch (err) {
+            console.error('Abstimmung fehlgeschlagen:', err);
+        } finally {
+            setShowConfirm(false);
+            setIsVoting(false);
+        }
     };
 
     const handleShare = async () => {
@@ -141,7 +152,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                 </button>
                             ) : hasVoted ? (
                                 <div className="flex-1 px-4 py-3 bg-green-50 text-green-700 rounded-xl font-semibold flex items-center justify-center gap-2 border border-green-200">
-                                    <Check className="w-5 h-5" /> Du hast abgestimmt!
+                                    <Check className="w-5 h-5" /> {alreadyCounted ? 'Bereits abgestimmt – danke!' : 'Du hast abgestimmt!'}
                                 </div>
                             ) : null}
                             <button
@@ -339,7 +350,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-sm font-bold text-slate-900">{votes} Stimmen</span>
-                                        <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-400">Gestimmt</span>
+                                        <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-400">{alreadyCounted ? 'Bereits gezählt' : 'Gestimmt'}</span>
                                     </div>
                                 </motion.div>
                             )}
