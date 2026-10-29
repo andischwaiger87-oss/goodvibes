@@ -9,7 +9,11 @@ const faqs = [
     },
     {
         question: "Kostet mich das wirklich nichts?",
-        answer: "Nein, absolut nichts. Weder das Einreichen, noch das Abstimmen, noch die spätere Umsetzung kosten Geld. Das Projekt ist meine persönliche, ehrenamtliche Initiative, um mit meinen Fähigkeiten als Entwickler etwas Gutes zu tun."
+        answer: "Nein, absolut nichts. Weder das Einreichen, noch das Abstimmen, noch die spätere Umsetzung kosten Geld. GoodVibes ist gemeinnützig und ohne Profit: meine persönliche, ehrenamtliche Initiative, um Ideen umzusetzen, die der Allgemeinheit helfen."
+    },
+    {
+        question: "Für welche Geräte sind die Apps gedacht?",
+        answer: "In erster Linie fürs Handy – dort werden die Apps im Alltag gebraucht, und von dort kommen auch die meisten Besuche. Alle Apps laufen direkt im Browser, ohne Installation aus dem App Store. Am Computer funktionieren sie ebenfalls."
     },
     {
         question: "Wer entscheidet, welche Idee umgesetzt wird?",

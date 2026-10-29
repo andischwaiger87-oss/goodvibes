@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Lightbulb, Users, ShieldCheck, Check } from 'lucide-react';
+import { ArrowRight, Lightbulb, Users, ShieldCheck, Check, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import BetaTestBanner from '../components/BetaTestBanner';
@@ -84,7 +84,7 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-[1.05rem] sm:text-xl text-slate-600 mb-9 sm:mb-11 max-w-2xl mx-auto leading-relaxed px-1"
                 >
-                    GoodVibes hilft dir, soziale Projekte zu starten. Du hast die Idee, wir alle entscheiden gemeinsam – und ich setze die besten Vorschläge kostenlos um.
+                    GoodVibes ist gemeinnützig und ohne Profit. Du hast eine Idee für eine Handy-App, die der Allgemeinheit hilft – wir entscheiden gemeinsam, und ich setze die besten Vorschläge ehrenamtlich und kostenlos um.
                 </motion.p>
 
                 <motion.div
@@ -108,7 +108,7 @@ export default function Home() {
                     className="mt-7 sm:mt-9 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-slate-500"
                     aria-label="Das Wichtigste auf einen Blick"
                 >
-                    {['100 % kostenlos', 'Anonym & ohne Anmeldung', 'Ohne Werbung'].map((t) => (
+                    {['Gemeinnützig & ohne Profit', '100 % kostenlos', 'Fürs Handy gemacht', 'Anonym & ohne Anmeldung'].map((t) => (
                         <li key={t} className="inline-flex items-center gap-1.5">
                             <Check className="w-4 h-4 text-emerald-500" aria-hidden="true" /> {t}
                         </li>
@@ -125,12 +125,17 @@ export default function Home() {
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-16 sm:pb-20"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 pb-16 sm:pb-20"
             >
                 <FeatureCard
                     icon={Lightbulb}
-                    title="Einfach helfen"
-                    desc="Im Mittelpunkt steht der gute Zweck. Mir geht es nicht um Gewinn, sondern darum, echte Probleme zu lösen."
+                    title="Gemeinnützig, ohne Profit"
+                    desc="Ich setze Ideen um, die der Allgemeinheit helfen. Ehrenamtlich, ohne Gewinnabsicht und ohne Werbung."
+                />
+                <FeatureCard
+                    icon={Smartphone}
+                    title="Fürs Handy gemacht"
+                    desc="Die Apps entstehen fürs Smartphone, denn dort werden sie im Alltag gebraucht. Sie laufen direkt im Browser, ohne Installation."
                 />
                 <FeatureCard
                     icon={Users}
@@ -149,7 +154,7 @@ export default function Home() {
 
 function FeatureCard({ icon: Icon, title, desc }) {
     return (
-        <motion.div variants={item} className="elgato-card p-6 sm:p-7 hover:border-blue-200 last:sm:col-span-2 last:lg:col-span-1">
+        <motion.div variants={item} className="elgato-card p-6 sm:p-7 hover:border-blue-200">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-50 ring-1 ring-blue-100 rounded-2xl flex items-center justify-center mb-5">
                 <Icon className="w-6 h-6 text-blue-600" aria-hidden="true" />
             </div>

@@ -26,9 +26,9 @@ const steps = [
 const TOTAL = steps.length;
 
 const RULES = [
-  { title: 'Hilft anderen', text: 'Die Idee unterstützt Menschen oder die Umwelt.' },
-  { title: 'Ohne Gewinnabsicht', text: 'Es geht ums Gemeinwohl, nicht ums Geldverdienen.' },
-  { title: 'Als App machbar', text: 'Sie lässt sich als Website oder App umsetzen.' },
+  { title: 'Hilft der Allgemeinheit', text: 'Die Idee unterstützt Menschen oder die Umwelt.' },
+  { title: 'Gemeinnützig', text: 'Ohne Profit – es geht ums Gemeinwohl, nicht ums Geldverdienen.' },
+  { title: 'Als Handy-App machbar', text: 'Sie lässt sich als App fürs Smartphone umsetzen.' },
   { title: 'Für alle', text: 'Sie grenzt niemanden aus und beleidigt niemanden.' },
 ];
 

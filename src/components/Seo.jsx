@@ -17,12 +17,12 @@ const ROUTES = {
     '/': {
         title: 'GoodVibes — soziale App-Ideen gemeinsam umsetzen',
         description:
-            'Reiche deine Idee für eine soziale App ein, stimme gemeinsam mit anderen ab — die ausgewählte Idee wird kostenlos umgesetzt. Anonym und ohne Anmeldung.',
+            'Reiche deine Idee für eine Handy-App ein, die der Allgemeinheit hilft. Gemeinsam wird abgestimmt, die Gewinner-Idee wird gemeinnützig und kostenlos umgesetzt.',
     },
     '/submission': {
         title: 'Idee einreichen — GoodVibes',
         description:
-            'Teile deine Vision für eine soziale App. Anonym, ohne Anmeldung — die Idee soll anderen Menschen oder der Umwelt helfen.',
+            'Teile deine Idee für eine Handy-App, die der Allgemeinheit hilft. Anonym, ohne Anmeldung, gemeinnützig umgesetzt.',
     },
     '/voting': {
         title: 'Abstimmung — GoodVibes',

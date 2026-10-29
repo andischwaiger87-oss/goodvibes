@@ -5,7 +5,7 @@ import BugTracker from '../components/BugTracker';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
     ArrowLeft, ExternalLink, Heart, Check, Sparkles, MessageSquare,
-    ShieldCheck, Award, Code2
+    ShieldCheck, Award, Code2, Smartphone
 } from 'lucide-react';
 import { getCategoryLabel } from '../utils/categories';
 import { projectAvatarUrl } from '../utils/avatar';
@@ -90,7 +90,8 @@ export default function ProjectDetail() {
         .filter(Boolean);
 
     const trust = [
-        { icon: Heart, title: 'Kostenlos', desc: 'Ehrenamtlich umgesetzt' },
+        { icon: Smartphone, title: 'Fürs Handy optimiert', desc: 'Läuft direkt im Browser' },
+        { icon: Heart, title: 'Gemeinnützig', desc: 'Ohne Profit, ehrenamtlich' },
         { icon: ShieldCheck, title: 'Ohne Anmeldung', desc: 'Keine persönlichen Daten' },
         { icon: Code2, title: 'Quelloffen', desc: 'MIT-Lizenz' },
     ];
@@ -121,6 +122,9 @@ export default function ProjectDetail() {
                         <div className="flex flex-wrap items-center gap-2 mb-5">
                             <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-white text-indigo-700 uppercase tracking-wider">
                                 <Award className="w-3.5 h-3.5" aria-hidden="true" /> Umgesetzt
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25">
+                                <Smartphone className="w-3.5 h-3.5" aria-hidden="true" /> Fürs Handy optimiert
                             </span>
                             <span className="inline-flex text-[11px] font-semibold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25">
                                 {getCategoryLabel(project.category)}
@@ -174,7 +178,7 @@ export default function ProjectDetail() {
             </motion.header>
 
             {/* ---------- Vertrauen: offen, ohne Kästen ---------- */}
-            <ul className="mt-6 sm:mt-8 grid grid-cols-3 gap-2 sm:gap-6 px-1 sm:px-4">
+            <ul className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-5 sm:gap-6 px-1 sm:px-4">
                 {trust.map((t) => (
                     <li key={t.title} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 sm:gap-3">
                         <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 text-indigo-600 flex items-center justify-center shrink-0">
@@ -233,7 +237,7 @@ export default function ProjectDetail() {
                         <h2 className="relative text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                             Lust, {project.title} auszuprobieren?
                         </h2>
-                        <p className="relative text-blue-100 mt-2">Öffnet sich direkt im Browser – ohne Installation.</p>
+                        <p className="relative text-blue-100 mt-2">Am besten am Handy öffnen – läuft direkt im Browser, ohne Installation.</p>
                         <a
                             href={project.live_url}
                             target="_blank"

@@ -16,12 +16,12 @@ export default function Submission() {
                     Teile deine <span className="text-gradient-flow">Idee</span>
                 </h1>
                 <p className="mt-4 text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-                    Du hast eine Idee für eine App, die anderen hilft? In fünf kurzen Schritten ist sie eingereicht.
+                    Du hast eine Idee für eine Handy-App, die der Allgemeinheit hilft? In fünf kurzen Schritten ist sie eingereicht.
                 </p>
                 <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-slate-500">
                     <li className="inline-flex items-center gap-1.5"><Lock className="w-4 h-4 text-blue-600" aria-hidden="true" /> Anonym</li>
                     <li className="inline-flex items-center gap-1.5"><Clock className="w-4 h-4 text-blue-600" aria-hidden="true" /> Ca. 3 Minuten</li>
-                    <li className="inline-flex items-center gap-1.5"><Heart className="w-4 h-4 text-blue-600" aria-hidden="true" /> Kostenlos & ehrenamtlich</li>
+                    <li className="inline-flex items-center gap-1.5"><Heart className="w-4 h-4 text-blue-600" aria-hidden="true" /> Gemeinnützig & kostenlos</li>
                 </ul>
             </header>
 

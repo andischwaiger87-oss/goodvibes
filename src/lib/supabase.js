@@ -158,7 +158,7 @@ const initMockDatabase = () => {
                 category: 'community', icon_emoji: '🗓️', accent: 'blue',
                 version: '1.0.0', is_beta: false, status: 'live',
                 live_url: 'https://tagesplaner-aut.pages.dev/',
-                scope: 'Kostenlos • Läuft im Browser (Handy & Computer) • Ohne Anmeldung • Ohne Werbung',
+                scope: 'Fürs Handy optimiert • Gemeinnützig & kostenlos • Ohne Anmeldung • Ohne Werbung',
                 features: 'Eigener Ablauf für jeden Wochentag (Werktag & Wochenende getrennt)\nErinnerungen melden sich mit Bild, Text und Stimme\nKalender in Tages-, Wochen- und Monatsansicht\nEinträge per Fingertipp verschieben – Uhrzeiten passen sich an\nSchritte abhaken und Tagesfortschritt auf einen Blick\n„Jetzt"-Ansicht zeigt die aktuelle Aufgabe\nRuhiger Modus mit weniger Animationen (reizarm)\nEinfache Einrichtung beim ersten Start\nFür Vorlese-Programme (Screenreader) optimiert',
                 whats_new: 'Die Testphase ist abgeschlossen. MeinPlan ist ab sofort frei nutzbar – dauerhaft kostenlos, ohne Anmeldung und ohne Werbung. Dein Feedback ist weiterhin willkommen und fließt in künftige Verbesserungen ein.',
                 screenshots: [], rating_sum: 13, rating_count: 3, sort_order: 1,
