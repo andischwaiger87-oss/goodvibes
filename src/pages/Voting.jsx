@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import VotingCard from '../components/VotingCard';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Database, AlertTriangle, Vote, Clock, Target } from 'lucide-react';
+import { Database, AlertTriangle, Vote, Clock, Target, ChevronDown } from 'lucide-react';
 import { getDeviceId } from '../utils/security';
 import { CardGridSkeleton } from '../components/Skeleton';
 
@@ -12,6 +12,7 @@ export default function Voting() {
     const [error, setError] = useState(null);
     const [currentPhase, setCurrentPhase] = useState('submission');
     const [voteGoal, setVoteGoal] = useState(100);
+    const [showHowTo, setShowHowTo] = useState(false);
 
     useEffect(() => {
         fetchPhaseAndProjects();
@@ -97,8 +98,7 @@ export default function Voting() {
                     transition={{ delay: 0.1 }}
                     className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed"
                 >
-                    Welches Projekt findest du am besten? <br className="hidden sm:block" />
-                    Entscheide mit, was wir als nächstes bauen.
+                    Unterstütze die Idee, die dir am besten gefällt.
                 </motion.p>
 
                 {currentPhase === 'review' ? (
@@ -119,32 +119,39 @@ export default function Voting() {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                        className="mt-6 sm:mt-8 inline-flex items-center gap-2.5 px-4 py-2.5 bg-white/80 backdrop-blur border border-slate-200 rounded-2xl sm:rounded-full text-slate-600 text-sm text-left shadow-sm max-w-md sm:max-w-none"
+                        transition={{ delay: 0.25 }}
+                        className="mt-6 sm:mt-8 flex flex-col items-center"
                     >
-                        <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-60" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
-                        </span>
-                        <span className="text-balance sm:whitespace-nowrap">Das Ergebnis siehst du erst nach deiner Stimme – so bleibt es fair.</span>
+                        <button
+                            type="button"
+                            onClick={() => setShowHowTo((v) => !v)}
+                            aria-expanded={showHowTo}
+                            aria-controls="so-funktionierts"
+                            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-white/80 backdrop-blur border border-slate-200 text-sm text-slate-600 shadow-sm hover:border-blue-200 transition-colors"
+                        >
+                            <Target className="w-4 h-4 text-indigo-600" aria-hidden="true" />
+                            <span><strong className="font-semibold text-slate-900">Ziel: {voteGoal} Stimmen</strong></span>
+                            <span className="text-slate-300" aria-hidden="true">·</span>
+                            <span className="text-blue-600 font-medium">So funktioniert’s</span>
+                            <ChevronDown className={`w-4 h-4 text-blue-600 transition-transform ${showHowTo ? 'rotate-180' : ''}`} aria-hidden="true" />
+                        </button>
+                        <AnimatePresence initial={false}>
+                            {showHowTo && (
+                                <motion.ul
+                                    id="so-funktionierts"
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden mt-4 max-w-md space-y-2 text-left text-sm text-slate-600"
+                                >
+                                    <li className="flex gap-2"><span className="text-blue-600 font-bold">1.</span> Du gibst einer Idee deine Stimme.</li>
+                                    <li className="flex gap-2"><span className="text-blue-600 font-bold">2.</span> Danach siehst du, wie viele Stimmen sie hat.</li>
+                                    <li className="flex gap-2"><span className="text-blue-600 font-bold">3.</span> Ab {voteGoal} Stimmen setze ich sie um – ehrenamtlich, eine nach der anderen.</li>
+                                </motion.ul>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 )}
-
-                {/* So funktioniert die Zielmarke */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="mt-6 sm:mt-8 max-w-2xl mx-auto flex items-start gap-4 text-left"
-                >
-                    <span className="shrink-0 w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
-                        <Target className="w-5 h-5" aria-hidden="true" />
-                    </span>
-                    <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                        <strong className="text-slate-900">Ziel: {voteGoal} Stimmen.</strong>{' '}
-                        Erreicht eine Idee die Marke, kommt sie auf die Umsetzungsliste. GoodVibes ist ehrenamtlich – ich setze eine Idee nach der anderen um, in der Reihenfolge der Stimmen.
-                    </p>
-                </motion.div>
             </div>
 
             {loading ? (
