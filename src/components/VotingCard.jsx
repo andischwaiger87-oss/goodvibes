@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye, Wrench, Target, Trophy } from 'lucide-react';
+import { ThumbsUp, Heart, Share2, Check, XCircle, AlertTriangle, X, Eye, Wrench, Target, Trophy, Info } from 'lucide-react';
 import { getDeviceId, hasAlreadyVotedLocal, recordVoteLocal } from '../utils/security';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getCategoryLabel } from '../utils/categories';
@@ -126,6 +126,16 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                                     {project.benefit || 'Keine Angabe'}
                                 </p>
                             </div>
+
+                            {project.admin_note && (
+                                <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-50/70 border border-blue-100">
+                                    <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" aria-hidden="true" />
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-blue-700 mb-1">Hinweis von Andi</h3>
+                                        <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{project.admin_note}</p>
+                                    </div>
+                                </div>
+                            )}
 
                             {(hasVoted || isImplementation) && (
                                 <div className="text-center py-4 bg-blue-50 rounded-xl border border-blue-100">
@@ -280,6 +290,15 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
                             {project.benefit}
                         </p>
                     </div>
+
+                    {project.admin_note && (
+                        <div className="mt-4 flex items-start gap-2.5 p-3.5 rounded-xl bg-blue-50/70 border border-blue-100">
+                            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" aria-hidden="true" />
+                            <p className="text-xs text-slate-700 leading-relaxed line-clamp-3">
+                                <strong className="text-blue-700">Hinweis von Andi:</strong> {project.admin_note}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Fortschritt zur Zielmarke */}
                     {!isImplementation && (

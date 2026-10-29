@@ -123,6 +123,12 @@ function ProjectModerationTab({ projects, fetchProjects, loading }) {
                                     </p>
                                 </div>
 
+                                <AdminNoteEditor
+                                    key={detailProject.id}
+                                    project={detailProject}
+                                    onSaved={(note) => { setDetailProject({ ...detailProject, admin_note: note }); fetchProjects(); }}
+                                />
+
                                 {detailProject.rejection_reason && (
                                     <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
                                         <h3 className="text-sm font-semibold text-red-600 uppercase mb-2">Ablehnungsgrund</h3>
@@ -275,6 +281,48 @@ function ProjectModerationTab({ projects, fetchProjects, loading }) {
                 </div>
             </div>
         </>
+    );
+}
+
+/** "Hinweis von Andi": transparente Einordnung, erscheint oeffentlich auf der Karte. */
+function AdminNoteEditor({ project, onSaved }) {
+    const [note, setNote] = useState(project.admin_note || '');
+    const [state, setState] = useState('idle'); // idle | saving | saved | error
+    const [errMsg, setErrMsg] = useState('');
+
+    const save = async () => {
+        setState('saving');
+        const value = note.trim() || null;
+        const { error } = await supabase.from('projects').update({ admin_note: value }).eq('id', project.id);
+        if (error) {
+            setErrMsg(error.message.includes('admin_note') ? 'Die Spalte fehlt noch – bitte Migration 014 ausführen.' : error.message);
+            setState('error');
+            return;
+        }
+        setState('saved');
+        onSaved?.(value);
+    };
+
+    return (
+        <div className="bg-blue-50/60 border border-blue-100 p-4 rounded-xl">
+            <label htmlFor={`note-${project.id}`} className="text-sm font-semibold text-blue-700 uppercase block mb-1">Hinweis von Andi (öffentlich)</label>
+            <p className="text-xs text-slate-500 mb-2">Zur ehrlichen Einordnung, z. B. was technisch (noch) nicht geht. Leer lassen = kein Hinweis.</p>
+            <textarea
+                id={`note-${project.id}`}
+                value={note}
+                onChange={(e) => { setNote(e.target.value); setState('idle'); }}
+                rows={4}
+                maxLength={600}
+                className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+            <div className="flex items-center gap-3 mt-2">
+                <button onClick={save} disabled={state === 'saving'} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-semibold disabled:opacity-50">
+                    {state === 'saving' ? 'Speichere…' : 'Hinweis speichern'}
+                </button>
+                {state === 'saved' && <span className="text-sm text-green-600 font-medium">Gespeichert</span>}
+                {state === 'error' && <span className="text-sm text-red-600">{errMsg}</span>}
+            </div>
+        </div>
     );
 }
 
