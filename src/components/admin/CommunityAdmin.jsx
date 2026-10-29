@@ -9,6 +9,7 @@ import { getPostType, POST_STATUS, normalizeScreenshots, normalizeUseCases, slug
 import { categoryLabels } from '../../utils/categories';
 import { avatarUrl, moderateText, sanitizeImage } from '../../utils/moderation';
 import { cn } from '../../utils/cn';
+import { uploadPendingImages } from '../../utils/mediaUpload';
 
 const ACCENT_KEYS = ['blue', 'green', 'purple', 'amber'];
 const ICON_SUGGESTIONS = ['📱', '🗓️', '🚶', '💬', '🧭', '❤️', '🌱', '🎓', '🩺', '🛠️', '🔔', '🗺️', '📝', '🤝', '🏠', '⭐'];
@@ -57,7 +58,19 @@ export function AppManagementTab() {
         const slug = slugifyName(raw) || slugifyName(form.name);
         if (!slug) { setMsg('Bitte gib ein Kürzel an (nur Buchstaben, Zahlen und Bindestriche).'); return; }
 
-        const payload = { ...form, slug };
+        // Noch nicht hochgeladene Bilder in den Speicher uebertragen
+        let screenshots = form.screenshots || [];
+        let use_cases = form.use_cases || [];
+        try {
+            screenshots = await uploadPendingImages(screenshots, `apps/${slug}/vorschau`);
+            use_cases = await uploadPendingImages(use_cases, `apps/${slug}/beispiele`);
+        } catch (err) {
+            console.error('Upload fehlgeschlagen:', err);
+            setMsg('Bilder konnten nicht hochgeladen werden. Ist Migration 012 (Bildspeicher) in Supabase ausgeführt?');
+            return;
+        }
+
+        const payload = { ...form, slug, screenshots, use_cases };
 
         const { error } = form.id
             ? await supabase.from('apps').update(payload).eq('id', form.id)
@@ -139,6 +152,7 @@ function AppEditor({ initial, onSave, onCancel, error }) {
     const input = 'w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none';
 
     const [imgBusy, setImgBusy] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [imgError, setImgError] = useState('');
 
     const handleScreenshots = async (e) => {
@@ -377,7 +391,14 @@ function AppEditor({ initial, onSave, onCancel, error }) {
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-100">
                     {error && <p role="alert" className="mr-auto self-center text-xs text-red-600 max-w-sm">{error}</p>}
                     <button onClick={onCancel} className="btn-secondary text-sm">Abbrechen</button>
-                    <button onClick={() => onSave(form)} className="btn-primary text-sm inline-flex items-center gap-2"><Save className="w-4 h-4" /> Speichern</button>
+                    <button
+                        onClick={async () => { setSaving(true); try { await onSave(form); } finally { setSaving(false); } }}
+                        disabled={saving}
+                        className="btn-primary text-sm inline-flex items-center gap-2"
+                    >
+                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {saving ? 'Speichert …' : 'Speichern'}
+                    </button>
                 </div>
             </div>
         </div>
@@ -400,7 +421,7 @@ export function CommunityModerationTab() {
     const fetchAll = async () => {
         setLoading(true);
         const { data: postData } = await supabase.from('app_posts').select('*').order('created_at', { ascending: false });
-        const { data: appData } = await supabase.from('apps').select('*');
+        const { data: appData } = await supabase.from('apps').select('id, name');
         setPosts(postData || []);
         setApps(appData || []);
         setLoading(false);

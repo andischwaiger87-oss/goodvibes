@@ -25,7 +25,7 @@ export default function Apps() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const { data: appData } = await supabase.from('apps').select('*').order('sort_order', { ascending: true });
+            const { data: appData } = await supabase.from('apps').select('id, slug, name, tagline, category, icon_emoji, accent, version, is_beta, status, live_url, rating_sum, rating_count, sort_order, created_at').order('sort_order', { ascending: true });
             const { data: postData } = await supabase.from('app_posts').select('*').eq('status', 'published');
 
             const counts = {};

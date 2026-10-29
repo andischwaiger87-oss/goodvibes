@@ -17,7 +17,7 @@ export default function BetaTestBanner() {
         let active = true;
         (async () => {
             try {
-                const { data } = await supabase.from('apps').select('*');
+                const { data } = await supabase.from('apps').select('id, slug, name, tagline, category, icon_emoji, accent, version, is_beta, status, live_url, rating_sum, rating_count, sort_order, created_at');
                 const betas = (data || [])
                     .filter((a) => a.is_beta && a.live_url)
                     .sort((a, b) => (a.sort_order || 99) - (b.sort_order || 99));
