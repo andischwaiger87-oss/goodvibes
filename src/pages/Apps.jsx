@@ -52,43 +52,43 @@ export default function Apps() {
     return (
         <div className="max-w-6xl mx-auto py-6 sm:py-14">
             {/* Header */}
-            <div className="text-center mb-10">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-4 inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-semibold gap-2"
-                >
-                    <LayoutGrid className="w-4 h-4" />
-                    App-Bereich & Community
-                </motion.div>
-                <h1 className="h1-hero text-4xl md:text-5xl mb-4">Unsere Apps – gemeinsam besser</h1>
-                <p className="text-lg sm:text-xl text-subtle max-w-2xl mx-auto leading-relaxed">
-                    Hier findest du alle GoodVibes-Apps. Probiere sie aus, teile deine Meinung und hilf mit,
-                    sie Schritt für Schritt zu verbessern. Jede Stimme zählt – ganz anonym und ohne Anmeldung.
+            <motion.header
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-center mb-8 sm:mb-12 px-2"
+            >
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600 mb-3">Apps & Community</p>
+                <h1 className="h1-hero text-[2.15rem] leading-[1.08] sm:text-5xl md:text-6xl mb-4 sm:mb-5">
+                    Unsere Apps.<br />
+                    <span className="text-gradient-flow">Gemeinsam besser.</span>
+                </h1>
+                <p className="text-base sm:text-lg text-slate-500 max-w-md mx-auto leading-relaxed text-pretty">
+                    Ausprobieren, Meinung sagen und mitverbessern – anonym und ohne Anmeldung.
                 </p>
-            </div>
+            </motion.header>
 
             {/* Vertrauens-Hinweise (barrierefrei & klar) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
+            <ul className="grid grid-cols-3 gap-2 sm:gap-6 mb-10 sm:mb-12 max-w-3xl mx-auto">
                 {[
-                    { icon: Heart, title: 'Freundlich & anonym', text: 'Sag offen deine Meinung – ohne Name, ohne Konto.' },
-                    { icon: ShieldCheck, title: 'Sicher geschützt', text: 'Wir filtern Spam und schädliche Inhalte automatisch.' },
-                    { icon: MessagesSquare, title: 'Du gestaltest mit', text: 'Die Wünsche mit den meisten Stimmen setzen wir um.' },
+                    { icon: Heart, title: 'Anonym', text: 'Ohne Name, ohne Konto' },
+                    { icon: ShieldCheck, title: 'Geschützt', text: 'Spam wird gefiltert' },
+                    { icon: MessagesSquare, title: 'Du gestaltest mit', text: 'Beliebte Wünsche kommen zuerst' },
                 ].map((item, i) => {
                     const Icon = item.icon;
                     return (
-                        <div key={i} className="bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
-                            <div className="shrink-0 w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                                <Icon className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-bold text-slate-900">{item.title}</p>
-                                <p className="text-xs text-slate-500 leading-relaxed">{item.text}</p>
-                            </div>
-                        </div>
+                        <li key={i} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-2 sm:gap-3">
+                            <span className="shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-violet-50 text-indigo-600 flex items-center justify-center">
+                                <Icon className="w-5 h-5" aria-hidden="true" />
+                            </span>
+                            <span>
+                                <span className="block text-sm font-semibold text-slate-900 leading-tight">{item.title}</span>
+                                <span className="hidden sm:block text-sm text-slate-500 mt-0.5">{item.text}</span>
+                            </span>
+                        </li>
                     );
                 })}
-            </div>
+            </ul>
 
             {/* Suche & Filter */}
             <div className="mb-8 flex flex-col sm:flex-row gap-3 sm:items-center">
@@ -100,14 +100,15 @@ export default function Apps() {
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="App suchen…"
                         aria-label="App suchen"
-                        className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none transition-all"
+                        className="w-full bg-white border border-slate-200 rounded-full pl-10 pr-4 min-h-[44px] text-base sm:text-sm text-slate-900 focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none transition-all"
                     />
                 </div>
-                <div className="flex gap-2 flex-wrap" role="group" aria-label="Nach Kategorie filtern">
+                <div className="flex gap-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Nach Kategorie filtern">
                     <button
                         onClick={() => setCategory('all')}
-                        className={cn('px-3 py-2 rounded-lg text-xs font-semibold border transition-all',
-                            category === 'all' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-50')}
+                        aria-pressed={category === 'all'}
+                        className={cn('shrink-0 min-h-[40px] px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all',
+                            category === 'all' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:text-blue-700')}
                     >
                         Alle
                     </button>
@@ -115,8 +116,9 @@ export default function Apps() {
                         <button
                             key={key}
                             onClick={() => setCategory(key)}
-                            className={cn('px-3 py-2 rounded-lg text-xs font-semibold border transition-all',
-                                category === key ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-gray-200 hover:bg-gray-50')}
+                            aria-pressed={category === key}
+                            className={cn('shrink-0 min-h-[40px] px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all',
+                                category === key ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:text-blue-700')}
                         >
                             {label}
                         </button>

@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import VotingCard from '../components/VotingCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { Database, AlertTriangle, Vote, Clock, Target, ChevronDown } from 'lucide-react';
 import { getDeviceId } from '../utils/security';
 import { CardGridSkeleton } from '../components/Skeleton';
+import { getCategoryLabel } from '../utils/categories';
+import { cn } from '../utils/cn';
 
 export default function Voting() {
     const [projects, setProjects] = useState([]);
@@ -13,6 +15,8 @@ export default function Voting() {
     const [currentPhase, setCurrentPhase] = useState('submission');
     const [voteGoal, setVoteGoal] = useState(100);
     const [showHowTo, setShowHowTo] = useState(false);
+    const [filter, setFilter] = useState('all');
+    const [sort, setSort] = useState('votes');
 
     useEffect(() => {
         fetchPhaseAndProjects();
@@ -71,6 +75,21 @@ export default function Voting() {
         }
     };
 
+    // Filter: nur Bereiche anzeigen, in denen es auch Ideen gibt
+    const categories = useMemo(() => {
+        const counts = {};
+        projects.forEach((p) => { if (p.status !== 'rejected') counts[p.category] = (counts[p.category] || 0) + 1; });
+        return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    }, [projects]);
+
+    const visible = useMemo(() => {
+        const list = projects.filter((p) => filter === 'all' || p.category === filter || p.status === 'rejected');
+        if (sort === 'new') {
+            return [...list].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+        return list;
+    }, [projects, filter, sort]);
+
     const handleVoteUpdate = (projectId) => {
         setProjects(prev => prev.map(p =>
             p.id === projectId ? { ...p, votes: (p.votes || 0) + 1 } : p
@@ -120,34 +139,43 @@ export default function Voting() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.25 }}
-                        className="mt-6 sm:mt-8 flex flex-col items-center"
+                        className="mt-6 sm:mt-8 max-w-md mx-auto"
                     >
                         <button
                             type="button"
                             onClick={() => setShowHowTo((v) => !v)}
                             aria-expanded={showHowTo}
                             aria-controls="so-funktionierts"
-                            className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-white/80 backdrop-blur border border-slate-200 text-sm text-slate-600 shadow-sm hover:border-blue-200 transition-colors"
+                            className="group inline-flex items-center gap-2.5 min-h-[44px] pl-1.5 pr-4 rounded-full bg-white ring-1 ring-slate-200 shadow-sm text-sm whitespace-nowrap hover:ring-blue-200 transition-all"
                         >
-                            <Target className="w-4 h-4 text-indigo-600" aria-hidden="true" />
-                            <span><strong className="font-semibold text-slate-900">Ziel: {voteGoal} Stimmen</strong></span>
-                            <span className="text-slate-300" aria-hidden="true">·</span>
-                            <span className="text-blue-600 font-medium">So funktioniert’s</span>
-                            <ChevronDown className={`w-4 h-4 text-blue-600 transition-transform ${showHowTo ? 'rotate-180' : ''}`} aria-hidden="true" />
+                            <span className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 text-white flex items-center justify-center shrink-0">
+                                <Target className="w-4 h-4" aria-hidden="true" />
+                            </span>
+                            <span className="text-slate-700">Ab <strong className="font-semibold text-slate-900">{voteGoal} Stimmen</strong> wird umgesetzt</span>
+                            <ChevronDown className={`w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform ${showHowTo ? 'rotate-180' : ''}`} aria-hidden="true" />
                         </button>
                         <AnimatePresence initial={false}>
                             {showHowTo && (
-                                <motion.ul
+                                <motion.div
                                     id="so-funktionierts"
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="overflow-hidden mt-4 max-w-md space-y-2 text-left text-sm text-slate-600"
+                                    className="overflow-hidden"
                                 >
-                                    <li className="flex gap-2"><span className="text-blue-600 font-bold">1.</span> Du gibst einer Idee deine Stimme.</li>
-                                    <li className="flex gap-2"><span className="text-blue-600 font-bold">2.</span> Danach siehst du, wie viele Stimmen sie hat.</li>
-                                    <li className="flex gap-2"><span className="text-blue-600 font-bold">3.</span> Ab {voteGoal} Stimmen setze ich sie um – ehrenamtlich, eine nach der anderen.</li>
-                                </motion.ul>
+                                    <ol className="mt-3 p-4 rounded-2xl bg-white ring-1 ring-slate-200/80 text-left text-sm text-slate-600 space-y-2.5">
+                                        {[
+                                            'Du gibst einer Idee deine Stimme.',
+                                            'Danach siehst du, wie viele Stimmen sie hat.',
+                                            `Ab ${voteGoal} Stimmen setze ich sie um – ehrenamtlich, eine nach der anderen.`,
+                                        ].map((t, i) => (
+                                            <li key={i} className="flex items-start gap-3">
+                                                <span className="shrink-0 w-6 h-6 rounded-full bg-blue-50 text-blue-700 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                                                <span className="pt-0.5">{t}</span>
+                                            </li>
+                                        ))}
+                                    </ol>
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </motion.div>
@@ -158,12 +186,47 @@ export default function Voting() {
                 <CardGridSkeleton count={6} />
             ) : projects.length > 0 ? (
                 <div className="relative">
+                    {/* ---------- Filter & Sortierung ---------- */}
+                    <div className="mb-5 sm:mb-7 -mx-4 sm:mx-0">
+                        <div className="flex items-center gap-2 overflow-x-auto px-4 sm:px-0 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Nach Bereich filtern">
+                            {[['all', projects.filter((p) => p.status !== 'rejected').length], ...categories].map(([key, count]) => {
+                                const active = filter === key;
+                                return (
+                                    <button
+                                        key={key} type="button" onClick={() => setFilter(key)} aria-pressed={active}
+                                        className={cn(
+                                            'shrink-0 inline-flex items-center gap-1.5 min-h-[40px] px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-all',
+                                            active
+                                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20'
+                                                : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:ring-blue-200 hover:text-blue-700'
+                                        )}
+                                    >
+                                        {key === 'all' ? 'Alle' : getCategoryLabel(key)}
+                                        <span className={cn('text-xs tabular-nums', active ? 'text-white/75' : 'text-slate-400')}>{count}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-3 px-4 sm:px-0 flex items-center gap-1 text-sm" role="group" aria-label="Sortierung">
+                            <span className="text-slate-400 mr-1">Sortieren:</span>
+                            {[['votes', 'Beliebt'], ['new', 'Neu']].map(([key, label]) => (
+                                <button
+                                    key={key} type="button" onClick={() => setSort(key)} aria-pressed={sort === key}
+                                    className={cn('min-h-[36px] px-3 rounded-full font-semibold transition-colors',
+                                        sort === key ? 'bg-blue-50 text-blue-700' : 'text-slate-500 hover:text-slate-800')}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Overlay block on voting dashboard during review phase */}
                     {currentPhase === 'review' && (
                         <div className="absolute inset-0 bg-slate-50/40 backdrop-blur-[2px] z-20 rounded-2xl pointer-events-none" />
                     )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-7">
-                        {projects.map((project) => (
+                        {visible.map((project) => (
                             <VotingCard 
                                 key={project.id} 
                                 project={project} 

@@ -82,9 +82,9 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-[1.05rem] sm:text-xl text-slate-600 mb-9 sm:mb-11 max-w-2xl mx-auto leading-relaxed px-1"
+                    className="text-[1.05rem] sm:text-xl text-slate-600 mb-9 sm:mb-11 max-w-2xl mx-auto leading-relaxed px-1 text-pretty"
                 >
-                    GoodVibes ist gemeinnützig und ohne Profit. Du hast eine Idee für eine Handy-App, die der Allgemeinheit hilft – wir entscheiden gemeinsam, und ich setze die besten Vorschläge ehrenamtlich und kostenlos um.
+                    GoodVibes ist gemeinnützig und ohne Profit. Du hast eine Idee für eine Handy-App, die der Allgemeinheit hilft – wir entscheiden gemeinsam, und ich setze die besten Vorschläge ehrenamtlich und kostenlos um.
                 </motion.p>
 
                 <motion.div

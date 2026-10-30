@@ -262,7 +262,7 @@ export default function PostComposer({ app, onPosted }) {
                                     type="button"
                                     onClick={() => setShowCode((v) => !v)}
                                     className={cn('inline-flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-lg border transition-colors',
-                                        showCode ? 'bg-slate-900 text-white border-slate-900' : 'border-gray-200 text-slate-600 hover:bg-gray-50')}
+                                        showCode ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-200 text-slate-600 hover:bg-gray-50')}
                                 >
                                     <Code2 className="w-4 h-4" /> Code beifügen
                                 </button>

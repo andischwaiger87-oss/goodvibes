@@ -252,7 +252,7 @@ export default function BugTracker({ projectId }) {
                             className={cn(
                                 "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
                                 activeCategory === 'all'
-                                    ? "bg-slate-900 text-white border-slate-900"
+                                    ? "bg-blue-600 text-white border-blue-600"
                                     : "bg-white text-slate-600 border-gray-200 hover:bg-gray-50"
                             )}
                         >
@@ -281,7 +281,7 @@ export default function BugTracker({ projectId }) {
                             className={cn(
                                 "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
                                 activeStatus === 'all'
-                                    ? "bg-slate-900 text-white border-slate-900"
+                                    ? "bg-blue-600 text-white border-blue-600"
                                     : "bg-white text-slate-600 border-gray-200 hover:bg-gray-50"
                             )}
                         >

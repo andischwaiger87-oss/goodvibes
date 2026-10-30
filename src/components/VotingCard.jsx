@@ -90,7 +90,7 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
     const DetailModal = () => (
         <AnimatePresence>
             {showDetail && (
-                <div className="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center pt-24 sm:pt-4 px-4 pb-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                <div className="fixed inset-0 z-[9999] flex items-start sm:items-center justify-center pt-24 sm:pt-4 px-4 pb-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -234,236 +234,169 @@ export default function VotingCard({ project, onVote, isGlobalPhaseReview = fals
     }
 
     // Normal Active Card or Implementation Card
+    const open = () => setShowDetail(true);
     return (
         <>
             <DetailModal />
-            <motion.div
+            <motion.article
                 layout
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={cn(
-                    "elgato-card flex flex-col h-full overflow-hidden group bg-white cursor-pointer relative hover:border-blue-200 hover:-translate-y-0.5",
-                    isImplementation && "border-indigo-200 hover:border-indigo-400"
+                    'relative flex flex-col h-full bg-white rounded-3xl ring-1 ring-slate-200/80 shadow-sm shadow-slate-200/50 transition-all',
+                    'hover:ring-blue-200 hover:shadow-md',
+                    isImplementation && 'ring-indigo-200'
                 )}
-                onClick={() => setShowDetail(true)}
-                role="button"
-                tabIndex={0}
-                aria-label={`${project.title} – Details ansehen`}
-                onKeyDown={(e) => {
-                    if (e.target !== e.currentTarget) return;
-                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowDetail(true); }
-                }}
             >
-                {/* Glow effect on implementation cards */}
                 {isImplementation && (
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+                    <div aria-hidden="true" className="absolute top-0 inset-x-6 h-1 rounded-b-full bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500" />
                 )}
-                
-                <div className="p-5 sm:p-6 flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 ring-1 ring-slate-200 overflow-hidden flex-shrink-0">
-                        <img src={projectAvatarUrl(project)} alt="" className="w-full h-full" />
-                    </div>
-                    <div className="flex-grow min-w-0 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+
+                {/* Kopf + Text: ganzer Bereich oeffnet die Details */}
+                <button
+                    type="button"
+                    onClick={open}
+                    aria-label={`${project.title} – Details ansehen`}
+                    className="text-left p-5 sm:p-6 pb-0 sm:pb-0 flex-grow rounded-t-3xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+                >
+                    <div className="flex items-start gap-3.5">
+                        <img src={projectAvatarUrl(project)} alt="" className="w-11 h-11 rounded-2xl bg-slate-50 ring-1 ring-slate-200 shrink-0" />
                         <div className="min-w-0">
-                            <h3 className="font-bold text-lg text-slate-900 leading-tight mb-1 line-clamp-2">{project.title}</h3>
-                            <p className="text-xs font-medium text-slate-500">von {project.username}</p>
+                            <h3 className="font-bold text-[17px] sm:text-lg text-slate-900 leading-snug line-clamp-2">{project.title}</h3>
+                            <p className="mt-0.5 text-xs text-slate-500 truncate">
+                                <span className={cn('font-semibold', isImplementation ? 'text-indigo-600' : 'text-blue-600')}>{getCategoryLabel(project.category)}</span>
+                                <span aria-hidden="true"> · </span>von {project.username}
+                            </p>
                         </div>
-                        <span className={cn(
-                            "inline-flex text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 w-fit",
-                            isImplementation
-                                ? "bg-indigo-50 text-indigo-700 border-indigo-100"
-                                : "bg-blue-50 text-blue-700 border-blue-100"
-                        )}>
-                            {getCategoryLabel(project.category)}
-                        </span>
                     </div>
-                </div>
 
-                <div className="px-5 sm:px-6 pb-5 sm:pb-6 flex-grow">
-                    <p className="text-sm text-slate-600 mb-5 leading-relaxed line-clamp-3">
-                        {project.description}
-                    </p>
+                    <p className="mt-4 text-[15px] text-slate-600 leading-relaxed line-clamp-3">{project.description}</p>
 
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
-                            <strong className="text-slate-900 block mb-1">Gut für:</strong>
-                            {project.benefit}
+                    {project.benefit && (
+                        <p className="mt-3 text-sm text-slate-500 leading-relaxed line-clamp-2">
+                            <span className="font-semibold text-slate-800">Gut für: </span>{project.benefit}
                         </p>
-                    </div>
+                    )}
+                </button>
 
-                    {/* Fortschritt zur Zielmarke (+ optionaler Hinweis als Tooltip) */}
-                    {!isImplementation && (
-                        <div className="mt-5 relative">
-                            <div className="flex items-center justify-between gap-3 text-xs mb-1.5 min-h-[24px]">
-                                {goalReached ? (
-                                    <span className="inline-flex items-center gap-1.5 font-semibold px-2.5 py-1 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-                                        <Trophy className="w-3.5 h-3.5" aria-hidden="true" /> Ziel erreicht
-                                    </span>
-                                ) : hasVoted ? (
-                                    <span className="font-semibold text-slate-700">{votes} von {voteGoal} Stimmen</span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1.5 text-slate-500">
-                                        <Target className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" /> Ziel: {voteGoal} Stimmen
-                                    </span>
-                                )}
-                                {project.admin_note && <NoteTip id={`note-${project.id}`} note={project.admin_note} />}
-                            </div>
-                            {hasVoted && !goalReached && (
-                                <div
-                                    className="h-2 rounded-full bg-slate-100 overflow-hidden"
-                                    role="progressbar" aria-valuemin={0} aria-valuemax={voteGoal} aria-valuenow={votes}
-                                    aria-label={`${votes} von ${voteGoal} Stimmen bis zur Umsetzungsliste`}
-                                >
-                                    <motion.div
-                                        className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${goalPercent}%` }}
-                                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                                    />
-                                </div>
+                {/* Fortschritt zur Zielmarke (+ optionaler Hinweis als Tooltip) */}
+                {!isImplementation && (
+                    <div className="relative px-5 sm:px-6 mt-5">
+                        <div className="flex items-center justify-between gap-3 text-xs mb-2 min-h-[24px]">
+                            {goalReached ? (
+                                <span className="inline-flex items-center gap-1.5 font-semibold px-2.5 py-1 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white">
+                                    <Trophy className="w-3.5 h-3.5" aria-hidden="true" /> Ziel erreicht
+                                </span>
+                            ) : hasVoted ? (
+                                <span className="font-semibold text-slate-700">{votes} von {voteGoal} Stimmen</span>
+                            ) : (
+                                <span className="inline-flex items-center gap-1.5 text-slate-500">
+                                    <Target className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" /> Ziel: {voteGoal} Stimmen
+                                </span>
+                            )}
+                            {project.admin_note && <NoteTip id={`note-${project.id}`} note={project.admin_note} />}
+                        </div>
+                        <div
+                            className="h-1.5 rounded-full bg-slate-100 overflow-hidden"
+                            role={hasVoted ? 'progressbar' : undefined}
+                            aria-hidden={hasVoted ? undefined : true}
+                            aria-valuemin={0} aria-valuemax={voteGoal} aria-valuenow={hasVoted ? votes : undefined}
+                            aria-label={hasVoted ? `${votes} von ${voteGoal} Stimmen bis zur Umsetzungsliste` : undefined}
+                        >
+                            {(hasVoted || goalReached) && (
+                                <motion.div
+                                    className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${goalPercent}%` }}
+                                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                                />
                             )}
                         </div>
-                    )}
-                </div>
-
-                <div className="px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 mt-auto min-h-[64px]" onClick={(e) => e.stopPropagation()}>
-                    <div className="relative">
-                        <AnimatePresence mode="wait">
-                            {isImplementation ? (
-                                <motion.div
-                                    key="implementation"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="flex items-center space-x-3 text-indigo-600"
-                                >
-                                    <div className="p-2 rounded-lg bg-indigo-50 border border-indigo-100 animate-pulse">
-                                        <Wrench className="w-4 h-4 text-indigo-600" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <motion.span
-                                            key={votes}
-                                            initial={{ scale: 1.35, color: '#2563eb' }}
-                                            animate={{ scale: 1, color: '#0f172a' }}
-                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                            className="text-sm font-bold text-slate-900 origin-left inline-block"
-                                        >
-                                            {votes} Stimmen
-                                        </motion.span>
-                                        <span className="text-[10px] uppercase tracking-wide font-semibold text-indigo-600">In Umsetzung</span>
-                                    </div>
-                                </motion.div>
-                            ) : !hasVoted ? (
-                                showConfirm ? (
-                                    <motion.div
-                                        key="confirm"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
-                                        className="flex items-center space-x-2"
-                                    >
-                                        <button
-                                            onClick={confirmVote}
-                                            disabled={isVoting}
-                                            className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md flex items-center shadow-sm transition-colors disabled:opacity-50"
-                                        >
-                                            {isVoting ? '...' : <><Check className="w-3 h-3 mr-1.5" /> Bestätigen</>}
-                                        </button>
-                                        <button
-                                            onClick={() => setShowConfirm(false)}
-                                            disabled={isVoting}
-                                            className="px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-slate-600 text-xs font-semibold rounded-md transition-colors"
-                                        >
-                                            Abbruch
-                                        </button>
-                                    </motion.div>
-                                ) : (
-                                    <motion.button
-                                        key="vote"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        onClick={handleInitialVoteClick}
-                                        disabled={isGlobalPhaseReview}
-                                        className={cn(
-                                            "flex items-center space-x-2 text-slate-500 transition-colors group/btn",
-                                            isGlobalPhaseReview
-                                                ? "opacity-40 cursor-not-allowed"
-                                                : "hover:text-blue-600"
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "p-2 rounded-lg bg-white border border-gray-200 transition-all",
-                                            !isGlobalPhaseReview && "group-hover/btn:border-blue-200 group-hover/btn:bg-blue-50"
-                                        )}>
-                                            <ThumbsUp className="w-4 h-4" />
-                                        </div>
-                                        <span className="text-sm font-semibold">Unterstützen</span>
-                                    </motion.button>
-                                )
-                            ) : (
-                                <motion.div
-                                    key="voted"
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    className="flex items-center space-x-3 text-blue-600"
-                                >
-                                    <div className="p-2 rounded-lg bg-blue-50 border border-blue-100">
-                                        <Heart className="w-4 h-4 fill-current" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <motion.span
-                                            key={votes}
-                                            initial={{ scale: 1.35, color: '#2563eb' }}
-                                            animate={{ scale: 1, color: '#0f172a' }}
-                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                            className="text-sm font-bold text-slate-900 origin-left inline-block"
-                                        >
-                                            {votes} Stimmen
-                                        </motion.span>
-                                        <span className="text-[10px] uppercase tracking-wide font-semibold text-slate-400">{alreadyCounted ? 'Bereits gezählt' : 'Gestimmt'}</span>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                     </div>
+                )}
 
-                    <div className="flex items-center gap-2">
+                {/* Aktionen */}
+                <div className="flex items-center gap-2 p-4 sm:px-6 mt-4">
+                    <AnimatePresence mode="wait" initial={false}>
                         {isImplementation ? (
-                            <button
+                            <motion.button
+                                key="impl" type="button"
                                 onClick={() => navigate('/progress')}
-                                className="text-indigo-600 hover:text-indigo-700 transition-colors text-xs font-semibold px-2 py-1 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 shadow-sm"
+                                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 transition-colors"
                             >
-                                Status ansehen
-                            </button>
+                                <Wrench className="w-4 h-4" aria-hidden="true" /> In Umsetzung · Status
+                            </motion.button>
+                        ) : !hasVoted ? (
+                            showConfirm ? (
+                                <motion.div key="confirm" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
+                                    <button
+                                        type="button" onClick={confirmVote} disabled={isVoting}
+                                        className="btn-primary inline-flex items-center gap-1.5 !min-h-[44px] !px-4 !py-0 text-sm !rounded-full"
+                                    >
+                                        {isVoting ? 'Zähle …' : <><Check className="w-4 h-4" aria-hidden="true" /> Stimme geben</>}
+                                    </button>
+                                    <button
+                                        type="button" onClick={() => setShowConfirm(false)} disabled={isVoting}
+                                        className="min-h-[44px] px-3 rounded-full text-sm font-semibold text-slate-500 hover:text-slate-800"
+                                    >
+                                        Abbrechen
+                                    </button>
+                                </motion.div>
+                            ) : (
+                                <motion.button
+                                    key="vote" type="button"
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                    onClick={handleInitialVoteClick}
+                                    disabled={isGlobalPhaseReview}
+                                    className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full ring-1 ring-blue-200 bg-blue-50/60 text-blue-700 text-sm font-semibold hover:bg-blue-100 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    <ThumbsUp className="w-4 h-4" aria-hidden="true" /> Unterstützen
+                                </motion.button>
+                            )
                         ) : (
-                            <button
-                                onClick={() => setShowDetail(true)}
-                                className="text-blue-600 hover:text-blue-700 transition-colors text-xs font-semibold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200"
+                            <motion.div
+                                key="voted"
+                                initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold"
                             >
-                                Mehr lesen
-                            </button>
+                                <Heart className="w-4 h-4 fill-current" aria-hidden="true" />
+                                <motion.span key={votes} initial={{ scale: 1.3 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 15 }}>
+                                    {votes} Stimmen
+                                </motion.span>
+                                <span className="sr-only">{alreadyCounted ? '– bereits gezählt' : '– du hast abgestimmt'}</span>
+                            </motion.div>
                         )}
+                    </AnimatePresence>
+
+                    <div className="ml-auto flex items-center">
                         <button
-                            onClick={handleShare}
-                            className="text-slate-400 hover:text-slate-900 transition-colors relative p-1"
-                            title="Teilen"
+                            type="button" onClick={open}
+                            className={cn('min-h-[44px] px-3 rounded-full text-sm font-semibold text-slate-600 hover:text-blue-700 hover:bg-slate-50 transition-colors', showConfirm && 'hidden sm:inline-block')}
                         >
-                            <Share2 className="w-4 h-4" />
+                            Mehr lesen
+                        </button>
+                        <button
+                            type="button" onClick={handleShare}
+                            className="relative w-11 h-11 inline-flex items-center justify-center rounded-full text-slate-400 hover:text-blue-700 hover:bg-slate-50 transition-colors"
+                            aria-label="Idee teilen"
+                        >
+                            <Share2 className="w-[18px] h-[18px]" aria-hidden="true" />
                             {shareSuccess && (
                                 <motion.span
-                                    initial={{ opacity: 0, y: 5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="absolute -top-8 -left-4 text-xs bg-green-600 text-white px-2 py-1 rounded whitespace-nowrap"
+                                    initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
+                                    className="absolute -top-8 right-0 text-xs bg-emerald-600 text-white px-2 py-1 rounded-md whitespace-nowrap"
                                 >
-                                    Kopiert!
+                                    Link kopiert
                                 </motion.span>
                             )}
                         </button>
                     </div>
                 </div>
-            </motion.div>
+            </motion.article>
         </>
     );
 }
+
 /**
  * Kleiner "Hinweis"-Knopf mit Tooltip.
  * Desktop: Hover oder Tastatur-Fokus. Handy: antippen (nochmal tippen schließt).
