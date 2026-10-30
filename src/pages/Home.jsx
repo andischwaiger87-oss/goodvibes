@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Lightbulb, Users, ShieldCheck, Check, Smartphone } from 'lucide-react';
+import { ArrowRight, Users, ShieldCheck, Check, Smartphone, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import BetaTestBanner from '../components/BetaTestBanner';
@@ -82,9 +82,9 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-[1.05rem] sm:text-xl text-slate-600 mb-9 sm:mb-11 max-w-2xl mx-auto leading-relaxed px-1 text-pretty"
+                    className="text-[1.05rem] sm:text-xl text-slate-600 mb-9 sm:mb-11 max-w-2xl mx-auto leading-relaxed px-1 text-balance"
                 >
-                    GoodVibes ist gemeinnützig und ohne Profit. Du hast eine Idee für eine Handy-App, die der Allgemeinheit hilft – wir entscheiden gemeinsam, und ich setze die besten Vorschläge ehrenamtlich und kostenlos um.
+                    Hast du eine Idee für eine Handy-App, die vielen hilft? Wir stimmen gemeinsam ab – und ich setze sie gemeinnützig und kostenlos um.
                 </motion.p>
 
                 <motion.div
@@ -105,11 +105,11 @@ export default function Home() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.45 }}
-                    className="mt-7 sm:mt-9 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-slate-500"
+                    className="mt-7 sm:mt-9 grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-x-4 gap-y-2.5 sm:gap-x-6 max-w-xs sm:max-w-none mx-auto text-left text-sm text-slate-500"
                     aria-label="Das Wichtigste auf einen Blick"
                 >
-                    {['Gemeinnützig & ohne Profit', '100 % kostenlos', 'Fürs Handy gemacht', 'Anonym & ohne Anmeldung'].map((t) => (
-                        <li key={t} className="inline-flex items-center gap-1.5">
+                    {['Gemeinnützig', '100 % kostenlos', 'Fürs Handy gemacht', 'Ohne Anmeldung'].map((t) => (
+                        <li key={t} className="inline-flex items-center gap-1.5 whitespace-nowrap">
                             <Check className="w-4 h-4 text-emerald-500" aria-hidden="true" /> {t}
                         </li>
                     ))}
@@ -119,47 +119,80 @@ export default function Home() {
             {/* Hinweis auf Apps in der Test-Phase (BETA) */}
             <BetaTestBanner />
 
-            {/* Feature Grid */}
-            <motion.section
-                variants={container}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 pb-16 sm:pb-20"
-            >
-                <FeatureCard
-                    icon={Lightbulb}
-                    title="Gemeinnützig, ohne Profit"
-                    desc="Ich setze Ideen um, die der Allgemeinheit helfen. Ehrenamtlich, ohne Gewinnabsicht und ohne Werbung."
-                />
-                <FeatureCard
-                    icon={Smartphone}
-                    title="Fürs Handy gemacht"
-                    desc="Die Apps entstehen fürs Smartphone, denn dort werden sie im Alltag gebraucht. Sie laufen direkt im Browser, ohne Installation."
-                />
-                <FeatureCard
-                    icon={Users}
-                    title="Gemeinsam entscheiden"
-                    desc="Jede Stimme zählt gleich viel. Die Vorschläge mit dem meisten Zuspruch werden verwirklicht."
-                />
-                <FeatureCard
-                    icon={ShieldCheck}
-                    title="Sicher & Privat"
-                    desc="Wir speichern keine persönlichen Daten von dir. Deine Privatsphäre bleibt geschützt."
-                />
-            </motion.section>
+            {/* ---------- Warum GoodVibes ---------- */}
+            <section className="pb-16 sm:pb-24" aria-labelledby="warum-heading">
+                <div className="text-center mb-8 sm:mb-12 px-2">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600 mb-3">Warum GoodVibes</p>
+                    <h2 id="warum-heading" className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+                        Mit Herz gemacht.
+                    </h2>
+                </div>
+
+                <motion.ul
+                    variants={container}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: '-40px' }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5"
+                >
+                    <FeatureCard
+                        icon={Heart} tone="rose"
+                        title="Ohne Profit"
+                        desc="Ich setze Ideen um, die vielen Menschen helfen – ehrenamtlich und ohne Werbung."
+                    />
+                    <FeatureCard
+                        icon={Smartphone} tone="violet"
+                        title="Fürs Handy gemacht"
+                        desc="Dort, wo du sie im Alltag brauchst. Läuft direkt im Browser, ohne Installation."
+                    />
+                    <FeatureCard
+                        icon={Users} tone="blue"
+                        title="Gemeinsam entscheiden"
+                        desc="Jede Stimme zählt gleich. Was die meisten wollen, wird gebaut."
+                    />
+                    <FeatureCard
+                        icon={ShieldCheck} tone="emerald"
+                        title="Sicher & privat"
+                        desc="Keine Anmeldung, keine persönlichen Daten. Deine Privatsphäre bleibt bei dir."
+                    />
+                </motion.ul>
+
+                {/* Persoenlicher Absender: schafft Vertrauen */}
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-8 sm:mt-10 flex items-center justify-center gap-2 text-sm text-slate-500"
+                >
+                    <Heart className="w-4 h-4 text-rose-500 fill-rose-500" aria-hidden="true" />
+                    Ein Herzensprojekt von Andi aus Unken
+                </motion.p>
+            </section>
         </div>
     );
 }
 
-function FeatureCard({ icon: Icon, title, desc }) {
+const TONES = {
+    rose: 'from-rose-50 to-orange-50 text-rose-500 ring-rose-100',
+    violet: 'from-violet-50 to-fuchsia-50 text-violet-600 ring-violet-100',
+    blue: 'from-blue-50 to-sky-50 text-blue-600 ring-blue-100',
+    emerald: 'from-emerald-50 to-teal-50 text-emerald-600 ring-emerald-100',
+};
+
+function FeatureCard({ icon: Icon, title, desc, tone = 'blue' }) {
     return (
-        <motion.div variants={item} className="elgato-card p-6 sm:p-7 hover:border-blue-200">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-50 ring-1 ring-blue-100 rounded-2xl flex items-center justify-center mb-5">
-                <Icon className="w-6 h-6 text-blue-600" aria-hidden="true" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
-            <p className="text-slate-500 leading-relaxed text-sm sm:text-base">{desc}</p>
-        </motion.div>
+        <motion.li
+            variants={item}
+            className="group flex sm:flex-col items-start gap-4 sm:gap-5 p-5 sm:p-7 rounded-3xl bg-white ring-1 ring-slate-200/70 shadow-sm shadow-slate-200/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60"
+        >
+            <span className={`shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ring-1 ${TONES[tone]} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6`}>
+                <Icon className="w-6 h-6" aria-hidden="true" />
+            </span>
+            <span>
+                <span className="block text-base sm:text-lg font-bold text-slate-900 mb-1">{title}</span>
+                <span className="block text-slate-500 leading-relaxed text-[15px]">{desc}</span>
+            </span>
+        </motion.li>
     );
 }
