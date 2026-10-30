@@ -4,6 +4,7 @@ import { ArrowRight, Users, ShieldCheck, Check, Smartphone, Heart, ChevronDown }
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import BetaTestBanner from '../components/BetaTestBanner';
+import VotingPreview from '../components/VotingPreview';
 
 const container = {
     hidden: { opacity: 0 },
@@ -118,7 +119,7 @@ export default function Home() {
 
                 {/* Desktop: sanfter Hinweis, dass es weiter unten weitergeht */}
                 <motion.a
-                    href="#warum-heading"
+                    href="#abstimmung-heading"
                     aria-label="Weiter nach unten"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1, y: [0, 6, 0] }}
@@ -132,8 +133,11 @@ export default function Home() {
             {/* Hinweis auf Apps in der Test-Phase (BETA) */}
             <BetaTestBanner />
 
+            {/* Live: die führenden Ideen, mit neugierigen Tieren */}
+            <VotingPreview />
+
             {/* ---------- Warum GoodVibes ---------- */}
-            <section className="pb-16 sm:pb-24 lg:pt-24 scroll-mt-24" aria-labelledby="warum-heading">
+            <section className="pb-16 sm:pb-24 scroll-mt-24" aria-labelledby="warum-heading">
                 <div className="text-center mb-8 sm:mb-12 px-2">
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600 mb-3">Warum GoodVibes</p>
                     <h2 id="warum-heading" className="scroll-mt-28 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
