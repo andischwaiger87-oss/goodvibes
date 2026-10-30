@@ -3,6 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Menu, X, ArrowRight, ChevronRight } from 'lucide-react';
 import { cn } from '../utils/cn';
+
+// Versionsnummer im Footer – bei grösseren Updates hier erhöhen.
+const APP_VERSION = '2.0';
 import { supabase } from '../lib/supabase';
 // Der Herz-Effekt ist aufwendig: nur laden, wenn er wirklich gebraucht wird.
 const AntigravityCursorEffect = lazy(() => import('./AntigravityCursorEffect'));
@@ -261,6 +264,9 @@ const Footer = () => (
             </div>
             <p className="mt-6 pt-6 border-t border-slate-200/60 text-xs text-slate-400 text-center sm:text-left">
                 © {new Date().getFullYear()} GoodVibes · Gemeinnützige Open-Source-Initiative · Ohne Werbung, ohne Tracking
+                <span className="ml-2 inline-flex align-middle items-center px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white text-[10px] font-semibold tracking-wide" title="Version">
+                    v{APP_VERSION}
+                </span>
             </p>
         </div>
     </footer>
