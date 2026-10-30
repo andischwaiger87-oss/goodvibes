@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Users, ShieldCheck, Check, Smartphone, Heart, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -55,16 +55,18 @@ export default function Home() {
     return (
         <div className="w-full max-w-6xl mx-auto">
             {/* Hero Section */}
-            <section className="text-center pt-8 pb-14 sm:py-16 lg:pt-0 lg:pb-[14vh] lg:min-h-[calc(100svh-5rem)] lg:flex lg:flex-col lg:items-center lg:justify-center relative">
+            <section className="isolate text-center pt-8 pb-14 sm:py-16 lg:pt-0 lg:pb-[14vh] lg:min-h-[calc(100svh-5rem)] lg:flex lg:flex-col lg:items-center lg:justify-center relative">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="mb-6 sm:mb-8 inline-flex items-center px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/80 backdrop-blur border border-blue-100 text-blue-700 text-xs sm:text-sm font-semibold shadow-sm shadow-blue-100"
+                    className="mb-6 sm:mb-8 inline-flex items-center gap-2.5 pl-1.5 pr-4 py-1.5 rounded-full bg-white/80 backdrop-blur border border-blue-100 text-blue-700 text-sm font-semibold shadow-sm shadow-blue-100"
                 >
-                    <span className="relative flex h-2.5 w-2.5 mr-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                    {/* Kleine Tier-Runde: zeigt freundlich, dass hier Menschen mitmachen */}
+                    <span className="flex -space-x-2" aria-hidden="true">
+                        {['tiere-0', 'tiere-18', 'tiere-9'].map((a) => (
+                            <img key={a} src={`/avatars/${a}.svg`} alt="" className="w-7 h-7 rounded-full ring-2 ring-white bg-white" />
+                        ))}
                     </span>
                     {getPhaseBadgeText()}
                 </motion.div>
@@ -116,6 +118,9 @@ export default function Home() {
                         </li>
                     ))}
                 </motion.ul>
+
+                {/* Dezente, unscharfe Herz-Kacheln im Hintergrund */}
+                <HeartBackdrop />
 
                 {/* Desktop: sanfter Hinweis, dass es weiter unten weitergeht */}
                 <motion.a
@@ -200,5 +205,34 @@ function FeatureCard({ icon: Icon, title, desc, tone = 'blue' }) {
                 <span className="block text-slate-500 leading-relaxed text-[15px]">{desc}</span>
             </span>
         </motion.li>
+    );
+}
+
+// Position, Größe, Unschärfe und Deckkraft der Hintergrund-Herzen.
+// Am Handy nur zwei, kleiner und weiter am Rand – damit der Text frei bleibt.
+const HEARTS = [
+    { pos: 'left-[-28px] top-[6%] sm:left-[4%] sm:top-[10%]', size: 'w-20 sm:w-28', blur: 'blur-[3px] sm:blur-[5px]', op: 'opacity-30', rot: '-rotate-12', dur: 9 },
+    { pos: 'right-[-34px] top-[30%] sm:right-[5%] sm:top-[16%]', size: 'w-24 sm:w-36', blur: 'blur-[5px] sm:blur-[9px]', op: 'opacity-25 sm:opacity-30', rot: 'rotate-12', dur: 11 },
+    { pos: 'hidden sm:block left-[11%] bottom-[16%]', size: 'w-20', blur: 'blur-[6px]', op: 'opacity-20', rot: 'rotate-6', dur: 10 },
+    { pos: 'hidden sm:block right-[13%] bottom-[10%]', size: 'w-24', blur: 'blur-[10px]', op: 'opacity-20', rot: '-rotate-6', dur: 12 },
+];
+
+function HeartBackdrop() {
+    const reduce = useReducedMotion();
+    return (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen -z-10 overflow-hidden">
+            {HEARTS.map((h, i) => (
+                <motion.div
+                    key={i}
+                    className={`absolute ${h.pos} ${h.size} ${h.blur} ${h.op}`}
+                    animate={reduce ? undefined : { y: [0, -12, 0] }}
+                    transition={{ duration: h.dur, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                    <div className={`aspect-square rounded-[30%] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center ${h.rot}`}>
+                        <Heart className="w-1/2 h-1/2 text-white fill-white" />
+                    </div>
+                </motion.div>
+            ))}
+        </div>
     );
 }
