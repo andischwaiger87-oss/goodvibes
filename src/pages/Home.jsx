@@ -54,7 +54,7 @@ export default function Home() {
     return (
         <div className="w-full max-w-6xl mx-auto">
             {/* Hero Section */}
-            <section className="text-center pt-8 pb-14 sm:py-16 lg:py-0 lg:min-h-[calc(100svh-5rem)] lg:flex lg:flex-col lg:items-center lg:justify-center relative">
+            <section className="text-center pt-8 pb-14 sm:py-16 lg:pt-0 lg:pb-[14vh] lg:min-h-[calc(100svh-5rem)] lg:flex lg:flex-col lg:items-center lg:justify-center relative">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
