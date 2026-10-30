@@ -10,10 +10,15 @@
 // /public/avatars. Aus dem Spitznamen (Seed) wird immer dasselbe
 // Bild berechnet – gleicher Name = gleiches Gesicht, wie vorher.
 
-export const AVATAR_STYLES = ['bottts', 'shapes', 'fun-emoji', 'thumbs'];
+// Ältere Stile – bleiben für die automatische Auswahl unverändert,
+// damit bestehende Avatare gleich aussehen wie bisher.
+const LEGACY_STYLES = ['bottts', 'shapes', 'fun-emoji', 'thumbs'];
+
+// Alle wählbaren Stile. "tiere" sind eigene, lokal gezeichnete Tier-Avatare.
+export const AVATAR_STYLES = ['tiere', ...LEGACY_STYLES];
 
 // Wie viele Varianten pro Stil in /public/avatars liegen.
-const VARIANTS_PER_STYLE = 30;
+export const VARIANTS = { tiere: 75, bottts: 30, shapes: 30, 'fun-emoji': 30, thumbs: 30 };
 
 /**
  * Kleiner, stabiler String-Hash (FNV-1a).
@@ -52,10 +57,15 @@ export function avatarUrl(seedString, fallback = 'gast') {
     if (!style) {
         // Kein (gültiger) Stil angegeben: aus dem Seed einen wählen,
         // damit die Avatare trotzdem abwechslungsreich bleiben.
-        style = AVATAR_STYLES[hashString(seed) % AVATAR_STYLES.length];
+        style = LEGACY_STYLES[hashString(seed) % LEGACY_STYLES.length];
     }
 
-    const index = hashString(`${style}|${seed}`) % VARIANTS_PER_STYLE;
+    // Direkte Auswahl: "tiere:#12" zeigt genau Variante 12
+    if (seed.startsWith('#')) {
+        const n = parseInt(seed.slice(1), 10);
+        if (Number.isFinite(n)) return `/avatars/${style}-${Math.abs(n) % VARIANTS[style]}.svg`;
+    }
+    const index = hashString(`${style}|${seed}`) % VARIANTS[style];
     return `/avatars/${style}-${index}.svg`;
 }
 

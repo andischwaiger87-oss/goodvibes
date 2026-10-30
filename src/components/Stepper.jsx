@@ -9,7 +9,7 @@ import {
 import { cn } from '../utils/cn';
 import { supabase } from '../lib/supabase';
 import { getDeviceId } from '../utils/security';
-import { avatarUrl } from '../utils/avatar';
+import { avatarUrl, VARIANTS } from '../utils/avatar';
 import { getCategoryLabel } from '../utils/categories';
 import { getJSON, setJSON } from '../utils/storage';
 
@@ -41,10 +41,19 @@ const CATEGORIES = [
 ];
 
 const AVATAR_STYLES = [
-  { id: 'bottts', label: 'Roboter' },
+  { id: 'tiere', label: 'Tiere' },
   { id: 'fun-emoji', label: 'Gesichter' },
+  { id: 'bottts', label: 'Roboter' },
   { id: 'shapes', label: 'Formen' },
 ];
+
+// Alle Bilder eines Stils (z. B. 75 Tiere) – zum freien Auswählen
+const optionsFor = (style) => Array.from({ length: VARIANTS[style] || 30 }, (_, n) => `${style}:#${n}`);
+
+// Namensvorschläge für alle, die lieber einen Fantasienamen möchten
+const NAME_A = ['Flinke', 'Fröhliche', 'Kluge', 'Mutige', 'Sonnige', 'Stille', 'Bunte', 'Freundliche', 'Wache', 'Sanfte'];
+const NAME_B = ['Amsel', 'Eule', 'Biene', 'Füchsin', 'Libelle', 'Meise', 'Möwe', 'Hummel', 'Lerche', 'Katze'];
+const suggestName = () => NAME_A[Math.floor(Math.random() * NAME_A.length)] + NAME_B[Math.floor(Math.random() * NAME_B.length)];
 
 const LIMITS = { title: 80, description: 2000, benefit: 1000, username: 30 };
 const DRAFT_KEY = 'gv_idea_draft';
@@ -54,22 +63,6 @@ const EMPTY = {
   username: '', avatar: '',
 };
 
-/** 12 verschiedene Avatare eines Stils (keine doppelten Bilder). */
-function makeAvatarOptions(style, count = 12) {
-  const seen = new Set();
-  const out = [];
-  let guard = 0;
-  while (out.length < count && guard < 400) {
-    guard++;
-    const seed = `${style}:${Math.random().toString(36).slice(2, 10)}`;
-    const url = avatarUrl(seed);
-    if (seen.has(url)) continue;
-    seen.add(url);
-    out.push(seed);
-  }
-  return out;
-}
-
 export default function Stepper() {
   const reduce = useReducedMotion();
   const topRef = useRef(null);
@@ -78,8 +71,10 @@ export default function Stepper() {
   const draft = getJSON(DRAFT_KEY, null, 'session');
   const [currentStep, setCurrentStep] = useState(draft?.step || 1);
   const [formData, setFormData] = useState({ ...EMPTY, ...(draft?.data || {}) });
-  const [avatarStyle, setAvatarStyle] = useState(draft?.style || 'bottts');
-  const [avatarOptions, setAvatarOptions] = useState(() => draft?.options || []);
+  const [avatarStyle, setAvatarStyle] = useState(
+    AVATAR_STYLES.some((st) => st.id === draft?.style) ? draft.style : 'tiere'
+  );
+  const avatarOptions = optionsFor(avatarStyle);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -89,29 +84,22 @@ export default function Stepper() {
   // Entwurf laufend sichern
   useEffect(() => {
     if (isSuccess) return;
-    setJSON(DRAFT_KEY, { step: currentStep, data: formData, style: avatarStyle, options: avatarOptions }, 'session');
-  }, [currentStep, formData, avatarStyle, avatarOptions, isSuccess]);
+    setJSON(DRAFT_KEY, { step: currentStep, data: formData, style: avatarStyle }, 'session');
+  }, [currentStep, formData, avatarStyle, isSuccess]);
 
-  // Avatare nur erzeugen, wenn noch keine da sind (Auswahl bleibt beim Zurueckgehen erhalten)
+  // Beim ersten Besuch von Schritt 4 ein zufälliges Tier vorauswählen
   useEffect(() => {
-    if (currentStep === 4 && avatarOptions.length === 0) {
-      const opts = makeAvatarOptions(avatarStyle);
-      setAvatarOptions(opts);
-      setFormData((prev) => (prev.avatar ? prev : { ...prev, avatar: opts[0] }));
+    if (currentStep === 4 && !formData.avatar) {
+      const opts = optionsFor(avatarStyle);
+      setFormData((prev) => ({ ...prev, avatar: opts[Math.floor(Math.random() * opts.length)] }));
     }
-  }, [currentStep, avatarOptions.length, avatarStyle]);
+  }, [currentStep, formData.avatar, avatarStyle]);
 
-  const switchStyle = (style) => {
-    setAvatarStyle(style);
-    const opts = makeAvatarOptions(style);
-    setAvatarOptions(opts);
-    setFormData((prev) => ({ ...prev, avatar: opts[0] }));
-  };
+  const switchStyle = (style) => setAvatarStyle(style);
 
-  const shuffleAvatars = () => {
-    const opts = makeAvatarOptions(avatarStyle);
-    setAvatarOptions(opts);
-    setFormData((prev) => ({ ...prev, avatar: opts[0] }));
+  const randomAvatar = () => {
+    const opts = optionsFor(avatarStyle);
+    update('avatar', opts[Math.floor(Math.random() * opts.length)]);
   };
 
   const validateStep = (step) => {
@@ -124,7 +112,7 @@ export default function Stepper() {
     }
     if (step === 3 && formData.benefit.trim().length < 10) e.benefit = 'Erklär kurz, wem das Projekt hilft (mind. 10 Zeichen).';
     if (step === 4) {
-      if (formData.username.trim().length < 3) e.username = 'Der Fantasiename ist noch zu kurz (mind. 3 Zeichen).';
+      if (formData.username.trim().length < 2) e.username = 'Bitte gib einen Namen ein (mind. 2 Zeichen).';
       if (!formData.avatar) e.avatar = 'Bitte wähle ein Bild aus.';
     }
     setErrors(e);
@@ -366,14 +354,14 @@ export default function Stepper() {
       case 4:
         return (
           <div>
-            <StepHead eyebrow="Schritt 4" title="Wie möchtest du erscheinen?" text="Alles bleibt anonym. Such dir einen Fantasienamen und ein Bild aus." />
+            <StepHead eyebrow="Schritt 4" title="Wie möchtest du erscheinen?" text="Such dir ein Bild aus und sag uns, wie wir dich nennen dürfen." />
 
             <div className="flex items-center justify-between gap-3 mb-4">
-              <div className="inline-flex p-1 rounded-full bg-slate-100" role="group" aria-label="Bild-Stil">
+              <div className="flex p-1 rounded-full bg-slate-100 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Bild-Stil">
                 {AVATAR_STYLES.map((s) => (
                   <button
                     key={s.id} type="button" onClick={() => switchStyle(s.id)} aria-pressed={avatarStyle === s.id}
-                    className={cn('px-3.5 sm:px-4 min-h-[36px] rounded-full text-sm font-semibold transition-all',
+                    className={cn('shrink-0 px-3.5 sm:px-4 min-h-[36px] rounded-full text-sm font-semibold transition-all',
                       avatarStyle === s.id ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-800')}
                   >
                     {s.label}
@@ -381,15 +369,19 @@ export default function Stepper() {
                 ))}
               </div>
               <button
-                type="button" onClick={shuffleAvatars}
-                className="group inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 min-h-[40px] px-2 transition-colors"
+                type="button" onClick={randomAvatar}
+                className="group shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600 min-h-[40px] px-2 transition-colors"
+                aria-label="Zufälliges Bild wählen"
               >
                 <Shuffle className="w-4 h-4 transition-transform group-active:rotate-180" aria-hidden="true" />
-                <span className="hidden sm:inline">Neue Bilder</span>
+                <span className="hidden sm:inline">Zufall</span>
               </button>
             </div>
 
-            <div role="radiogroup" aria-label="Bild auswählen" className="grid grid-cols-4 sm:grid-cols-6 gap-2.5 sm:gap-3">
+            <div
+              role="radiogroup" aria-label="Bild auswählen"
+              className="grid grid-cols-5 sm:grid-cols-8 gap-2 sm:gap-2.5 max-h-[248px] sm:max-h-[260px] overflow-y-auto overscroll-contain p-1 -m-1 rounded-2xl"
+            >
               {avatarOptions.map((seed, i) => {
                 const active = formData.avatar === seed;
                 return (
@@ -398,7 +390,7 @@ export default function Stepper() {
                     onClick={() => update('avatar', seed)}
                     className={cn(
                       'relative aspect-square rounded-2xl bg-slate-50 overflow-hidden transition-all active:scale-95',
-                      active ? 'ring-4 ring-blue-500 shadow-lg shadow-blue-500/20 scale-[1.03]' : 'ring-1 ring-slate-200 hover:ring-blue-300'
+                      active ? 'ring-[3px] ring-blue-600 ring-offset-2 shadow-lg shadow-blue-500/20' : 'ring-1 ring-slate-200 hover:ring-blue-300'
                     )}
                   >
                     <img src={avatarUrl(seed)} alt="" className="w-full h-full" loading="lazy" />
@@ -412,8 +404,14 @@ export default function Stepper() {
               })}
             </div>
 
-            <div className="mt-7">
-              <Field id="username" label="Dein Fantasiename" error={errors.username} count={formData.username.length} max={LIMITS.username}>
+            <p className="mt-2 text-xs text-slate-400">{avatarOptions.length} Bilder zur Auswahl – scroll für mehr</p>
+
+            <div className="mt-6">
+              <Field
+                id="username" label="Wie dürfen wir dich nennen?"
+                hint="Dein Vorname, ein Spitzname oder ein Fantasiename – ganz wie du magst. Er ist öffentlich sichtbar."
+                error={errors.username} count={formData.username.length} max={LIMITS.username}
+              >
                 <div className="relative">
                   {formData.avatar && (
                     <img src={avatarUrl(formData.avatar)} alt="" aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-100" />
@@ -421,11 +419,18 @@ export default function Stepper() {
                   <input
                     id="username" type="text" value={formData.username} maxLength={LIMITS.username}
                     onChange={(e) => update('username', e.target.value)}
-                    placeholder="z. B. Sonnenblume"
-                    autoComplete="off"
+                    placeholder="z. B. Andrea oder Sonnenblume"
+                    autoComplete="nickname"
                     aria-invalid={!!errors.username} aria-describedby={errors.username ? 'username-fehler' : undefined}
-                    className={cn(inputCls(errors.username), formData.avatar && 'pl-14')}
+                    className={cn(inputCls(errors.username), formData.avatar && 'pl-14', 'pr-28')}
                   />
+                  <button
+                    type="button"
+                    onClick={() => update('username', suggestName())}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 min-h-[36px] px-3 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" aria-hidden="true" /> Vorschlag
+                  </button>
                 </div>
               </Field>
             </div>

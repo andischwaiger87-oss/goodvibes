@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
-import { Wrench, Calendar, CheckCircle2, ChevronRight, Activity, Lightbulb, AlertTriangle } from 'lucide-react';
+import { Wrench, Activity, AlertTriangle } from 'lucide-react';
+import PageHeader from '../components/PageHeader';
+import RichText from '../components/RichText';
 import { getCategoryLabel } from '../utils/categories';
 
 export default function Progress() {
@@ -78,144 +80,113 @@ export default function Progress() {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-32">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-100 border-t-indigo-600" role="status" aria-label="Lädt" />
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto py-6 sm:py-12">
-            
-            {/* DIAGNOSE-OVERLAY: Wird nur angezeigt, wenn Supabase auf dem Gerät blockiert wird */}
+        <div className="max-w-3xl mx-auto py-6 sm:py-14">
+            <PageHeader
+                eyebrow="Fortschritt"
+                title="Live dabei,"
+                highlight="wie es entsteht."
+                text="Hier siehst du, wie die gewählte Idee Schritt für Schritt zur App wird."
+            />
+
+            {/* Technischer Hinweis, falls Daten nicht geladen werden konnten (z. B. Werbeblocker) */}
             {errorMessage && (
-                <div className="mb-8 p-4 bg-red-50 border-2 border-red-200 rounded-2xl text-red-800 text-sm flex items-start gap-3 shadow-sm">
-                    <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <div role="status" className="mb-8 flex items-start gap-3 p-4 rounded-2xl bg-white ring-1 ring-slate-200 text-sm text-slate-600">
+                    <span className="shrink-0 w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center">
+                        <AlertTriangle className="w-4 h-4" aria-hidden="true" />
+                    </span>
                     <div>
-                        <h4 className="font-bold text-base mb-1">Mobile Diagnose-Meldung:</h4>
-                        <p className="font-mono bg-white/50 p-2 rounded border border-red-100 mt-1">{errorMessage}</p>
-                        <p className="text-xs text-slate-500 mt-2">Hinweis: Wenn hier ein 'Failed to fetch' steht, blockiert ein Ad-Blocker oder Privatsphäre-Filter auf deinem Smartphone die Verbindung zu Supabase.</p>
+                        <p className="font-semibold text-slate-900">Daten konnten nicht geladen werden</p>
+                        <p className="mt-0.5">Oft blockiert ein Werbe- oder Privatsphäre-Filter die Verbindung. Bitte lade die Seite neu oder deaktiviere den Filter kurz.</p>
+                        <p className="mt-2 text-xs text-slate-400 font-mono break-all">{errorMessage}</p>
                     </div>
                 </div>
             )}
 
-            {/* Header */}
-            <div className="text-center mb-8 sm:mb-14">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-4 inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold gap-2"
-                >
-                    <Activity className="w-4 h-4 animate-pulse text-indigo-500" />
-                    Umsetzungs-Phase
-                </motion.div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-                    Projekt-Fortschritt
-                </h1>
-                <p className="text-base sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                    Hier kannst du in Echtzeit verfolgen, wie wir die Gewinner-Idee der Community in Code verwandeln.
-                </p>
-            </div>
-
-            {/* Project Overview Card */}
             {project ? (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="elgato-card p-5 sm:p-10 mb-12 bg-white relative overflow-hidden border-indigo-100 shadow-md"
-                >
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-                        <div>
-                            <span className="inline-flex text-xs font-semibold px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 mb-3">
-                                {getCategoryLabel(project.category)}
-                            </span>
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">{project.title}</h2>
-                            <p className="text-xs sm:text-sm text-slate-500">
-                                Eingereicht von <span className="font-semibold">{project.username}</span> • {project.votes} Stimmen erhalten
+                <>
+                    {/* Projekt + Fortschritt */}
+                    <motion.section
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 p-6 sm:p-10 shadow-xl shadow-indigo-500/20 mb-12 sm:mb-16"
+                    >
+                        <div aria-hidden="true" className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
+                        <div className="relative">
+                            <p className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-white/15 text-white ring-1 ring-white/25 uppercase tracking-wider mb-4">
+                                <Activity className="w-3.5 h-3.5" aria-hidden="true" /> In Umsetzung
                             </p>
-                        </div>
-                    </div>
+                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">{project.title}</h2>
+                            <p className="mt-2 text-sm text-blue-50">
+                                {getCategoryLabel(project.category)} · Idee von <span className="font-semibold text-white">{project.username}</span> · {project.votes} Stimmen
+                            </p>
 
-                    <p className="text-slate-600 mb-8 leading-relaxed text-sm sm:text-lg bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-                        {project.description}
-                    </p>
+                            <div className="mt-8">
+                                <div className="flex items-end justify-between mb-2.5">
+                                    <span className="text-sm font-semibold text-blue-50">Fortschritt</span>
+                                    <span className="text-3xl font-extrabold text-white tabular-nums">{progress}%</span>
+                                </div>
+                                <div className="h-3 rounded-full bg-white/20 overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} aria-label="Fortschritt der Umsetzung">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${progress}%` }}
+                                        transition={{ duration: 0.9, ease: 'easeOut' }}
+                                        className="h-full rounded-full bg-white"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </motion.section>
 
-                    {/* Progress bar */}
-                    <div>
-                        <div className="flex justify-between items-center text-sm mb-2.5">
-                            <span className="font-bold text-slate-700">Gesamt-Fortschritt</span>
-                            <span className="font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-100">{progress}%</span>
-                        </div>
-                        <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200/50 p-0.5">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${progress}%` }}
-                                transition={{ duration: 0.8, ease: "easeOut" }}
-                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600"
-                            />
-                        </div>
-                    </div>
-                </motion.div>
+                    <section className="mb-12 sm:mb-16" aria-labelledby="idee-heading">
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-600 mb-2">Die Idee</p>
+                        <h2 id="idee-heading" className="text-2xl font-extrabold text-slate-900 tracking-tight mb-4">Worum es geht</h2>
+                        <RichText text={project.description} />
+                    </section>
+
+                    {/* Tagebuch */}
+                    <section aria-labelledby="tagebuch-heading">
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-600 mb-2">Tagebuch</p>
+                        <h2 id="tagebuch-heading" className="text-2xl font-extrabold text-slate-900 tracking-tight mb-6 sm:mb-8">Was zuletzt passiert ist</h2>
+
+                        {updates.length > 0 ? (
+                            <ol className="relative ml-3 border-l-2 border-indigo-100 space-y-8 sm:space-y-10">
+                                {updates.map((update, index) => (
+                                    <motion.li
+                                        key={update.id || index}
+                                        initial={{ opacity: 0, x: -12 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: Math.min(index, 4) * 0.06 }}
+                                        className="relative pl-7 sm:pl-9"
+                                    >
+                                        <span aria-hidden="true" className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full ring-4 ring-slate-50 ${index === 0 ? 'bg-gradient-to-br from-blue-600 to-violet-600' : 'bg-indigo-200'}`} />
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
+                                            <time className="text-xs font-semibold text-slate-400">{new Date(update.created_at).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+                                            <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{update.progress_percent}%</span>
+                                        </div>
+                                        <h3 className="text-lg font-bold text-slate-900 mb-1.5">{update.update_title}</h3>
+                                        <p className="text-[15px] text-slate-600 leading-relaxed whitespace-pre-wrap max-w-[68ch]">{update.update_text}</p>
+                                    </motion.li>
+                                ))}
+                            </ol>
+                        ) : (
+                            <p className="text-slate-500">Bald gibt es hier die ersten Einträge.</p>
+                        )}
+                    </section>
+                </>
             ) : (
-                <div className="max-w-3xl mx-auto py-12 px-4 text-center bg-white rounded-2xl border border-gray-200 shadow-sm mb-12">
-                    <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Wrench className="w-8 h-8" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Kein Projekt ausgewählt</h1>
-                    <p className="text-slate-500 max-w-md mx-auto mb-6">
-                        Die Umsetzungsphase ist aktiv, aber im Admin-Dashboard wurde noch kein konkretes Gewinner-Projekt zur Entwicklung markiert.
-                    </p>
-                </div>
-            )}
-
-            {/* Timeline updates */}
-            {project && (
-                <div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-8 flex items-center gap-2">
-                        <Calendar className="w-6 h-6 text-indigo-600" />
-                        Entwicklungs-Tagebuch (Timeline)
-                    </h3>
-
-                    {updates.length > 0 ? (
-                        <div className="relative border-l-2 border-indigo-100 ml-2 sm:ml-8 pl-6 sm:pl-10 space-y-12">
-                            {updates.map((update, index) => (
-                                <motion.div
-                                    key={update.id || index}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="relative"
-                                >
-                                    <div className="absolute left-0 -translate-x-[calc(50%+1px)] top-6 w-5 h-5 rounded-full border-4 border-slate-50 bg-indigo-600 flex items-center justify-center shadow-sm z-10">
-                                        <CheckCircle2 className="w-2.5 h-2.5 text-white" />
-                                    </div>
-
-                                    <div className="elgato-card p-4 sm:p-6 bg-white hover:border-indigo-200 transition-colors shadow-sm">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                                            <h4 className="text-base sm:text-lg font-bold text-slate-900">{update.update_title}</h4>
-                                            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded w-fit">
-                                                {new Date(update.created_at).toLocaleDateString('de-DE')}
-                                            </span>
-                                        </div>
-                                        <p className="text-slate-600 text-xs sm:text-base leading-relaxed whitespace-pre-wrap">
-                                            {update.update_text}
-                                        </p>
-                                        <div className="mt-4 flex items-center gap-2">
-                                            <span className="text-[11px] sm:text-xs text-indigo-600 font-semibold px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded">
-                                                Status: {update.progress_percent}% fertiggestellt
-                                            </span>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-100">
-                            <Lightbulb className="w-8 h-8 text-slate-400 mx-auto mb-3" />
-                            <p className="text-slate-500 font-medium">Noch keine Updates verfasst.</p>
-                        </div>
-                    )}
+                <div className="text-center py-12 px-6 max-w-lg mx-auto">
+                    <span className="mx-auto mb-5 w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-50 to-violet-50 text-indigo-600 flex items-center justify-center">
+                        <Wrench className="w-7 h-7" aria-hidden="true" />
+                    </span>
+                    <h2 className="text-xl font-bold text-slate-900 mb-2">Gerade wird nichts umgesetzt</h2>
+                    <p className="text-slate-500 leading-relaxed">Sobald eine Idee in die Umsetzung geht, kannst du hier live mitverfolgen, wie sie entsteht.</p>
                 </div>
             )}
         </div>

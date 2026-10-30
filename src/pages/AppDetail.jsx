@@ -243,8 +243,8 @@ export default function AppDetail() {
 
             {/* BETA-Hinweis */}
             {app.is_beta && (
-                <p role="note" className="mt-4 flex items-start gap-2.5 text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
-                    <FlaskConical className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+                <p role="note" className="mt-4 flex items-start gap-2.5 text-sm text-slate-600 bg-white ring-1 ring-slate-200 rounded-2xl px-4 py-3">
+                    <FlaskConical className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" aria-hidden="true" />
                     <span>
                         <strong>Test-Phase:</strong> Die App ist neu und kann noch kleine Fehler haben.
                         Dein Feedback hilft, sie besser zu machen.

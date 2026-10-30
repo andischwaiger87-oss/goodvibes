@@ -124,7 +124,7 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}
-                        <Link to="/" className="flex items-center space-x-3 group cursor-pointer z-50">
+                        <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer z-50">
                             <motion.div
                                 animate={{
                                     scale: [1, 1.15, 1],
@@ -135,11 +135,11 @@ const Navbar = ({ currentPhase, activeProjectTitle, activeProjectId }) => {
                                     repeat: Infinity,
                                     ease: "easeInOut"
                                 }}
-                                className="p-2.5 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30"
+                                className="p-2 sm:p-2.5 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-[11px] sm:rounded-xl shadow-md shadow-blue-500/25 sm:shadow-lg sm:shadow-blue-500/30"
                             >
-                                <Heart className="w-5 h-5 text-white fill-white" />
+                                <Heart className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-white fill-white" />
                             </motion.div>
-                            <span className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+                            <span className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
                                 GoodVibes
                                 {currentPhase === 'implementation' && (
                                     <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold border border-blue-200 uppercase tracking-wider hidden sm:inline-block">

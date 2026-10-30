@@ -29,7 +29,7 @@ export default function AppCard({ app, index = 0, postCount = 0 }) {
             >
                 <div className="flex items-start gap-4">
                     {/* App-Avatar (Community-Bezug) */}
-                    <div className="shrink-0 w-16 h-16 rounded-2xl bg-white ring-1 ring-gray-200 shadow-sm flex items-center justify-center overflow-hidden" aria-hidden="true">
+                    <div className="shrink-0 w-16 h-16 rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105 flex items-center justify-center overflow-hidden" aria-hidden="true">
                         <img
                             src={COMMUNITY_AVATAR}
                             alt=""
@@ -44,7 +44,7 @@ export default function AppCard({ app, index = 0, postCount = 0 }) {
                                 {app.name}
                             </h3>
                             {app.is_beta && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wide">
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 ring-1 ring-violet-100 uppercase tracking-wide">
                                     <FlaskConical className="w-3 h-3" /> Beta
                                 </span>
                             )}
@@ -55,7 +55,7 @@ export default function AppCard({ app, index = 0, postCount = 0 }) {
 
                 {/* Meta-Zeile */}
                 <div className="flex items-center flex-wrap gap-x-4 gap-y-2 mt-4 text-xs text-slate-500">
-                    <span className={cn('inline-flex px-2 py-0.5 rounded border font-medium', accent.soft)}>
+                    <span className={cn('inline-flex px-2.5 py-0.5 rounded-full border font-semibold', accent.soft)}>
                         {getCategoryLabel(app.category)}
                     </span>
                     {app.rating_count > 0 ? (

@@ -4,7 +4,7 @@ Offene Ideen und geplante Verbesserungen. Neueste oben.
 
 ## Geplant
 
-### Tier-Avatare zur Auswahl
+### Tier-Avatare zur Auswahl — für User erledigt (v2.0), offen: eigenes Bild pro App
 - **Was:** Neben den bisherigen Stilen (Roboter, Formen, Emoji-Gesichter, Daumen) zusätzlich **Tier-Avatare** anbieten.
 - **Wo:** Avatar-Auswahl beim Einreichen einer Idee (Stepper, Schritt 4) **und** beim App-Avatar im Admin (Apps → Bearbeiten).
 - **Umsetzung (Notiz):** Tiere als lokale SVG-Dateien unter `public/avatars/` ablegen (kein Drittanbieter, wie die bestehenden Avatare). Neuen Stil in `src/utils/avatar.js` (`AVATAR_STYLES`) ergänzen. Für Apps ein Feld `avatar` in der Tabelle `apps`, damit jede App ihr eigenes Bild bekommt statt des gemeinsamen Roboters (`COMMUNITY_AVATAR`).

@@ -6,6 +6,7 @@ import { Database, AlertTriangle, Vote, Clock, Target, ChevronDown } from 'lucid
 import { getDeviceId } from '../utils/security';
 import { CardGridSkeleton } from '../components/Skeleton';
 import { getCategoryLabel } from '../utils/categories';
+import PageHeader from '../components/PageHeader';
 import { cn } from '../utils/cn';
 
 export default function Voting() {
@@ -102,35 +103,28 @@ export default function Voting() {
     };
 
     return (
-        <div className="py-6 sm:py-12 max-w-7xl mx-auto">
-            <div className="text-center mb-8 sm:mb-14">
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 sm:mb-5"
-                >
-                    Deine Stimme zählt
-                </motion.h1>
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed"
-                >
-                    Unterstütze die Idee, die dir am besten gefällt.
-                </motion.p>
-
+        <div className="py-6 sm:py-14 max-w-7xl mx-auto">
+            <PageHeader
+                eyebrow="Abstimmung"
+                title="Deine Stimme"
+                highlight="zählt."
+                text="Unterstütze die Idee, die dir am besten gefällt."
+                className="!mb-0"
+            />
+            <div className="text-center mb-8 sm:mb-12">
                 {currentPhase === 'review' ? (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="mt-6 sm:mt-8 inline-flex flex-col sm:flex-row items-center gap-3 p-5 sm:p-6 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 max-w-2xl mx-auto text-left shadow-sm"
+                        className="mt-6 sm:mt-8 flex items-start gap-3 p-4 sm:p-5 bg-white ring-1 ring-slate-200 rounded-2xl max-w-lg mx-auto text-left"
                     >
-                        <Clock className="w-10 h-10 text-amber-500 shrink-0" />
+                        <span className="shrink-0 w-9 h-9 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center">
+                            <Clock className="w-[18px] h-[18px]" aria-hidden="true" />
+                        </span>
                         <div>
-                            <h3 className="font-bold text-base sm:text-lg mb-1">Abstimmungsrunde beendet (Sichtungsphase)</h3>
-                            <p className="text-sm text-amber-800 leading-relaxed">
-                                Wir werten aktuell alle Stimmen aus und sichten die eingereichten Ideen für die nächste Phase. Während der Review-Phase sind Abstimmungen und neue Einreichungen kurzzeitig pausiert.
+                            <h3 className="font-semibold text-slate-900">Kurze Pause</h3>
+                            <p className="text-sm text-slate-600 leading-relaxed mt-0.5">
+                                Ich werte gerade die Stimmen aus. Abstimmen und Einreichen ist bald wieder möglich.
                             </p>
                         </div>
                     </motion.div>

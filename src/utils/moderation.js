@@ -25,7 +25,7 @@ import { getDeviceId } from './security';
 // Verspielte, freundliche Bausteine für automatische Spitznamen.
 const NICK_ADJ = ['Sonnige', 'Mutige', 'Kluge', 'Freundliche', 'Muntere', 'Ruhige', 'Flinke', 'Helle', 'Warme', 'Neugierige', 'Fröhliche', 'Sanfte'];
 const NICK_NOUN = ['Libelle', 'Sonnenblume', 'Wolke', 'Biene', 'Feder', 'Welle', 'Kastanie', 'Amsel', 'Brise', 'Koralle', 'Lichtung', 'Robbe'];
-const AVATAR_STYLES = ['bottts', 'fun-emoji', 'shapes', 'thumbs'];
+const AVATAR_STYLES = ['tiere', 'tiere', 'bottts', 'fun-emoji', 'shapes', 'thumbs'];
 
 /**
  * Erzeugt einen freundlichen, zufälligen Spitznamen.

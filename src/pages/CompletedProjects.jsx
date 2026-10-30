@@ -1,154 +1,116 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
-import { Award, ArrowRight, Sparkles, ExternalLink, Heart } from 'lucide-react';
+import { ArrowRight, ExternalLink, Heart, Smartphone, Wrench } from 'lucide-react';
 import { getCategoryLabel } from '../utils/categories';
 import { projectAvatarUrl } from '../utils/avatar';
 import { useSeo } from '../components/Seo';
 import { CardGridSkeleton } from '../components/Skeleton';
+import PageHeader from '../components/PageHeader';
 
 export default function CompletedProjects() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
 
     useSeo({
         title: 'Umgesetzte Projekte — GoodVibes',
-        description: 'Alle Apps, die durch eure Ideen und Stimmen ausgewählt und kostenlos umgesetzt wurden. Direkt ausprobieren und Feedback geben.',
+        description: 'Alle Apps, die durch eure Ideen und Stimmen ausgewählt und gemeinnützig umgesetzt wurden. Direkt ausprobieren und Feedback geben.',
     });
 
     useEffect(() => {
-        fetchCompletedProjects();
-    }, []);
-
-    const fetchCompletedProjects = async () => {
-        setLoading(true);
-        try {
-            const { data } = await supabase
-                .from('projects')
-                .select('*')
-                .eq('status', 'completed')
-                .order('created_at', { ascending: false });
-            
-            if (data) {
-                setProjects(data);
+        (async () => {
+            setLoading(true);
+            try {
+                const { data } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .eq('status', 'completed')
+                    .order('created_at', { ascending: false });
+                if (data) setProjects(data);
+            } catch (err) {
+                console.error('Fehler beim Laden der Projekte:', err);
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            console.error("Error fetching completed projects:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="max-w-6xl mx-auto py-10"><CardGridSkeleton count={2} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" /></div>
-        );
-    }
+        })();
+    }, []);
 
     return (
         <div className="max-w-6xl mx-auto py-6 sm:py-14">
-            {/* Header */}
-            <div className="text-center mb-8 sm:mb-14">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-4 inline-flex items-center px-4 py-1.5 rounded-full bg-yellow-50 border border-yellow-100 text-yellow-700 text-sm font-semibold gap-2"
-                >
-                    <Award className="w-4 h-4 text-yellow-600 animate-bounce" />
-                    Showcase & Realisierte Apps
-                </motion.div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-                    Unsere umgesetzten Projekte
-                </h1>
-                <p className="text-base sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                    Hier findest du alle Apps, die durch eure Ideen und Stimmen ausgewählt und von uns kostenlos realisiert wurden.
-                </p>
-            </div>
+            <PageHeader
+                eyebrow="Showcase"
+                title="Aus Ideen"
+                highlight="werden Apps."
+                text="Diese Apps wurden von euch gewählt und gemeinnützig umgesetzt. Probier sie aus und sag mir, was du denkst."
+            />
 
-            {projects.length > 0 ? (
+            {loading ? (
+                <CardGridSkeleton count={2} className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" />
+            ) : projects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    {projects.map((project, index) => (
-                        <motion.div
-                            key={project.id}
-                            initial={{ opacity: 0, y: 25 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="elgato-card overflow-hidden bg-white hover:border-blue-200 flex flex-col group relative"
-                        >
-                            {/* Decorative top border */}
-                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600" />
-                            
-                            <div className="p-5 sm:p-7 flex-grow">
-                                <div className="flex justify-between items-start gap-4 mb-4">
-                                    <span className="inline-flex text-xs font-semibold px-2.5 py-1 rounded bg-yellow-50 text-yellow-700 border border-yellow-100">
-                                        {getCategoryLabel(project.category)}
-                                    </span>
-                                    <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
-                                        <Heart className="w-3.5 h-3.5 fill-current text-red-400" /> {project.votes} Stimmen
-                                    </span>
-                                </div>
+                    {projects.map((project, index) => {
+                        const detailUrl = `/projects/${project.slug || project.id}`;
+                        return (
+                            <motion.article
+                                key={project.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.08 }}
+                                className="elgato-card group flex flex-col overflow-hidden"
+                            >
+                                {/* Kopf im Markenverlauf */}
+                                <Link to={detailUrl} className="relative block overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 px-5 py-6 sm:px-7 sm:py-7 focus-visible:outline-none">
+                                    <div aria-hidden="true" className="absolute -top-16 -right-10 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
+                                    <div className="relative flex items-center gap-4">
+                                        <span className="shrink-0 w-16 h-16 rounded-2xl bg-white shadow-lg shadow-indigo-900/20 flex items-center justify-center transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
+                                            <img src={projectAvatarUrl(project)} alt="" className="w-12 h-12" loading="lazy" />
+                                        </span>
+                                        <span className="min-w-0">
+                                            <span className="block text-2xl font-extrabold text-white tracking-tight leading-tight truncate">{project.title}</span>
+                                            <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-blue-50">
+                                                <span className="inline-flex items-center gap-1"><Smartphone className="w-3.5 h-3.5" aria-hidden="true" /> Fürs Handy</span>
+                                                <span className="inline-flex items-center gap-1"><Heart className="w-3.5 h-3.5 fill-current" aria-hidden="true" /> {project.votes} Stimmen</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </Link>
 
-                                <h3 className="text-2xl font-bold text-slate-900 mb-3 leading-tight group-hover:text-blue-700 transition-colors">
-                                    {project.title}
-                                </h3>
-
-                                {/* Einreicher mit Avatar – hilft beim Wiedererkennen */}
-                                <div className="flex items-center gap-2.5 mb-4">
-                                    <img
-                                        src={projectAvatarUrl(project)}
-                                        alt=""
-                                        aria-hidden="true"
-                                        className="w-9 h-9 rounded-full bg-gray-50 ring-1 ring-gray-200 shrink-0"
-                                        loading="lazy"
-                                    />
-                                    <p className="text-xs text-slate-500">
-                                        Idee von <span className="font-bold text-slate-700">{project.username}</span>
+                                <div className="p-5 sm:p-7 flex-grow">
+                                    <p className="text-xs text-slate-500 mb-3">
+                                        <span className="font-semibold text-blue-600">{getCategoryLabel(project.category)}</span>
+                                        <span aria-hidden="true"> · </span>Idee von {project.username}
                                     </p>
+                                    <p className="text-[15px] text-slate-600 leading-relaxed line-clamp-3">{project.description}</p>
                                 </div>
-                                
-                                <p className="text-slate-600 leading-relaxed text-sm sm:text-base mb-6 line-clamp-3">
-                                    {project.description}
-                                </p>
 
-                                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 mb-4">
-                                    <h4 className="text-xs font-bold text-slate-700 mb-1 uppercase tracking-wide">Hauptnutzen:</h4>
-                                    <p className="text-xs sm:text-sm text-slate-500 leading-relaxed line-clamp-2">
-                                        {project.benefit}
-                                    </p>
+                                <div className="px-5 pb-5 sm:px-7 sm:pb-7 flex flex-col sm:flex-row gap-3">
+                                    {project.live_url && (
+                                        <a
+                                            href={project.live_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="btn-primary flex-1 inline-flex items-center justify-center gap-2 min-h-[48px]"
+                                        >
+                                            App öffnen <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                                        </a>
+                                    )}
+                                    <Link to={detailUrl} className="btn-secondary flex-1 inline-flex items-center justify-center gap-1.5 min-h-[48px]">
+                                        Mehr erfahren <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                                    </Link>
                                 </div>
-                            </div>
-
-                            <div className="px-5 py-4 sm:px-8 sm:py-5 border-t border-gray-100 bg-gray-50/50 flex flex-wrap items-center gap-3 mt-auto">
-                                {project.live_url && (
-                                    <a
-                                        href={project.live_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn-primary flex-1 sm:flex-none inline-flex items-center justify-center gap-2 text-sm px-5"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        App öffnen <ExternalLink className="w-4 h-4" />
-                                    </a>
-                                )}
-                                
-                                <button
-                                    onClick={() => navigate(`/projects/${project.slug || project.id}`)}
-                                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-3 bg-white hover:bg-gray-50 text-slate-700 text-sm font-bold rounded-xl border border-gray-200 transition-colors focus:outline-none focus:ring-4 focus:ring-gray-100"
-                                >
-                                    Details & Feedback <ArrowRight className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.article>
+                        );
+                    })}
                 </div>
             ) : (
-                <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-100 max-w-2xl mx-auto">
-                    <Sparkles className="w-12 h-12 text-yellow-500 mx-auto mb-4 animate-pulse" />
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">Noch keine realisierten Projekte</h3>
-                    <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
-                        Das erste Gewinnerprojekt der Community befindet sich aktuell in der aktiven Umsetzung. Sobald es fertiggestellt ist, findest du es hier samt Link und Feedback-Bereich!
+                <div className="text-center py-16 px-6 max-w-lg mx-auto">
+                    <span className="mx-auto mb-5 w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-50 to-violet-50 text-indigo-600 flex items-center justify-center">
+                        <Wrench className="w-7 h-7" aria-hidden="true" />
+                    </span>
+                    <h2 className="text-xl font-bold text-slate-900 mb-2">Die erste App entsteht gerade</h2>
+                    <p className="text-slate-500 leading-relaxed">
+                        Sobald sie fertig ist, findest du sie hier – mit Link und Feedback-Bereich.
                     </p>
                 </div>
             )}

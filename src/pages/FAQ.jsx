@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown, Sparkles, Lightbulb, MessagesSquare, ShieldCheck } from 'lucide-react';
+import PageHeader from '../components/PageHeader';
 
 const faqs = [
     {
@@ -81,22 +82,63 @@ const faqs = [
     }
 ];
 
+// Themen-Gruppen: macht die Liste für Laien überschaubar
+const GROUPS = [
+    { id: 'grundlagen', title: 'Grundlagen', icon: Sparkles, tone: 'from-blue-50 to-sky-50 text-blue-600',
+      q: ["Was bedeutet 'GoodVibes'?", 'Kostet mich das wirklich nichts?', 'Wer steckt hinter GoodVibes?', 'Für welche Geräte sind die Apps gedacht?', 'Kann ich bei der Entwicklung helfen?'] },
+    { id: 'ideen', title: 'Ideen & Abstimmung', icon: Lightbulb, tone: 'from-violet-50 to-fuchsia-50 text-violet-600',
+      q: ['Ab wann wird eine Idee umgesetzt?', 'Wer entscheidet, welche Idee umgesetzt wird?', 'Was passiert mit meiner Idee nach der Einreichung?', 'Darf ich auch als Verein oder Organisation einreichen?', 'Welche Projektphasen gibt es bei GoodVibes?', "Was bedeutet es, wenn ein Projekt 'In Umsetzung' ist?", 'Was passiert nach der Fertigstellung eines Projekts?'] },
+    { id: 'apps', title: 'Apps & Community', icon: MessagesSquare, tone: 'from-rose-50 to-orange-50 text-rose-500',
+      q: ["Was ist der neue Bereich 'Apps & Community'?", "Was bedeutet 'BETA' bei einer App?", 'Wie entscheidet ihr, welche Verbesserungen umgesetzt werden?', 'Warum kann ich keine Links posten – und wie melde ich einen Fehler mit Bild?'] },
+    { id: 'sicherheit', title: 'Datenschutz & Sicherheit', icon: ShieldCheck, tone: 'from-emerald-50 to-teal-50 text-emerald-600',
+      q: ['Wie wird der Datenschutz gewährleistet?', 'Muss ich mich anmelden, um mitzureden?', 'Wie sorgt ihr dafür, dass niemand beleidigt oder mit Spam nervt?'] },
+];
+
 export default function FAQ() {
+    const byQuestion = Object.fromEntries(faqs.map((f) => [f.question, f]));
+    const used = new Set(GROUPS.flatMap((g) => g.q));
+    const groups = GROUPS.map((g) => ({ ...g, items: g.q.map((q) => byQuestion[q]).filter(Boolean) }));
+    // Neue Fragen, die noch keiner Gruppe zugeordnet sind, landen bei den Grundlagen
+    const rest = faqs.filter((f) => !used.has(f.question));
+    if (rest.length) groups[0].items.push(...rest);
+
     return (
         <div className="max-w-3xl mx-auto py-6 sm:py-14">
-            <div className="text-center mb-8 sm:mb-14">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mb-6">
-                    <HelpCircle className="w-8 h-8" />
-                </div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Häufige Fragen</h1>
-                <p className="text-base sm:text-xl text-slate-500">
-                    Alles, was du über GoodVibes wissen musst.
-                </p>
-            </div>
+            <PageHeader
+                eyebrow="FAQ"
+                title="Alles, was du"
+                highlight="wissen musst."
+                text="Kurze Antworten auf die häufigsten Fragen."
+            />
 
-            <div className="space-y-3">
-                {faqs.map((faq, index) => (
-                    <FAQItem key={index} faq={faq} index={index} />
+            {/* Themen-Sprungmarken */}
+            <nav aria-label="Themen" className="-mx-4 sm:mx-0 mb-10 sm:mb-12">
+                <ul className="flex sm:flex-wrap sm:justify-center gap-2 overflow-x-auto px-4 sm:px-0 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {groups.map((g) => (
+                        <li key={g.id} className="shrink-0">
+                            <a href={`#${g.id}`} className="inline-flex items-center gap-2 min-h-[40px] px-4 rounded-full bg-white ring-1 ring-slate-200 text-sm font-semibold text-slate-600 hover:ring-blue-200 hover:text-blue-700 transition-all whitespace-nowrap">
+                                <g.icon className="w-4 h-4" aria-hidden="true" /> {g.title}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+
+            <div className="space-y-12 sm:space-y-14">
+                {groups.map((g) => (
+                    <section key={g.id} id={g.id} aria-labelledby={`${g.id}-titel`} className="scroll-mt-24">
+                        <div className="flex items-center gap-3 mb-4 sm:mb-5">
+                            <span className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${g.tone} flex items-center justify-center`}>
+                                <g.icon className="w-5 h-5" aria-hidden="true" />
+                            </span>
+                            <h2 id={`${g.id}-titel`} className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">{g.title}</h2>
+                        </div>
+                        <div className="space-y-2.5">
+                            {g.items.map((faq) => (
+                                <FAQItem key={faq.question} faq={faq} index={faqs.indexOf(faq)} />
+                            ))}
+                        </div>
+                    </section>
                 ))}
             </div>
         </div>
@@ -110,24 +152,24 @@ function FAQItem({ faq, index }) {
 
     return (
         <div className={`elgato-card overflow-hidden transition-colors ${isOpen ? 'border-blue-200' : 'hover:border-blue-200'}`}>
-            <h2 className="m-0">
+            <h3 className="m-0">
                 <button
                     id={buttonId}
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
                     aria-expanded={isOpen}
                     aria-controls={panelId}
-                    className="w-full flex items-center justify-between gap-4 p-5 sm:p-6 text-left min-h-[64px] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 rounded-2xl"
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 sm:p-5 text-left min-h-[60px] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 rounded-3xl"
                 >
-                    <span className="text-base sm:text-lg font-semibold text-slate-900 leading-snug">{faq.question}</span>
-                    <span className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className="text-base font-semibold text-slate-900 leading-snug">{faq.question}</span>
+                    <span className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-gradient-to-br from-blue-600 to-violet-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
                         <ChevronDown
                             className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                             aria-hidden="true"
                         />
                     </span>
                 </button>
-            </h2>
+            </h3>
             <AnimatePresence initial={false}>
                 {isOpen && (
                     <motion.div
@@ -139,7 +181,7 @@ function FAQItem({ faq, index }) {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-slate-600 leading-relaxed max-w-[68ch]">
+                        <div className="px-5 pb-5 text-[15px] text-slate-600 leading-relaxed max-w-[68ch]">
                             {faq.answer}
                         </div>
                     </motion.div>

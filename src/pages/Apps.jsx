@@ -7,6 +7,7 @@ import { categoryLabels } from '../utils/categories';
 import { cn } from '../utils/cn';
 import { useSeo } from '../components/Seo';
 import { CardGridSkeleton } from '../components/Skeleton';
+import PageHeader from '../components/PageHeader';
 
 export default function Apps() {
     useSeo({
@@ -52,21 +53,12 @@ export default function Apps() {
     return (
         <div className="max-w-6xl mx-auto py-6 sm:py-14">
             {/* Header */}
-            <motion.header
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="text-center mb-8 sm:mb-12 px-2"
-            >
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600 mb-3">Apps & Community</p>
-                <h1 className="h1-hero text-[2.15rem] leading-[1.08] sm:text-5xl md:text-6xl mb-4 sm:mb-5">
-                    Unsere Apps.<br />
-                    <span className="text-gradient-flow">Gemeinsam besser.</span>
-                </h1>
-                <p className="text-base sm:text-lg text-slate-500 max-w-md mx-auto leading-relaxed text-pretty">
-                    Ausprobieren, Meinung sagen und mitverbessern – anonym und ohne Anmeldung.
-                </p>
-            </motion.header>
+            <PageHeader
+                eyebrow="Apps & Community"
+                title="Unsere Apps."
+                highlight="Gemeinsam besser."
+                text="Ausprobieren, Meinung sagen und mitverbessern – anonym und ohne Anmeldung."
+            />
 
             {/* Vertrauens-Hinweise (barrierefrei & klar) */}
             <ul className="grid grid-cols-3 gap-2 sm:gap-6 mb-10 sm:mb-12 max-w-3xl mx-auto">

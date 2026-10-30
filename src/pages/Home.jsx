@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Users, ShieldCheck, Check, Smartphone, Heart } from 'lucide-react';
+import { ArrowRight, Users, ShieldCheck, Check, Smartphone, Heart, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import BetaTestBanner from '../components/BetaTestBanner';
@@ -54,7 +54,7 @@ export default function Home() {
     return (
         <div className="w-full max-w-6xl mx-auto">
             {/* Hero Section */}
-            <section className="text-center pt-8 pb-14 sm:py-16 lg:py-28 relative">
+            <section className="text-center pt-8 pb-14 sm:py-16 lg:py-0 lg:min-h-[calc(100svh-5rem)] lg:flex lg:flex-col lg:items-center lg:justify-center relative">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -84,7 +84,8 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-[1.05rem] sm:text-xl text-slate-600 mb-9 sm:mb-11 max-w-2xl mx-auto leading-relaxed px-1 text-balance"
                 >
-                    Hast du eine Idee für eine Handy-App, die vielen hilft? Wir stimmen gemeinsam ab – und ich setze sie gemeinnützig und kostenlos um.
+                    Hast du eine Idee für eine Handy-App, die vielen hilft? Wir stimmen gemeinsam ab – und ich setze sie{' '}
+                    <span className="whitespace-nowrap">gemeinnützig und kostenlos um.</span>
                 </motion.p>
 
                 <motion.div
@@ -114,16 +115,28 @@ export default function Home() {
                         </li>
                     ))}
                 </motion.ul>
+
+                {/* Desktop: sanfter Hinweis, dass es weiter unten weitergeht */}
+                <motion.a
+                    href="#warum-heading"
+                    aria-label="Weiter nach unten"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, y: [0, 6, 0] }}
+                    transition={{ opacity: { delay: 1 }, y: { duration: 2, repeat: Infinity, ease: 'easeInOut' } }}
+                    className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 w-10 h-10 items-center justify-center rounded-full text-slate-400 hover:text-blue-600 transition-colors"
+                >
+                    <ChevronDown className="w-6 h-6" aria-hidden="true" />
+                </motion.a>
             </section>
 
             {/* Hinweis auf Apps in der Test-Phase (BETA) */}
             <BetaTestBanner />
 
             {/* ---------- Warum GoodVibes ---------- */}
-            <section className="pb-16 sm:pb-24" aria-labelledby="warum-heading">
+            <section className="pb-16 sm:pb-24 lg:pt-24 scroll-mt-24" aria-labelledby="warum-heading">
                 <div className="text-center mb-8 sm:mb-12 px-2">
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600 mb-3">Warum GoodVibes</p>
-                    <h2 id="warum-heading" className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+                    <h2 id="warum-heading" className="scroll-mt-28 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
                         Mit Herz gemacht.
                     </h2>
                 </div>
@@ -157,17 +170,6 @@ export default function Home() {
                     />
                 </motion.ul>
 
-                {/* Persoenlicher Absender: schafft Vertrauen */}
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 }}
-                    className="mt-8 sm:mt-10 flex items-center justify-center gap-2 text-sm text-slate-500"
-                >
-                    <Heart className="w-4 h-4 text-rose-500 fill-rose-500" aria-hidden="true" />
-                    Ein Herzensprojekt von Andi aus Unken
-                </motion.p>
             </section>
         </div>
     );

@@ -101,10 +101,11 @@ p, li { text-wrap: pretty; }
 
 /* Karte: weichere Ecken, feiner Rand, mehrschichtiger Schatten */
 @utility elgato-card {
-    @apply bg-white border border-slate-200/70 rounded-2xl transition-[box-shadow,border-color,transform] duration-300;
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.03);
+    @apply bg-white border border-slate-200/70 rounded-3xl transition-[box-shadow,border-color,transform] duration-300;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.03), 0 4px 16px -6px rgb(15 23 42 / 0.06);
     &:hover {
-        box-shadow: 0 4px 6px -1px rgb(15 23 42 / 0.05), 0 12px 24px -8px rgb(15 23 42 / 0.10);
+        box-shadow: 0 2px 4px rgb(15 23 42 / 0.04), 0 16px 32px -12px rgb(15 23 42 / 0.12);
+        border-color: rgb(191 219 254 / 0.9);
     }
 }
 
