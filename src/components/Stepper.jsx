@@ -299,14 +299,14 @@ export default function Stepper() {
                         key={id} type="button" role="radio" aria-checked={active}
                         onClick={() => update('category', id)}
                         className={cn(
-                          'flex items-center gap-2.5 rounded-2xl border-2 px-3.5 min-h-[56px] text-left text-sm font-semibold transition-all active:scale-[0.98]',
+                          'flex items-center gap-2.5 rounded-2xl border-2 px-3 sm:px-3.5 min-h-[56px] text-left text-sm font-semibold transition-all active:scale-[0.98]',
                           active ? 'border-blue-500 bg-blue-50 text-blue-800 shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'
                         )}
                       >
                         <span className={cn('shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-colors', active ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500')}>
                           <Icon className="w-4 h-4" aria-hidden="true" />
                         </span>
-                        {getCategoryLabel(id)}
+                        <span className="min-w-0 hyphens-auto break-words leading-snug">{getCategoryLabel(id)}</span>
                       </button>
                     );
                   })}

@@ -109,7 +109,7 @@ export default function Home() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.45 }}
-                    className="mt-7 sm:mt-9 grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-x-4 gap-y-2.5 sm:gap-x-6 max-w-xs sm:max-w-none mx-auto text-left text-sm text-slate-500"
+                    className="mt-7 sm:mt-9 grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-x-3 gap-y-2.5 sm:gap-x-6 max-w-[22rem] sm:max-w-none mx-auto text-left text-sm text-slate-500"
                     aria-label="Das Wichtigste auf einen Blick"
                 >
                     {['Gemeinnützig', '100 % kostenlos', 'Fürs Handy gemacht', 'Ohne Anmeldung'].map((t) => (
