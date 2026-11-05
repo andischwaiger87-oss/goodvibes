@@ -7,20 +7,26 @@ import { Play, Pause, ThumbsUp, Share2, Lightbulb } from 'lucide-react';
  * - Desktop: startet automatisch (ohne Ton), sobald sichtbar.
  * - Handy & "Bewegung reduzieren": nur Standbild, Start per Antippen (spart Daten).
  */
+const VIDEO = '/videos/goodvibes-demo.mp4';
+
 export default function DemoVideo() {
     const ref = useRef(null);
     const [playing, setPlaying] = useState(false);
-    const [src, setSrc] = useState(null);
+
+    // Quelle direkt am Element setzen: so kann play() sofort starten
+    const ensureSrc = (el) => {
+        if (!el.getAttribute('src')) { el.setAttribute('src', VIDEO); el.load(); }
+    };
 
     useEffect(() => {
         const el = ref.current;
-        if (!el || typeof IntersectionObserver === 'undefined') { setSrc('/videos/goodvibes-demo.mp4'); return; }
+        if (!el) return;
+        if (typeof IntersectionObserver === 'undefined') { ensureSrc(el); return; }
         const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         const desktop = window.matchMedia?.('(min-width: 768px)').matches;
         const io = new IntersectionObserver(([e]) => {
             if (e.isIntersecting) {
-                setSrc('/videos/goodvibes-demo.mp4');
-                if (desktop && !reduce) el.play?.().catch(() => {});
+                if (desktop && !reduce) { ensureSrc(el); el.play?.().catch(() => {}); }
             } else if (!el.paused) {
                 el.pause();
             }
@@ -32,7 +38,7 @@ export default function DemoVideo() {
     const toggle = () => {
         const el = ref.current;
         if (!el) return;
-        if (!src) setSrc('/videos/goodvibes-demo.mp4');
+        ensureSrc(el);
         if (el.paused) el.play?.().catch(() => {}); else el.pause();
     };
 
@@ -72,7 +78,6 @@ export default function DemoVideo() {
                     >
                         <video
                             ref={ref}
-                            src={src || undefined}
                             poster="/videos/goodvibes-demo-poster.webp"
                             width="720" height="1558"
                             muted loop playsInline preload="none"
