@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Sparkles, Lightbulb, MessagesSquare, ShieldCheck } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
+import DemoVideo from '../components/DemoVideo';
 
 const faqs = [
     {
@@ -110,6 +111,9 @@ export default function FAQ() {
                 highlight="wissen musst."
                 text="Kurze Antworten auf die häufigsten Fragen."
             />
+
+            {/* Kurzer Clip: so funktioniert GoodVibes */}
+            <DemoVideo />
 
             {/* Themen-Sprungmarken */}
             <nav aria-label="Themen" className="-mx-4 sm:mx-0 mb-10 sm:mb-12">

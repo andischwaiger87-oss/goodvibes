@@ -31,3 +31,7 @@ https://:version.:project.pages.dev/*
 # Vorschaubild fuer geteilte Links
 /og-image.png
   Cache-Control: public, max-age=604800
+
+# Demo-Video: aendert sich selten -> 30 Tage zwischenspeichern
+/videos/*
+  Cache-Control: public, max-age=2592000
